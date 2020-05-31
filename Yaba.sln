@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetAppAPI", "BudgetAppAPI\BudgetAppAPI.csproj", "{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YabaAPI", "BudgetAppAPI\YabaAPI.csproj", "{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
