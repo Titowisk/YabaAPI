@@ -35,6 +35,70 @@ namespace YabaAPI.Controllers
 				throw ex;
 			}
 		}
+
+		[HttpGet]
+		public IActionResult Get()
+		{
+			try
+			{
+				return Ok(_context.Transactions.ToList());
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
+		[HttpGet("{id}")]
+		public IActionResult Get(long id)
+		{
+			try
+			{
+				return Ok(_context.Transactions.Find(id));
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
+		[HttpDelete("{id}")]
+		public IActionResult Delete(long id)
+		{
+			try
+			{
+				var transaction = _context.Transactions.Find(id);
+				_context.Transactions.Remove(transaction);
+				_context.SaveChanges();
+
+				return Ok();
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
+		[HttpPut("{id}")]
+		public IActionResult Update(long id, [FromBody] Transaction newTransaction)
+		{
+			try
+			{
+				var transaction = _context.Transactions.Find(id);
+				transaction.Origin = newTransaction.Origin;
+				transaction.Date = newTransaction.Date;
+				transaction.Amount = newTransaction.Amount;
+
+				_context.Transactions.Update(transaction);
+				_context.SaveChanges();
+
+				return Ok();
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 	}
 	/* NOTES:
 	 - Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)
