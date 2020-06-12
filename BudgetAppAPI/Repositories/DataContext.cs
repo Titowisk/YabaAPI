@@ -6,6 +6,7 @@ namespace YabaAPI.Repositories
 	public class DataContext : DbContext
 	{
 		public DbSet<Transaction> Transactions { get; set; }
+		public DbSet<BankAccount> BankAccounts { get; set; }
 
 		public DataContext(DbContextOptions<DataContext> options) : base(options)
 		{	}
@@ -38,6 +39,30 @@ namespace YabaAPI.Repositories
 				.Property(t => t.Date)
 				.HasColumnName("TR_Date")
 				.HasColumnType("date")
+				.IsRequired();
+
+			// Too much code in this DataContext
+			modelBuilder.Entity<BankAccount>()
+				.ToTable("BankAccounts")
+				.HasKey(bk => bk.Id);
+
+			modelBuilder.Entity<BankAccount>()
+				.HasMany(bk => bk.Transactions)
+				.WithOne(t => t.BankAccount);
+
+			modelBuilder.Entity<BankAccount>()
+				.Property(bk => bk.Id)
+				.HasColumnName("BK_Id")
+				.IsRequired();
+
+			modelBuilder.Entity<BankAccount>()
+				.Property(bk => bk.Number)
+				.HasColumnName("BK_Number")
+				.IsRequired();
+
+			modelBuilder.Entity<BankAccount>()
+				.Property(bk => bk.Agency)
+				.HasColumnName("BK_Agency")
 				.IsRequired();
 		}
 	}
