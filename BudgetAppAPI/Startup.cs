@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using YabaAPI.Repositories;
+using Newtonsoft.Json;
 
 namespace YabaAPI
 {
@@ -20,7 +21,8 @@ namespace YabaAPI
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddControllers();
+			services.AddControllers()
+				.AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 			services.AddDbContext<DataContext>(opt =>
 				opt.UseSqlServer(Configuration.GetConnectionString("SqlServerDB")));
 		}
