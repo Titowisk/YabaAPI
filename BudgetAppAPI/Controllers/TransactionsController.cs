@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using YabaAPI.Models;
 using YabaAPI.Repositories;
 
@@ -41,7 +42,12 @@ namespace YabaAPI.Controllers
 		{
 			try
 			{
-				return Ok(_context.Transactions.ToList());
+				var transactions = _context
+					.Transactions
+					.Include(t => t.BankAccount)
+					.ToList();
+
+				return Ok(transactions);
 			}
 			catch (Exception)
 			{
@@ -54,7 +60,12 @@ namespace YabaAPI.Controllers
 		{
 			try
 			{
-				return Ok(_context.Transactions.Find(id));
+				var transaction = _context
+					.Transactions
+					.Include(t => t.BankAccount) 
+					.First(t => t.Id == id);
+
+				return Ok(transaction);
 			}
 			catch (Exception)
 			{
@@ -88,6 +99,7 @@ namespace YabaAPI.Controllers
 				transaction.Origin = newTransaction.Origin;
 				transaction.Date = newTransaction.Date;
 				transaction.Amount = newTransaction.Amount;
+				transaction.BankAccountId = newTransaction.BankAccountId;
 
 				_context.Transactions.Update(transaction);
 				_context.SaveChanges();
@@ -101,8 +113,9 @@ namespace YabaAPI.Controllers
 		}
 	}
 	/* NOTES:
-	 - Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)
-	 - Return types
-		https://docs.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.accepted?view=aspnetcore-3.1
+		- Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)
+		- Return types
+			https://docs.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.accepted?view=aspnetcore-3.1
+		- using .Include() normally, it brings the whole object in the response.
 	 */
 }
