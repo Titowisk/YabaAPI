@@ -35,6 +35,9 @@ namespace YabaAPI.Repositories
 				.HasColumnName("TR_Date")
 				.HasColumnType("date")
 				.IsRequired();
+
+			builder.Property(t => t.Category)
+				.HasColumnName("TR_Category");
 		}
 	}
 }

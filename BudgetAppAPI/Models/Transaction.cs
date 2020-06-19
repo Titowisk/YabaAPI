@@ -22,5 +22,6 @@ namespace YabaAPI.Models
 		public decimal Amount { get; set; }
 		public int? BankAccountId { get; set; }
 		public BankAccount? BankAccount { get; set; }
+		public Category? Category { get; set; }
 	}
 }
