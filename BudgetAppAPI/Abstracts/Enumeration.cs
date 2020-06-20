@@ -43,11 +43,14 @@ namespace YabaAPI.Abstracts
 			return typeMatches && valueMatches;
 		}
 
-		public override int GetHashCode() => Value.GetHashCode();
-
-		public static T FromValue<T>(int value) where T : Enumeration
+		public override int GetHashCode()
 		{
-			var matchingItem = Parse<T, int>(value, "value", item => item.Value == value);
+			return Value.GetHashCode();
+		}
+
+		public static T FromValue<T>(short value) where T : Enumeration
+		{
+			var matchingItem = Parse<T, short>(value, "value", item => item.Value == value);
 			return matchingItem;
 		}
 
