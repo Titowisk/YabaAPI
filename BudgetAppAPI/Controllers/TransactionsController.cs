@@ -51,7 +51,7 @@ namespace YabaAPI.Controllers
 								 t.Origin,
 								 t.Amount,
 								 t.Date,
-								 Bank = t.BankAccount != null ? t.BankAccount.Number : "",
+								 Bank = t.BankAccount != null ? BankCode.FromValue<BankCode>(t.BankAccount.Code).Name : "",
 								 Category = t.Category != null ? t.Category.ToString() : ""
 							 };
 
