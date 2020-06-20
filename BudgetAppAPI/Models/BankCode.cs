@@ -2,7 +2,7 @@
 
 namespace YabaAPI.Models
 {
-	public class BankCode : Enumeration<short>
+	public class BankCode : Enumeration
 	{
 		public static readonly BankCode BRADESCO = new BankCode(237, "Bradesco");
 
