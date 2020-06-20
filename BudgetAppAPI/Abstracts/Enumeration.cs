@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace YabaAPI.Abstracts
 {
@@ -11,15 +10,15 @@ namespace YabaAPI.Abstracts
 		public short Value { get; set; }
 		public string Name { get; set; }
 
-		protected Enumeration(short id, string name)
+		protected Enumeration(short value, string name)
 		{
-			Value = id;
+			Value = value;
 			Name = name;
 		}
 
 		public override string ToString() => Name;
 
-		public static IEnumerable<T> GetAll<T>() where T: Enumeration
+		public static IEnumerable<T> GetAll<T>() where T : Enumeration
 		{
 			var fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
 
