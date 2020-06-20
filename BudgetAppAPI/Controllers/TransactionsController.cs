@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using YabaAPI.Models;
 using YabaAPI.Repositories;
 
@@ -47,7 +44,18 @@ namespace YabaAPI.Controllers
 					.Include(t => t.BankAccount)
 					.ToList();
 
-				return Ok(transactions);
+				var results = from t in transactions
+							 select new 
+							 {
+								 t.Id,
+								 t.Origin,
+								 t.Amount,
+								 t.Date,
+								 Bank = t.BankAccount != null ? t.BankAccount.Number : "",
+								 Category = t.Category != null ? t.Category.ToString() : ""
+							 };
+
+				return Ok(results);
 			}
 			catch (Exception)
 			{
@@ -62,10 +70,20 @@ namespace YabaAPI.Controllers
 			{
 				var transaction = _context
 					.Transactions
-					.Include(t => t.BankAccount) 
+					.Include(t => t.BankAccount)
 					.First(t => t.Id == id);
 
-				return Ok(transaction);
+				var result = new
+				{
+					transaction.Id,
+					transaction.Origin,
+					transaction.Amount,
+					transaction.Date,
+					Bank = transaction.BankAccount != null ? transaction.BankAccount.Number : "",
+					Category = transaction.Category != null ? transaction.Category.ToString() : ""
+				};
+
+				return Ok(result);
 			}
 			catch (Exception)
 			{
@@ -117,5 +135,7 @@ namespace YabaAPI.Controllers
 		- Return types
 			https://docs.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.accepted?view=aspnetcore-3.1
 		- using .Include() normally, it brings the whole object in the response.
+
+		- making fields nullable causes the necessity of checking values before returning
 	 */
 }
