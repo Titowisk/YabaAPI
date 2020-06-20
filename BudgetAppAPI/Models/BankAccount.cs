@@ -4,10 +4,11 @@ namespace YabaAPI.Models
 {
 	public class BankAccount
 	{
-		public BankAccount(string number, string agency)
+		public BankAccount(string number, string agency, BankCode code)
 		{
 			Number = number;
 			Agency = agency;
+			Code = code.Value;
 		}
 
 		public BankAccount()
@@ -18,6 +19,7 @@ namespace YabaAPI.Models
 		public int Id { get; set; }
 		public string Number { get; set; }
 		public string Agency { get; set; }
+		public short Code { get; set; }
 		public IEnumerable<Transaction>? Transactions { get; set; }
 	}
 }
