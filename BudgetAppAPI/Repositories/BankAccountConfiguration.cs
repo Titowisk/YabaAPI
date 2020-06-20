@@ -30,6 +30,11 @@ namespace YabaAPI.Repositories
 				.Property(bk => bk.Agency)
 				.HasColumnName("BK_Agency")
 				.IsRequired();
+
+			builder
+				.Property(bk => bk.Code)
+				.HasColumnName("BK_Code")
+				.IsRequired();
 		}
 	}
 }
