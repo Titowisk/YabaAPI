@@ -51,7 +51,7 @@ namespace YabaAPI.Controllers
 								 t.Origin,
 								 t.Amount,
 								 t.Date,
-								 Bank = t.BankAccount != null ? t.BankAccount.Number : "",
+								 Bank = t.BankAccount != null ? BankCode.FromValue<BankCode>(t.BankAccount.Code).Name : "",
 								 Category = t.Category != null ? t.Category.ToString() : ""
 							 };
 
@@ -79,7 +79,7 @@ namespace YabaAPI.Controllers
 					transaction.Origin,
 					transaction.Amount,
 					transaction.Date,
-					Bank = transaction.BankAccount != null ? transaction.BankAccount.Number : "",
+					Bank = transaction.BankAccount != null ? BankCode.FromValue<BankCode>(transaction.BankAccount.Code).Name : "",
 					Category = transaction.Category != null ? transaction.Category.ToString() : ""
 				};
 
@@ -137,5 +137,6 @@ namespace YabaAPI.Controllers
 		- using .Include() normally, it brings the whole object in the response.
 
 		- making fields nullable causes the necessity of checking values before returning
+		- enum is less verbose than Enumeration when , but Enumeration is less verbose for validations
 	 */
 }

@@ -59,6 +59,8 @@ namespace YabaAPI.Controllers
                 return BadRequest();
             }
 
+            // TODO: bankAccount.Code must be validated, or else, invalid short values can be insert on the table
+
             _context.Entry(bankAccount).State = EntityState.Modified;
 
             try
