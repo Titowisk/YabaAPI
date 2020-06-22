@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using YabaAPI.Abstracts;
+using YabaAPI.Models;
+using YabaAPI.Repositories;
 
 namespace YabaAPI.Controllers
 {
@@ -16,15 +18,12 @@ namespace YabaAPI.Controllers
 	[ApiController]
 	public class CsvReaderController : ControllerBase
 	{
+		private readonly DataContext _context;
 
-		//[Route("[Action]")]
-		//[HttpPost]
-		//public async Task<IActionResult> ReadCsvFileFromBinary(byte[] csvBinary)
-		//{
-		//	// TODO: validate csv file
-		//	using var stream = System.IO.File.ReadAllBytesAsync(csvBinary);
-
-		//}
+		public CsvReaderController(DataContext context)
+        {
+			_context = context;
+        }
 
 		[Route("[Action]")]
 		[HttpPost]
@@ -38,23 +37,75 @@ namespace YabaAPI.Controllers
 
 			foreach (var csv in csvFiles)
 			{
-				BradescoReader(csv);
+				var parsedFile = BradescoReader(csv);
+
+				SaveTransactions(parsedFile, bankCode);
 			}
 			
+			// TODO: custom error handling for each batch of transactions saved
+
+			// TODO: return number of files processed and status for each one
 			return "olá";
 		}
 
 
-		#region Priv Methods
-		private BradescoCsvFile BradescoReader(IFormFile csv)
+
+        #region Priv Methods
+        private void SaveTransactions(BradescoCsvFile parsedFile, short bankCode)
+        {
+			// TODO: regex to get Agency and Account Numbers
+			var splitFirstLine = parsedFile.FirstLine.Split("|");
+			var agencyNumber = splitFirstLine[0].Split(":")[2].Trim();
+			var accountNumber = splitFirstLine[1].Split(":")[1].Trim().Replace("-", "");
+			var enumBankCode = BankCode.FromValue<BankCode>(bankCode);
+
+            
+
+			var newBankAccount = new BankAccount(accountNumber, agencyNumber, enumBankCode);
+
+			var bankAccount = _context.BankAccounts.FirstOrDefault(bk => bk.Equals(newBankAccount));
+			if (bankAccount == null)
+            {
+				bankAccount = newBankAccount;
+			}
+
+			foreach (var data in parsedFile.BradescoTransactions)
+			{
+                try
+                {
+					var amount = string.IsNullOrEmpty(data.Credito) ? data.Debito : data.Credito;
+
+					var newTransaction = new Transaction(
+						data.Origem,
+						DateTime.Parse(data.Data),
+						decimal.Parse(amount));
+				
+					// TODO: check if docto number exists in DB
+					_context.Transactions.Add(newTransaction);
+
+					bankAccount.Transactions.Add(newTransaction);
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+			}
+
+			_context.SaveChanges();
+			// TODO: change to async Task
+		}
+
+        private BradescoCsvFile BradescoReader(IFormFile csv)
 		{
+			// TODO: change to async Task
 			var bradescoCsv = new BradescoCsvFile();
 
 			using var reader = new StreamReader(csv.OpenReadStream());
 			using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				csvReader.Configuration.Delimiter = ";";
-				csvReader.Configuration.MissingFieldFound = null;
+				csvReader.Configuration.MissingFieldFound = null; // TODO: this removes the need to use the try/catch block (test)
 
 				while (csvReader.Read())
 				{
@@ -63,22 +114,22 @@ namespace YabaAPI.Controllers
                     {
                         try
                         {
-							if(!string.IsNullOrEmpty(csvReader.GetField(2)))
-							{
-								var transaction = new BradescoTransaction();
-								transaction.Data = csvReader.GetField(0);
-								transaction.Historico = csvReader.GetField(1);
-								transaction.Docto = csvReader.GetField(2);
-								transaction.Credito = csvReader.GetField(3);
-								transaction.Debito = csvReader.GetField(4);
-								transaction.Saldo = csvReader.GetField(5);
-
-								bradescoCsv.BradescoTransactions.Add(transaction);
-							}
-							else if (!string.IsNullOrEmpty(csvReader.GetField(1)) && csvReader.GetField(1) != "Total do Dia")
+                            if (int.TryParse(csvReader.GetField(2), out int i))
                             {
-								bradescoCsv.BradescoTransactions.Last().Origem = csvReader.GetField(1);
-							}
+                                var transaction = new BradescoTransaction();
+                                transaction.Data = csvReader.GetField(0);
+                                transaction.Historico = csvReader.GetField(1);
+                                transaction.Docto = csvReader.GetField(2);
+                                transaction.Credito = csvReader.GetField(3);
+                                transaction.Debito = csvReader.GetField(4);
+                                transaction.Saldo = csvReader.GetField(5);
+
+                                bradescoCsv.BradescoTransactions.Add(transaction);
+                            }
+                            else if (!string.IsNullOrEmpty(csvReader.GetField(1)) && csvReader.Context.Record.Length == 4)
+                            {
+                                bradescoCsv.BradescoTransactions.Last().Origem = csvReader.GetField(1);
+                            }
 
                         }
                         catch (Exception ex)
@@ -90,7 +141,6 @@ namespace YabaAPI.Controllers
 					else if (rowIndex == 1)
 					{
 						bradescoCsv.FirstLine = csvReader.GetField(0);
-						// TODO: regex to get Agency and Account Numbers
 					}
 					
 				}
@@ -126,4 +176,8 @@ namespace YabaAPI.Controllers
         public string Origem { get; set; }
 
     }
+
+	/*NOTES
+	 * Class is to big. There is a clear need of breaking down in more classes
+	 */
 }
