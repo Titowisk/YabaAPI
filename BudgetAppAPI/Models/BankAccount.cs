@@ -20,6 +20,6 @@ namespace YabaAPI.Models
 		public string Number { get; set; }
 		public string Agency { get; set; }
 		public short Code { get; set; }
-		public IEnumerable<Transaction>? Transactions { get; set; }
+		public List<Transaction> Transactions { get; set; } = new List<Transaction>();
 	}
 }
