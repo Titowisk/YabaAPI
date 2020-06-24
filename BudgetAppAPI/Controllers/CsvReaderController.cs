@@ -59,8 +59,6 @@ namespace YabaAPI.Controllers
 			var accountNumber = splitFirstLine[1].Split(":")[1].Trim().Replace("-", "");
 			var enumBankCode = BankCode.FromValue<BankCode>(bankCode);
 
-            
-
 			var newBankAccount = new BankAccount(accountNumber, agencyNumber, enumBankCode);
 
 			var bankAccount = _context.BankAccounts.FirstOrDefault(bk => bk.Equals(newBankAccount));
@@ -91,7 +89,7 @@ namespace YabaAPI.Controllers
                 }
 
 			}
-
+			_context.Add(bankAccount);
 			_context.SaveChanges();
 			// TODO: change to async Task
 		}
@@ -106,6 +104,7 @@ namespace YabaAPI.Controllers
 			{
 				csvReader.Configuration.Delimiter = ";";
 				csvReader.Configuration.MissingFieldFound = null; // TODO: this removes the need to use the try/catch block (test)
+				csvReader.Configuration.IgnoreBlankLines = false;
 
 				while (csvReader.Read())
 				{
@@ -114,6 +113,9 @@ namespace YabaAPI.Controllers
                     {
                         try
                         {
+							if(string.IsNullOrEmpty(csvReader.Context.RawRecord))
+								break;
+
                             if (int.TryParse(csvReader.GetField(2), out int i))
                             {
                                 var transaction = new BradescoTransaction();
