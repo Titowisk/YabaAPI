@@ -28,6 +28,7 @@ namespace YabaAPI
 				opt.UseSqlServer(Configuration.GetConnectionString("SqlServerDB")));
 
 			services.AddScoped<ITransactionRepository, TransactionRepository>();
+			services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
