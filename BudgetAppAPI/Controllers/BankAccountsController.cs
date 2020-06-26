@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using YabaAPI.Models;
 using YabaAPI.Repositories;
+using YabaAPI.Repositories.Contracts;
 
 namespace YabaAPI.Controllers
 {
@@ -14,31 +15,27 @@ namespace YabaAPI.Controllers
     [ApiController]
     public class BankAccountsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IBankAccountRepository _bankAccountRepository;
 
-        public BankAccountsController(DataContext context)
+        public BankAccountsController(IBankAccountRepository bankAccountRepository)
         {
-            _context = context;
+            _bankAccountRepository = bankAccountRepository;
         }
 
         // GET: api/BankAccounts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
         {
-            return await _context
-                .BankAccounts
-                .Include(b => b.Transactions)
-                .ToListAsync();
+            var bankAccounts = await _bankAccountRepository.GetAll();
+
+            return Ok(bankAccounts);
         }
 
         // GET: api/BankAccounts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BankAccount>> GetBankAccount(int id)
         {
-            var bankAccount = await _context
-                .BankAccounts
-                .Include(b => b.Transactions)
-                .FirstAsync(b => b.Id == id);
+            var bankAccount = await _bankAccountRepository.GetById(id);
 
             if (bankAccount == null)
             {
@@ -61,15 +58,13 @@ namespace YabaAPI.Controllers
 
             // TODO: bankAccount.Code must be validated, or else, invalid short values can be insert on the table
 
-            _context.Entry(bankAccount).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _bankAccountRepository.Update(bankAccount);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BankAccountExists(id))
+                if (!await _bankAccountRepository.Exists(id))
                 {
                     return NotFound();
                 }
@@ -88,8 +83,7 @@ namespace YabaAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<BankAccount>> PostBankAccount(BankAccount bankAccount)
         {
-            _context.BankAccounts.Add(bankAccount);
-            await _context.SaveChangesAsync();
+            await _bankAccountRepository.Create(bankAccount);
 
             return CreatedAtAction("GetBankAccount", new { id = bankAccount.Id }, bankAccount);
         }
@@ -98,21 +92,9 @@ namespace YabaAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<BankAccount>> DeleteBankAccount(int id)
         {
-            var bankAccount = await _context.BankAccounts.FindAsync(id);
-            if (bankAccount == null)
-            {
-                return NotFound();
-            }
+            await _bankAccountRepository.Delete(id);
 
-            _context.BankAccounts.Remove(bankAccount);
-            await _context.SaveChangesAsync();
-
-            return bankAccount;
-        }
-
-        private bool BankAccountExists(int id)
-        {
-            return _context.BankAccounts.Any(e => e.Id == id);
+            return Ok();
         }
     }
     /*NOTES:
