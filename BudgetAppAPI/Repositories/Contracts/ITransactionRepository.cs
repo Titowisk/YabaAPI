@@ -11,7 +11,5 @@ namespace YabaAPI.Repositories.Contracts
         void Create(Transaction entity);
         void Update(Transaction entity);
         void Delete(long id);
-
-        void Save();
     }
 }

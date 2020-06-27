@@ -20,12 +20,15 @@ namespace YabaAPI.Repositories
         public void Create(Transaction entity)
         {
             _context.Transactions.Add(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(long id)
         {
             var transaction = _context.Transactions.Find(id);
             _context.Transactions.Remove(transaction);
+
+            _context.SaveChanges();
         }
 
 
@@ -61,10 +64,6 @@ namespace YabaAPI.Repositories
         public void Update(Transaction entity)
         {
             _context.Transactions.Update(entity);
-        }
-
-        public void Save()
-        {
             _context.SaveChanges();
         }
 

@@ -23,7 +23,6 @@ namespace YabaAPI.Controllers
             try
             {
                 _transactionRepository.Create(transaction);
-                _transactionRepository.Save();
 
                 return Ok();
             }
@@ -90,7 +89,6 @@ namespace YabaAPI.Controllers
             try
             {
                 _transactionRepository.Delete(id);
-                _transactionRepository.Save();
 
                 return Ok();
             }
@@ -112,7 +110,6 @@ namespace YabaAPI.Controllers
                 transaction.BankAccountId = newTransaction.BankAccountId;
 
                 _transactionRepository.Update(transaction);
-                _transactionRepository.Save();
 
                 return Ok();
             }
