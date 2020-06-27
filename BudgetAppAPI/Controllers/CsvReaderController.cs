@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using YabaAPI.Abstracts;
 using YabaAPI.Models;
 using YabaAPI.Repositories;
+using YabaAPI.Repositories.Contracts;
 
 namespace YabaAPI.Controllers
 {
@@ -18,12 +19,16 @@ namespace YabaAPI.Controllers
 	[ApiController]
 	public class CsvReaderController : ControllerBase
 	{
-		private readonly DataContext _context;
+        private readonly ITransactionRepository _transactionRepository;
+        private readonly IBankAccountRepository _bankAccountRepository;
 
-		public CsvReaderController(DataContext context)
+        public CsvReaderController(
+			ITransactionRepository transactionRepository,
+			IBankAccountRepository bankAccountRepository)
         {
-			_context = context;
-        }
+			_transactionRepository = transactionRepository;
+			_bankAccountRepository = bankAccountRepository;
+		}
 
 		[Route("[Action]")]
 		[HttpPost]
@@ -53,7 +58,6 @@ namespace YabaAPI.Controllers
         #region Priv Methods
         private void SaveTransactions(BradescoCsvFile parsedFile, short bankCode)
         {
-			// TODO: regex to get Agency and Account Numbers
 			var splitFirstLine = parsedFile.FirstLine.Split("|");
 			var agencyNumber = splitFirstLine[0].Split(":")[2].Trim();
 			var accountNumber = splitFirstLine[1].Split(":")[1].Trim().Replace("-", "");
@@ -61,7 +65,7 @@ namespace YabaAPI.Controllers
 
 			var newBankAccount = new BankAccount(accountNumber, agencyNumber, enumBankCode);
 
-			var bankAccount = _context.BankAccounts.FirstOrDefault(bk => bk.Equals(newBankAccount));
+			var bankAccount = _bankAccountRepository.Find(newBankAccount);
 			if (bankAccount == null)
             {
 				bankAccount = newBankAccount;
@@ -78,9 +82,6 @@ namespace YabaAPI.Controllers
 						DateTime.Parse(data.Data),
 						decimal.Parse(amount));
 				
-					// TODO: check if docto number exists in DB
-					_context.Transactions.Add(newTransaction);
-
 					bankAccount.Transactions.Add(newTransaction);
                 }
                 catch (Exception ex)
@@ -89,8 +90,12 @@ namespace YabaAPI.Controllers
                 }
 
 			}
-			_context.Add(bankAccount);
-			_context.SaveChanges();
+
+			// TODO: create unitOfWork to assure atomicity in persisting
+			if (bankAccount.Id > 0)
+				_bankAccountRepository.Update(bankAccount).Wait();
+			else
+				_bankAccountRepository.Create(bankAccount).Wait();
 			// TODO: change to async Task
 		}
 
@@ -181,5 +186,6 @@ namespace YabaAPI.Controllers
 
 	/*NOTES
 	 * Class is to big. There is a clear need of breaking down in more classes
+	 * // TODO: check if docto number exists in DB ??
 	 */
 }
