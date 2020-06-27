@@ -10,6 +10,7 @@ namespace YabaAPI.Repositories.Contracts
     {
         Task<IEnumerable<BankAccount>> GetAll();
         Task<BankAccount> GetById(int id);
+        BankAccount? Find(BankAccount bankAccount);
         Task Update(BankAccount entity);
         Task Delete(int id);
         Task Create(BankAccount entity);

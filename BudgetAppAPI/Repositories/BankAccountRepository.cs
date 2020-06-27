@@ -19,6 +19,9 @@ namespace YabaAPI.Repositories
 
         public async Task Create(BankAccount entity)
         {
+            if (entity.Transactions.Count > 0)
+                _context.Attach(entity);
+
             _context.BankAccounts.Add(entity);
 
             await _context.SaveChangesAsync();
@@ -40,6 +43,15 @@ namespace YabaAPI.Repositories
         public async Task<bool> Exists(int id)
         {
             return await _context.BankAccounts.AnyAsync(e => e.Id == id);
+        }
+
+        public BankAccount? Find(BankAccount bankAccount)
+        {
+            return _context.BankAccounts
+                        .FirstOrDefault(bk =>
+                            bk.Number == bankAccount.Number &&
+                            bk.Agency == bankAccount.Agency &&
+                            bk.Code == bankAccount.Code);
         }
 
         public async Task<IEnumerable<BankAccount>> GetAll()
