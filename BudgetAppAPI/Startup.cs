@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using YabaAPI.Repositories;
 using Newtonsoft.Json;
+using YabaAPI.Repositories.Contracts;
 
 namespace YabaAPI
 {
@@ -25,6 +26,9 @@ namespace YabaAPI
 				.AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 			services.AddDbContext<DataContext>(opt =>
 				opt.UseSqlServer(Configuration.GetConnectionString("SqlServerDB")));
+
+			services.AddScoped<ITransactionRepository, TransactionRepository>();
+			services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
