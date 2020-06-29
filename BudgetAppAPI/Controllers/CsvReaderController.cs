@@ -34,7 +34,7 @@ namespace YabaAPI.Controllers
         {
             // TODO: validate csv file
 
-            // TODO: validate bankCode exists in BankCode Enumeration Class
+            BankCode.ValidateCode(bankCode);
 
             // TODO: dinamically choose which BankReader to use for reading
 
