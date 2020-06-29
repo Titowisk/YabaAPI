@@ -82,7 +82,6 @@ namespace YabaAPI.Controllers
 
                 Validate.IsTrue(await _bankAccountRepository.Exists(id), $"Bank account {bankAccount.Number} not found");
 
-                // TODO: bankAccount.Code must be validated, or else, invalid short values can be insert on the table
                 BankCode.ValidateCode(bankAccount.Code);
            
                 await _bankAccountRepository.Update(bankAccount);
