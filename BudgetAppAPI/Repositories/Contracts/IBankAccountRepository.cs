@@ -13,6 +13,7 @@ namespace YabaAPI.Repositories.Contracts
         BankAccount? Find(BankAccount bankAccount);
         Task Update(BankAccount entity);
         Task Delete(int id);
+        Task Delete(BankAccount id);
         Task Create(BankAccount entity);
         Task<bool> Exists(int id);
     }
