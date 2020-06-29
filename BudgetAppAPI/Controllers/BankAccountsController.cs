@@ -55,7 +55,7 @@ namespace YabaAPI.Controllers
             {
                 var bankAccount = await _bankAccountRepository.GetById(id);
 
-                Validate.NotNull(bankAccount);
+                Validate.NotNull(bankAccount, "Bank account not found");
 
                 return bankAccount;
             }
@@ -80,10 +80,10 @@ namespace YabaAPI.Controllers
             {
                 Validate.IsTrue(id == bankAccount.Id, "Parameter id must be equal to body id");
 
-                Validate.IsTrue(await _bankAccountRepository.Exists(id));
+                Validate.IsTrue(await _bankAccountRepository.Exists(id), $"Bank account {bankAccount.Number} not found");
 
                 // TODO: bankAccount.Code must be validated, or else, invalid short values can be insert on the table
-                BankCode.FromValue<BankCode>(bankAccount.Code);
+                BankCode.ValidateCode(bankAccount.Code);
            
                 await _bankAccountRepository.Update(bankAccount);
                 return NoContent();
