@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Yaba.Tools.Validations;
 using YabaAPI.Models;
 using YabaAPI.Repositories.Contracts;
 
@@ -40,9 +41,20 @@ namespace YabaAPI.Controllers
 
             foreach (var csv in csvFiles)
             {
-                var parsedFile = BradescoReader(csv);
+                try
+                {
+                    Validate.IsTrue(csv.ContentType == "text/csv", "Only csv files are accepted");
 
-                SaveTransactions(parsedFile, bankCode);
+                    Validate.IsTrue(csv.Length > 0, $"File {csv.FileName} is empty");
+
+                    var parsedFile = BradescoReader(csv);
+
+                    SaveTransactions(parsedFile, bankCode);
+                }
+                catch (Exception)
+                {
+                    // TODO: logger
+                }
             }
 
             // TODO: custom error handling for each batch of transactions saved
