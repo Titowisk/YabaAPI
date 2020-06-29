@@ -1,4 +1,7 @@
-﻿using YabaAPI.Abstracts;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using System.Linq;
+using Yaba.Tools.Validations;
+using YabaAPI.Abstracts;
 
 namespace YabaAPI.Models
 {
@@ -10,6 +13,13 @@ namespace YabaAPI.Models
 			: base(value, name)
 		{
 		}
+
+		public static void ValidateCode(short value)
+        {
+			var valueExists = BankCode.GetAll<BankCode>().Any(item => item.Value == value);
+
+			Validate.IsTrue(valueExists, $"Bank, with code {value}, not registered yet");
+        }
 	}
 
 	// https://contasimples.com/blog/lista-de-codigos-dos-bancos/
