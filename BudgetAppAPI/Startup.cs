@@ -8,7 +8,7 @@ using YabaAPI.Repositories;
 using Newtonsoft.Json;
 using YabaAPI.Repositories.Contracts;
 
-namespace YabaAPI
+namespace Yaba.WebApi
 {
 	public class Startup
 	{

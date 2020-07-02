@@ -10,7 +10,7 @@ using YabaAPI.Models;
 using YabaAPI.Repositories;
 using YabaAPI.Repositories.Contracts;
 
-namespace YabaAPI.Controllers
+namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
