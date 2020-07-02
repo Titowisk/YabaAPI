@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YabaAPI", "BudgetAppAPI\YabaAPI.csproj", "{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebApi", "BudgetAppAPI\Yaba.WebApi.csproj", "{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E1C134E7-61CD-4E18-8C81-81C1F4E19C31}"
 EndProject
