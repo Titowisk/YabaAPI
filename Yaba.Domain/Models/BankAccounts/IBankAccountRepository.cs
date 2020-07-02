@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Yaba.Domain.Models.BankAccounts;
 
-namespace Yaba.Domain.Models
+namespace Yaba.Domain.Models.BankAccounts
 {
     public interface IBankAccountRepository : IAsyncDisposable
     {
