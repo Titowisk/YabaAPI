@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
+using Yaba.Infrastructure.Persistence.Configurations;
 
 namespace Yaba.Infrastructure.Persistence.Context
 {
