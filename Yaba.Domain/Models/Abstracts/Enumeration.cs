@@ -73,4 +73,4 @@ namespace Yaba.Domain.Models.Abstracts
         #endregion
     }
 }
-}
+
