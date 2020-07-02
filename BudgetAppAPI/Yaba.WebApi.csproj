@@ -13,4 +13,9 @@
     <PackageReference Include="Yaba.Tools" Version="0.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Yaba.Domain\Yaba.Domain.csproj" />
+    <ProjectReference Include="..\Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>
