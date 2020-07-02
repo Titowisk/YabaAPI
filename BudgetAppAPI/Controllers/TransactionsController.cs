@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using Yaba.Tools.Validations;
 using YabaAPI.Models;
 using YabaAPI.Repositories.Contracts;
 
@@ -26,9 +27,14 @@ namespace YabaAPI.Controllers
 
                 return Ok();
             }
+            catch(ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
             catch (Exception ex)
             {
-                throw ex;
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
             }
         }
 
@@ -52,9 +58,14 @@ namespace YabaAPI.Controllers
 
                 return Ok(results);
             }
-            catch (Exception)
+            catch (ArgumentException aex)
             {
-                throw;
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
             }
         }
 
@@ -64,6 +75,8 @@ namespace YabaAPI.Controllers
             try
             {
                 var transaction = _transactionRepository.GetByIdWithBankAccount(id);
+
+                Validate.NotNull(transaction, "Transaction not found");
 
                 var result = new
                 {
@@ -77,9 +90,14 @@ namespace YabaAPI.Controllers
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (ArgumentException aex)
             {
-                throw;
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
             }
         }
 
@@ -88,13 +106,22 @@ namespace YabaAPI.Controllers
         {
             try
             {
-                _transactionRepository.Delete(id);
+                var transaction = _transactionRepository.GetById(id);
+
+                Validate.NotNull(transaction, "Transaction not found");
+
+                _transactionRepository.Delete(transaction);
 
                 return Ok();
             }
-            catch (Exception)
+            catch (ArgumentException aex)
             {
-                throw;
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
             }
         }
 
@@ -103,7 +130,13 @@ namespace YabaAPI.Controllers
         {
             try
             {
+                Validate.IsTrue(id == newTransaction.Id, "Parameter id must be equal to body id");
+
                 var transaction = _transactionRepository.GetById(id);
+
+                Validate.NotNull(transaction, "Transaction not found");
+
+                // TODO: encapsulate Transaction creation in constructor
                 transaction.Origin = newTransaction.Origin;
                 transaction.Date = newTransaction.Date;
                 transaction.Amount = newTransaction.Amount;
@@ -113,9 +146,14 @@ namespace YabaAPI.Controllers
 
                 return Ok();
             }
-            catch (Exception)
+            catch (ArgumentException aex)
             {
-                throw;
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
             }
         }
     }
@@ -127,5 +165,6 @@ namespace YabaAPI.Controllers
 
 		- making fields nullable causes the necessity of checking values before returning
 		- enum is less verbose than Enumeration when , but Enumeration is less verbose for validations
+        - TODO: need logger for 500 errors
 	 */
 }

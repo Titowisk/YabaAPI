@@ -35,6 +35,13 @@ namespace YabaAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task Delete(BankAccount entity)
+        {
+            _context.BankAccounts.Remove(entity);
+
+            await _context.SaveChangesAsync();
+        }
+
         public async ValueTask DisposeAsync()
         {
             await _context.DisposeAsync();
@@ -66,7 +73,7 @@ namespace YabaAPI.Repositories
             return await _context
                 .BankAccounts
                 .Include(b => b.Transactions)
-                .FirstAsync(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task Update(BankAccount entity)

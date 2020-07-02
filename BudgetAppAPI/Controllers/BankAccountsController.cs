@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Yaba.Tools.Validations;
 using YabaAPI.Models;
 using YabaAPI.Repositories;
 using YabaAPI.Repositories.Contracts;
@@ -26,23 +27,47 @@ namespace YabaAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
         {
-            var bankAccounts = await _bankAccountRepository.GetAll();
+            try
+            {
+                var bankAccounts = await _bankAccountRepository.GetAll();
 
-            return Ok(bankAccounts);
+                Validate.IsTrue(bankAccounts.Count() > 0, "No bank accounts found.");
+             
+                return Ok(bankAccounts);
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
+
         }
 
         // GET: api/BankAccounts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BankAccount>> GetBankAccount(int id)
         {
-            var bankAccount = await _bankAccountRepository.GetById(id);
-
-            if (bankAccount == null)
+            try
             {
-                return NotFound();
-            }
+                var bankAccount = await _bankAccountRepository.GetById(id);
 
-            return bankAccount;
+                Validate.NotNull(bankAccount, "Bank account not found");
+
+                return bankAccount;
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
         }
 
         // PUT: api/BankAccounts/5
@@ -51,30 +76,26 @@ namespace YabaAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBankAccount(int id, BankAccount bankAccount)
         {
-            if (id != bankAccount.Id)
-            {
-                return BadRequest();
-            }
-
-            // TODO: bankAccount.Code must be validated, or else, invalid short values can be insert on the table
-
             try
             {
-                await _bankAccountRepository.Update(bankAccount);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _bankAccountRepository.Exists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                Validate.IsTrue(id == bankAccount.Id, "Parameter id must be equal to body id");
 
-            return NoContent();
+                Validate.IsTrue(await _bankAccountRepository.Exists(id), $"Bank account {bankAccount.Number} not found");
+
+                BankCode.ValidateCode(bankAccount.Code);
+           
+                await _bankAccountRepository.Update(bankAccount);
+                return NoContent();
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
         }
 
         // POST: api/BankAccounts
@@ -83,18 +104,46 @@ namespace YabaAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<BankAccount>> PostBankAccount(BankAccount bankAccount)
         {
-            await _bankAccountRepository.Create(bankAccount);
+            try
+            {
+                await _bankAccountRepository.Create(bankAccount);
 
-            return CreatedAtAction("GetBankAccount", new { id = bankAccount.Id }, bankAccount);
+                return CreatedAtAction("GetBankAccount", new { id = bankAccount.Id }, bankAccount);
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
         }
 
         // DELETE: api/BankAccounts/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<BankAccount>> DeleteBankAccount(int id)
         {
-            await _bankAccountRepository.Delete(id);
+            try
+            {
+                var bankAccount = _bankAccountRepository.GetById(id);
 
-            return Ok();
+                Validate.NotNull(bankAccount, "Bank account not found.");
+
+                await _bankAccountRepository.Delete(id);
+
+                return Ok();
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
         }
     }
     /*NOTES:

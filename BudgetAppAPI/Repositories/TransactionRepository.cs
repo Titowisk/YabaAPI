@@ -31,6 +31,12 @@ namespace YabaAPI.Repositories
             _context.SaveChanges();
         }
 
+        public void Delete(Transaction entity)
+        {
+            _context.Transactions.Remove(entity);
+
+            _context.SaveChanges();
+        }
 
         public IEnumerable<Transaction> GetAll()
         {
@@ -46,7 +52,7 @@ namespace YabaAPI.Repositories
         {
             var transaction = _context
                     .Transactions
-                    .First(t => t.Id == id);
+                    .FirstOrDefault(t => t.Id == id);
 
             return transaction;
         }
@@ -56,7 +62,7 @@ namespace YabaAPI.Repositories
             var transaction = _context
                     .Transactions
                     .Include(t => t.BankAccount)
-                    .First(t => t.Id == id);
+                    .FirstOrDefault(t => t.Id == id);
 
             return transaction;
         }
