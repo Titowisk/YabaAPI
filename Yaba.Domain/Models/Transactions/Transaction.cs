@@ -1,5 +1,6 @@
 ﻿using System;
 using Yaba.Domain.Models.BankAccounts;
+using Yaba.Domain.Models.Transactions.Enumerations;
 
 namespace Yaba.Domain.Models.Transactions
 {
