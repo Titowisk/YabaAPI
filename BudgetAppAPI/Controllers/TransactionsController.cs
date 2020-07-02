@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
+using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
@@ -126,7 +127,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(long id, [FromBody] Transaction newTransaction)
+        public IActionResult Update(long id, [FromBody] TransactionDTO newTransaction)
         {
             try
             {
@@ -136,7 +137,6 @@ namespace Yaba.WebApi.Controllers
 
                 Validate.NotNull(transaction, "Transaction not found");
 
-                // TODO: encapsulate Transaction creation in constructor
                 transaction.SetOrigin(newTransaction.Origin);
                 transaction.SetDate(newTransaction.Date);
                 transaction.SetAmount(newTransaction.Amount);
