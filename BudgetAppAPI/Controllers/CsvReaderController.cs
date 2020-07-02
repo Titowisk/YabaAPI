@@ -8,9 +8,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Yaba.Domain.Models.BankAccounts;
+using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Domain.Models.Transactions;
 using Yaba.Tools.Validations;
-using YabaAPI.Models;
-using YabaAPI.Repositories.Contracts;
 
 namespace Yaba.WebApi.Controllers
 {

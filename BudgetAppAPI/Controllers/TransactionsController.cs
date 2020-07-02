@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Domain.Models.Transactions;
 using Yaba.Tools.Validations;
-using YabaAPI.Models;
-using YabaAPI.Repositories.Contracts;
 
 namespace Yaba.WebApi.Controllers
 {
@@ -27,7 +27,7 @@ namespace Yaba.WebApi.Controllers
 
                 return Ok();
             }
-            catch(ArgumentException aex)
+            catch (ArgumentException aex)
             {
                 return BadRequest(aex.Message);
             }

@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Yaba.Domain.Models.BankAccounts;
+using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Tools.Validations;
-using YabaAPI.Models;
-using YabaAPI.Repositories;
-using YabaAPI.Repositories.Contracts;
 
 namespace Yaba.WebApi.Controllers
 {
@@ -32,7 +29,7 @@ namespace Yaba.WebApi.Controllers
                 var bankAccounts = await _bankAccountRepository.GetAll();
 
                 Validate.IsTrue(bankAccounts.Count() > 0, "No bank accounts found.");
-             
+
                 return Ok(bankAccounts);
             }
             catch (ArgumentException aex)
@@ -83,7 +80,7 @@ namespace Yaba.WebApi.Controllers
                 Validate.IsTrue(await _bankAccountRepository.Exists(id), $"Bank account {bankAccount.Number} not found");
 
                 BankCode.ValidateCode(bankAccount.Code);
-           
+
                 await _bankAccountRepository.Update(bankAccount);
                 return NoContent();
             }
