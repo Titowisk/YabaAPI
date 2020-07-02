@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Domain", "Yaba.Domain\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure.Persistence", "Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj", "{EAD68103-9B66-436B-BE28-79F8AE94E0CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure.DTO", "Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj", "{202890FD-587D-4339-ABD1-D33CD806E650}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{EAD68103-9B66-436B-BE28-79F8AE94E0CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAD68103-9B66-436B-BE28-79F8AE94E0CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAD68103-9B66-436B-BE28-79F8AE94E0CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{202890FD-587D-4339-ABD1-D33CD806E650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{202890FD-587D-4339-ABD1-D33CD806E650}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{202890FD-587D-4339-ABD1-D33CD806E650}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{202890FD-587D-4339-ABD1-D33CD806E650}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +64,7 @@ Global
 		{D616B286-080E-4DD8-87F3-F6320260DA03} = {C8FCBF3D-B2DE-4754-B3F9-1D076A03C163}
 		{FCA33D67-0B81-4488-A959-ABCD56142291} = {01762426-A203-40D4-BFC6-258DFCF8EEA7}
 		{EAD68103-9B66-436B-BE28-79F8AE94E0CC} = {683C0615-22C5-47A6-BF20-50E91B4460EF}
+		{202890FD-587D-4339-ABD1-D33CD806E650} = {1F1D7F71-91FA-495A-934B-CB35E547F236}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABB214B-4FF9-4C2C-9926-1467825E1EFE}
