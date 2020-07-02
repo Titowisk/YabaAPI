@@ -137,9 +137,9 @@ namespace Yaba.WebApi.Controllers
                 Validate.NotNull(transaction, "Transaction not found");
 
                 // TODO: encapsulate Transaction creation in constructor
-                transaction.Origin = newTransaction.Origin;
-                transaction.Date = newTransaction.Date;
-                transaction.Amount = newTransaction.Amount;
+                transaction.SetOrigin(newTransaction.Origin);
+                transaction.SetDate(newTransaction.Date);
+                transaction.SetAmount(newTransaction.Amount);
                 transaction.BankAccountId = newTransaction.BankAccountId;
 
                 _transactionRepository.Update(transaction);
