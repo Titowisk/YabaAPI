@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Domain.Models.Transactions;
+using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
-using YabaAPI.Models;
-using YabaAPI.Repositories.Contracts;
 
-namespace YabaAPI.Controllers
+namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -27,7 +28,7 @@ namespace YabaAPI.Controllers
 
                 return Ok();
             }
-            catch(ArgumentException aex)
+            catch (ArgumentException aex)
             {
                 return BadRequest(aex.Message);
             }
@@ -126,7 +127,7 @@ namespace YabaAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(long id, [FromBody] Transaction newTransaction)
+        public IActionResult Update(long id, [FromBody] TransactionDTO newTransaction)
         {
             try
             {
@@ -136,10 +137,9 @@ namespace YabaAPI.Controllers
 
                 Validate.NotNull(transaction, "Transaction not found");
 
-                // TODO: encapsulate Transaction creation in constructor
-                transaction.Origin = newTransaction.Origin;
-                transaction.Date = newTransaction.Date;
-                transaction.Amount = newTransaction.Amount;
+                transaction.SetOrigin(newTransaction.Origin);
+                transaction.SetDate(newTransaction.Date);
+                transaction.SetAmount(newTransaction.Amount);
                 transaction.BankAccountId = newTransaction.BankAccountId;
 
                 _transactionRepository.Update(transaction);
