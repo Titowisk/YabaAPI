@@ -44,7 +44,4 @@ namespace Yaba.WebApi.Controllers
 
         }
     }
-    /*NOTES
-	 * // TODO: check if docto number exists in DB ??
-	 */
 }
