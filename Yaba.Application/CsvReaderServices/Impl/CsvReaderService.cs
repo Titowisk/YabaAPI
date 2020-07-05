@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Application.BankStatementReaders;
 using Yaba.Domain.Models.BankAccounts;
@@ -29,6 +29,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
             foreach (var csv in csvFiles)
             {
                 var fileStatus = new FileStatusDTO();
+                fileStatus.FileName = csv.FileName;
 
                 try
                 {
@@ -41,6 +42,9 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     await PersistBankEstatementInformation(parsedFile, bankCode);
 
                     fileStatus.IsSuccessfullRead = true;
+                    fileStatus.TransactionsSaved = parsedFile.Transactions.Count;
+                    fileStatus.InitialDate = parsedFile.Transactions.First().Date;
+                    fileStatus.FinalDate = parsedFile.Transactions.Last().Date;
                 }
                 catch (Exception)
                 {
@@ -92,4 +96,6 @@ namespace Yaba.Application.CsvReaderServices.Impl
                 await _bankAccountRepository.Create(bankAccount);
         }
     }
+    /*NOTES:
+     // TODO: Create custom exceptions: custom excepttions are managed through fileStatusDTO, all other must end up in BadRequest or 500 Internal Error*/
 }
