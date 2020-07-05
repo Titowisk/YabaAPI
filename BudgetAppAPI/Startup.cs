@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Yaba.Application.CsvReaderServices;
+using Yaba.Application.CsvReaderServices.Impl;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Infrastructure.Persistence.Context;
@@ -31,6 +33,7 @@ namespace Yaba.WebApi
 
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+            services.AddScoped<ICsvReaderService, CsvReaderService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
