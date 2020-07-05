@@ -21,11 +21,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.2 - CrossCutting", "4.2 -
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.3 - Services", "4.3 - Services", "{D616B286-080E-4DD8-87F3-F6320260DA03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Domain", "Yaba.Domain\Yaba.Domain.csproj", "{FCA33D67-0B81-4488-A959-ABCD56142291}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Domain", "Yaba.Domain\Yaba.Domain.csproj", "{FCA33D67-0B81-4488-A959-ABCD56142291}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure.Persistence", "Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj", "{EAD68103-9B66-436B-BE28-79F8AE94E0CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.Persistence", "Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj", "{EAD68103-9B66-436B-BE28-79F8AE94E0CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure.DTO", "Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj", "{202890FD-587D-4339-ABD1-D33CD806E650}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.DTO", "Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj", "{202890FD-587D-4339-ABD1-D33CD806E650}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Application", "Yaba.Application\Yaba.Application.csproj", "{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{202890FD-587D-4339-ABD1-D33CD806E650}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{202890FD-587D-4339-ABD1-D33CD806E650}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{202890FD-587D-4339-ABD1-D33CD806E650}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{FCA33D67-0B81-4488-A959-ABCD56142291} = {01762426-A203-40D4-BFC6-258DFCF8EEA7}
 		{EAD68103-9B66-436B-BE28-79F8AE94E0CC} = {683C0615-22C5-47A6-BF20-50E91B4460EF}
 		{202890FD-587D-4339-ABD1-D33CD806E650} = {1F1D7F71-91FA-495A-934B-CB35E547F236}
+		{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94} = {2D4846EF-599A-426E-8FE9-4838E4A85966}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABB214B-4FF9-4C2C-9926-1467825E1EFE}

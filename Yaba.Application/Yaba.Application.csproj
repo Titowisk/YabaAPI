@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="15.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yaba.Domain\Yaba.Domain.csproj" />
+    <ProjectReference Include="..\Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj" />
+  </ItemGroup>
+
+</Project>
