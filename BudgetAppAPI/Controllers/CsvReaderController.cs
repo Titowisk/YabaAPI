@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Yaba.Application.CsvReaderServices;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
@@ -21,13 +22,41 @@ namespace Yaba.WebApi.Controllers
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IBankAccountRepository _bankAccountRepository;
+        private readonly ICsvReaderService _csvReaderService;
 
         public CsvReaderController(
             ITransactionRepository transactionRepository,
-            IBankAccountRepository bankAccountRepository)
+            IBankAccountRepository bankAccountRepository,
+            ICsvReaderService csvReaderService)
         {
             _transactionRepository = transactionRepository;
             _bankAccountRepository = bankAccountRepository;
+            _csvReaderService = csvReaderService;
+
+        }
+
+        [Route("[Action]")]
+        [HttpPost]
+        public async Task<IActionResult> ReadBankStatements(IFormFileCollection csvFiles, [FromForm] short bankCode)
+        {
+            try
+            {
+                BankCode.ValidateCode(bankCode);
+
+                var result = await _csvReaderService.ReadTransactionsFromFiles(csvFiles, bankCode);
+
+                return Ok(result);
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
+
         }
 
         [Route("[Action]")]
