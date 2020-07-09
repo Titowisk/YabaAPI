@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
@@ -13,10 +14,14 @@ namespace Yaba.WebApi.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionRepository _transactionRepository;
+        private readonly ILogger<TransactionsController> _logger;
 
-        public TransactionsController(ITransactionRepository transactionRepository)
+        public TransactionsController(
+            ITransactionRepository transactionRepository,
+            ILogger<TransactionsController> logger)
         {
             _transactionRepository = transactionRepository;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -30,11 +35,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -61,11 +67,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -93,11 +100,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -117,11 +125,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -148,11 +157,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -165,6 +175,5 @@ namespace Yaba.WebApi.Controllers
 
 		- making fields nullable causes the necessity of checking values before returning
 		- enum is less verbose than Enumeration when , but Enumeration is less verbose for validations
-        - TODO: need logger for 500 errors
 	 */
 }
