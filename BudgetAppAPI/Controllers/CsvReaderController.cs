@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Yaba.Application.CsvReaderServices;
@@ -13,11 +14,14 @@ namespace Yaba.WebApi.Controllers
     public class CsvReaderController : ControllerBase
     {
         private readonly ICsvReaderService _csvReaderService;
+        private readonly ILogger<CsvReaderController> _logger;
 
-        public CsvReaderController(ICsvReaderService csvReaderService)
+        public CsvReaderController(
+            ICsvReaderService csvReaderService,
+            ILogger<CsvReaderController> logger)
         {
             _csvReaderService = csvReaderService;
-
+            _logger = logger;
         }
 
         [Route("[Action]")]
@@ -34,11 +38,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex, "Message: {0}", ex.Message);
                 return StatusCode(500);
             }
 
