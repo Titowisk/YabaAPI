@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +15,14 @@ namespace Yaba.WebApi.Controllers
     [ApiController]
     public class BankAccountsController : ControllerBase
     {
+        private readonly ILogger<BankAccountsController> _logger;
         private readonly IBankAccountRepository _bankAccountRepository;
 
-        public BankAccountsController(IBankAccountRepository bankAccountRepository)
+        public BankAccountsController(
+            ILogger<BankAccountsController> logger,
+            IBankAccountRepository bankAccountRepository)
         {
+            _logger = logger;
             _bankAccountRepository = bankAccountRepository;
         }
 
@@ -34,11 +40,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message); 
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
 
@@ -58,11 +65,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -86,11 +94,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -109,11 +118,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }
@@ -134,11 +144,12 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("Message: {0}", ex.Message);
                 return StatusCode(500);
             }
         }

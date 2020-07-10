@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,14 @@ namespace Yaba.Application.CsvReaderServices.Impl
 {
     public class CsvReaderService : ICsvReaderService
     {
+        private readonly ILogger<CsvReaderService> _logger;
         private readonly IBankAccountRepository _bankAccountRepository;
 
-        public CsvReaderService(IBankAccountRepository bankAccountRepository)
+        public CsvReaderService(
+            ILogger<CsvReaderService> logger,
+            IBankAccountRepository bankAccountRepository)
         {
+            _logger = logger;
             _bankAccountRepository = bankAccountRepository;
         }
 
@@ -46,9 +51,10 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     fileStatus.InitialDate = parsedFile.Transactions.First().Date;
                     fileStatus.FinalDate = parsedFile.Transactions.Last().Date;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // TODO: logger
+                    // TODO: create exception for file and reading cases, and another for database cases
+                    _logger.LogWarning("Message: {0}", ex.Message);
                     fileStatus.IsSuccessfullRead = false;
                 }
                 finally
@@ -74,20 +80,13 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
             foreach (var data in parsedFile.Transactions)
             {
-                try
-                {
-                    // TODO: create mapping between Transaction and StandardTransaction
-                    var newTransaction = new Transaction(
-                        data.Origin,
-                        data.Date,
-                        data.Amount);
+                // TODO: create mapping between Transaction and StandardTransaction
+                var newTransaction = new Transaction(
+                    data.Origin,
+                    data.Date,
+                    data.Amount);
 
-                    bankAccount.Transactions.Add(newTransaction);
-                }
-                catch (Exception)
-                {
-                    // TODO: add logger ?
-                }
+                bankAccount.Transactions.Add(newTransaction);
             }
 
             if (bankAccount.Id > 0)
