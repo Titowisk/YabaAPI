@@ -5,6 +5,7 @@ namespace Yaba.Infrastructure.DTO
 {
     public class StandardBankStatementDTO
     {
+        // TODO: Create StandardBankStatement with validations inside it
         public StandardBankStatementDTO()
         {
             Transactions = new List<StandardTransactionDTO>();
@@ -17,6 +18,7 @@ namespace Yaba.Infrastructure.DTO
 
     public class StandardTransactionDTO
     {
+        // TODO: Create StandardTransaction with validations inside it
         public string Origin { get; set; }
         public string TypeDescription { get; set; }
         public DateTime Date { get; set; }
