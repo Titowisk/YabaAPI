@@ -11,9 +11,9 @@ namespace Yaba.Application.BankStatementReaders.ReaderResolver
         {
             _serviceProvider = serviceProvider;
         }
-        public IBankEstatementReader GetBankEstatementReader(BankCode readerName)
+        public IBankEstatementReader GetBankEstatementReader(BankCode bank)
         {
-            if (readerName.Name == BankCode.BRADESCO.Name)
+            if (bank.Name == BankCode.BRADESCO.Name)
                 return (IBankEstatementReader)_serviceProvider.GetService(typeof(BradescoReader));
 
             //if (readerName.Name == BankCode.ITAU.Name)
@@ -22,7 +22,7 @@ namespace Yaba.Application.BankStatementReaders.ReaderResolver
             //if (readerName.Name == BankCode.BANCODOBRASIL.Name)
             //    return (IBankEstatementReader)_serviceProvider.GetService(typeof(BancoDoBrasilReader));
 
-            throw new ArgumentException("This Bank is not supported yet.");
+            throw new ArgumentException($"{bank.Name} is not supported yet.");
         }
 
         /*NOTES:
