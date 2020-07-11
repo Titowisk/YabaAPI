@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using System.IO;
@@ -10,6 +11,13 @@ namespace Yaba.Application.BankStatementReaders
 {
     public class BradescoReader : IBankEstatementReader
     {
+        private readonly ILogger _logger;
+
+        public BradescoReader(ILogger<BradescoReader> logger)
+        {
+            _logger = logger;
+        }
+
         public StandardBankStatementDTO ProcessBankInformation(IFormFile csvFile)
         {
             var bankStatement = new StandardBankStatementDTO();
@@ -18,7 +26,6 @@ namespace Yaba.Application.BankStatementReaders
             using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 csvReader.Configuration.Delimiter = ";";
-                csvReader.Configuration.MissingFieldFound = null; // TODO: this removes the need to use the try/catch block (test)
                 csvReader.Configuration.IgnoreBlankLines = false;
 
                 while (csvReader.Read())
@@ -43,7 +50,7 @@ namespace Yaba.Application.BankStatementReaders
                         }
                         catch (Exception ex)
                         {
-                            // TODO: add logger
+                            _logger.LogWarning(ex, $"{csvFile.FileName}, line: {rowIndex}");
                         }
                     }
                     else if (rowIndex == 1)
