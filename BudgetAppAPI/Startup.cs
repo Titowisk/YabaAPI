@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Yaba.Application.BankStatementReaders;
+using Yaba.Application.BankStatementReaders.ReaderResolver;
 using Yaba.Application.CsvReaderServices;
 using Yaba.Application.CsvReaderServices.Impl;
 using Yaba.Domain.Models.BankAccounts;
@@ -34,6 +36,9 @@ namespace Yaba.WebApi
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IBankAccountRepository, BankAccountRepository>();
             services.AddScoped<ICsvReaderService, CsvReaderService>();
+
+            services.AddSingleton<IReaderResolver, ReaderResolver>();
+            services.AddTransient<BradescoReader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
