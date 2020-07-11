@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Application.BankStatementReaders;
+using Yaba.Application.BankStatementReaders.ReaderResolver;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
@@ -16,19 +17,22 @@ namespace Yaba.Application.CsvReaderServices.Impl
     public class CsvReaderService : ICsvReaderService
     {
         private readonly ILogger<CsvReaderService> _logger;
+        private readonly IReaderResolver _readerResolver;
         private readonly IBankAccountRepository _bankAccountRepository;
 
         public CsvReaderService(
             ILogger<CsvReaderService> logger,
+            IReaderResolver readerResolver,
             IBankAccountRepository bankAccountRepository)
         {
             _logger = logger;
+            _readerResolver = readerResolver;
             _bankAccountRepository = bankAccountRepository;
         }
 
         public async Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(IFormFileCollection csvFiles, short bankCode)
         {
-            IBankEstatementReader reader = BankStatementReaderFactory.GetReader(bankCode);
+            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(bankCode));
             var fileStatusResult = new List<FileStatusDTO>();
 
             foreach (var csv in csvFiles)
