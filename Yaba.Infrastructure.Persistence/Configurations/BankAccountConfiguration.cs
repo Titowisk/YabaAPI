@@ -42,7 +42,8 @@ namespace Yaba.Infrastructure.Persistence.Configurations
 
             builder
                 .HasOne(bk => bk.User)
-                .WithMany(u => u.BankAccounts);
+                .WithMany(u => u.BankAccounts)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
