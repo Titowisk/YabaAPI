@@ -17,7 +17,7 @@ namespace Yaba.Domain.Models.Users
         public string Name { get; private set; }
         public string Email { get; private set; }
         public string Password { get; private set; }
-        public IEnumerable<BankAccount> BankAccounts { get; set; }
+        public ICollection<BankAccount> BankAccounts { get; set; }
 
         public void SetName(string name)
         {
