@@ -24,7 +24,7 @@ namespace Yaba.Domain.Models.BankAccounts
 		public string Agency { get; set; }
 		public short Code { get; set; }
 		public List<Transaction> Transactions { get; set; } = new List<Transaction>();
-        public User User { get; set; }
-        public int UserId { get; set; }
+        public User? User { get; set; }
+        public int? UserId { get; set; }
     }
 }
