@@ -14,6 +14,11 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
+        public async Task<bool> UserWithEmailExists(string email)
+        {
+            return await _context.Users.AnyAsync(u => u.Email.Equals(email));
+        }
+
         public async Task Create(User entity)
         {
             _context.Users.Add(entity);
