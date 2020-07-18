@@ -6,5 +6,6 @@ namespace Yaba.Application.UserServices
     public interface IUserService
     {
         Task UserSignIn(UserSignInDTO dto);
+        Task<UserLoginResponseDTO> Login(UserLoginDTO dto);
     }
 }

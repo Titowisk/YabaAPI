@@ -15,6 +15,23 @@ namespace Yaba.Application.UserServices.Impl
             _userRepository = userRepository;
         }
 
+        public async Task<UserLoginResponseDTO> Login(UserLoginDTO dto)
+        {
+            var user = await _userRepository.GetByEmail(dto.Email);
+
+            Validate.NotNull(user, "User not found");
+
+            SecurityManager.VerifyPasswordPbkdf2(dto.Password, user.Password);
+
+            // generate Token
+
+            return new UserLoginResponseDTO()
+            {
+                Message = "Login realizado com sucesso",
+                Token = token
+            };
+        }
+
         public async Task UserSignIn(UserSignInDTO dto)
         {
             // TODO: add email confirmation
