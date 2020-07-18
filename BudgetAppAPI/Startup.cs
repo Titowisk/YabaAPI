@@ -9,6 +9,8 @@ using Yaba.Application.BankStatementReaders;
 using Yaba.Application.BankStatementReaders.ReaderResolver;
 using Yaba.Application.CsvReaderServices;
 using Yaba.Application.CsvReaderServices.Impl;
+using Yaba.Application.UserServices;
+using Yaba.Application.UserServices.Impl;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
@@ -38,6 +40,7 @@ namespace Yaba.WebApi
             services.AddScoped<IBankAccountRepository, BankAccountRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICsvReaderService, CsvReaderService>();
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
