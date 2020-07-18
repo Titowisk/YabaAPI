@@ -6,4 +6,16 @@
         public string Email { get; set; }
         public string Password { get; set; }
     }
+
+    public class UserLoginDTO
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class UserLoginResponseDTO
+    {
+        public string Message { get; set; }
+        public string Token { get; set; }
+    }
 }
