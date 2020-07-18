@@ -17,9 +17,9 @@ namespace Yaba.Application.UserServices.Impl
 
         public async Task UserSignIn(UserSignInDTO dto)
         {
-            ValidateUser(dto.Name, dto.Email, dto.Password);
+            // TODO: add email confirmation
+            await ValidateUser(dto.Name, dto.Email, dto.Password);
 
-            // encrypt password
             dto.Password = EncryptPassword(dto.Password);
 
             var user = new User(dto.Name, dto.Email, dto.Password);
