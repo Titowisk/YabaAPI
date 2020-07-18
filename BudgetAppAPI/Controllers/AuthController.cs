@@ -25,7 +25,7 @@ namespace Yaba.WebApi.Controllers
 
         [HttpPost]
         [Route("[Action]")]
-        public async Task<IActionResult> SignIn(UserSignInDTO dto)
+        public async Task<IActionResult> SignIn([FromBody] UserSignInDTO dto)
         {
             try
             {
