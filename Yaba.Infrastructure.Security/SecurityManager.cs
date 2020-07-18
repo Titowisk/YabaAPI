@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace Yaba.Infrastructure.Security
@@ -28,6 +29,22 @@ namespace Yaba.Infrastructure.Security
 
             // TODO: save it in different columns ?
             return $"{passwordSalt}.{passwordHash}";
+        }
+
+        public static bool VerifyPasswordPbkdf2(string passwordToCheck, string passwordFromDatabase)
+        {
+            var split = passwordFromDatabase.Split(".");
+            var salt = split[0];
+            var hash = split[1];
+
+            var check = KeyDerivation.Pbkdf2(
+                        password: passwordToCheck,
+                        salt: Convert.FromBase64String(salt),
+                        prf: KeyDerivationPrf.HMACSHA512,
+                        iterationCount: 3, // TODO: make this a option (Options pattern)
+                        numBytesRequested: 256 / 8);
+
+            return check.SequenceEqual(Convert.FromBase64String(hash));
         }
     }
 }
