@@ -11,6 +11,7 @@ using Yaba.Application.CsvReaderServices;
 using Yaba.Application.CsvReaderServices.Impl;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
+using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.Persistence.Context;
 using Yaba.Infrastructure.Persistence.Repositories;
 
@@ -35,6 +36,8 @@ namespace Yaba.WebApi
 
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
             services.AddScoped<ICsvReaderService, CsvReaderService>();
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
