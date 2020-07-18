@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Security;
@@ -17,6 +14,7 @@ namespace Yaba.Application.UserServices.Impl
         {
             _userRepository = userRepository;
         }
+
         public async Task UserSignIn(UserSignInDTO dto)
         {
             ValidateUser(dto.Name, dto.Email, dto.Password);
@@ -29,23 +27,38 @@ namespace Yaba.Application.UserServices.Impl
         }
 
         #region Priv Methods
-        private void ValidateUser(string name, string email, string password)
+        private string EncryptPassword(string password)
+        {
+            return SecurityManager.GeneratePbkdf2Hash(password);
+        }
+
+        private async Task ValidateUser(string name, string email, string password)
         {
             Validate.NotNullOrEmpty(name, "A name is necessary");
 
+            await ValidateEmail(email);
+
+            ValidatePassword(password);
+        }
+
+        private async Task ValidateEmail(string email)
+        {
             // TODO: proper email validation
             Validate.NotNullOrEmpty(email, "An email is necessary");
 
             Validate.IsTrue(email.Contains("@"), "Email is not valid");
 
+            var emailExists = await _userRepository.UserWithEmailExists(email);
+
+            Validate.IsTrue(!emailExists, "This email has already been signed in");
+        }
+
+        private void ValidatePassword(string password)
+        {
             // TODO: proper password validation
             Validate.NotNullOrEmpty(password, "A password is necessary");
 
             Validate.IsTrue(password.Length > 7, "Password needs to be 8 characters long or greater");
-        }
-        private string EncryptPassword(string password)
-        {
-            return SecurityManager.GeneratePbkdf2Hash(password);
         }
         #endregion
     }
