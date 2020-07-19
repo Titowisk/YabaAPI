@@ -35,6 +35,15 @@ namespace Yaba.Infrastructure.Persistence.Configurations
                 .Property(bk => bk.Code)
                 .HasColumnName("BK_Code")
                 .IsRequired();
+
+            builder
+                .Property(bk => bk.UserId)
+                .HasColumnName("BK_UserId");
+
+            builder
+                .HasOne(bk => bk.User)
+                .WithMany(u => u.BankAccounts)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
