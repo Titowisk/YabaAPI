@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Security;
@@ -9,10 +10,14 @@ namespace Yaba.Application.UserServices.Impl
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IOptions<JwtConfig> _options;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(
+            IUserRepository userRepository,
+            IOptions<JwtConfig> options)
         {
             _userRepository = userRepository;
+            _options = options;
         }
 
         public async Task<UserLoginResponseDTO> Login(UserLoginDTO dto)
@@ -21,14 +26,14 @@ namespace Yaba.Application.UserServices.Impl
 
             Validate.NotNull(user, "User not found");
 
-            SecurityManager.VerifyPasswordPbkdf2(dto.Password, user.Password);
+            var passwordIsValid = SecurityManager.VerifyPasswordPbkdf2(dto.Password, user.Password);
 
-            // generate Token
+            Validate.IsTrue(passwordIsValid, "Password is incorrect");
 
             return new UserLoginResponseDTO()
             {
                 Message = "Login realizado com sucesso",
-                Token = token
+                Token = JwtHandler.GenerateToken(_options.Value.SecretKey, user.Id, user.Name)
             };
         }
 
