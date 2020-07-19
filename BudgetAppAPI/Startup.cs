@@ -14,6 +14,7 @@ using Yaba.Application.UserServices.Impl;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
+using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.Context;
 using Yaba.Infrastructure.Persistence.Repositories;
 
@@ -31,6 +32,8 @@ namespace Yaba.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
+
             services.AddControllers()
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddDbContext<DataContext>(opt =>
@@ -50,6 +53,8 @@ namespace Yaba.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // $Env:ASPNETCORE_ENVIRONMENT = "Development"
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
