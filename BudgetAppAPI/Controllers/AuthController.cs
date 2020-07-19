@@ -49,9 +49,9 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                await _userService.Login(dto);
+                var result = await _userService.Login(dto);
 
-                return Ok("token");
+                return Ok(result);
             }
             catch (ArgumentException aex)
             {
