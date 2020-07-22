@@ -36,5 +36,16 @@ namespace Yaba.Application.BankAccountServices.Impl
 
             await _bankAccountRepository.Create(bankAccount);
         }
+
+        public async Task<BankAccount> GetBankAccount(string agency, string number, short code)
+        {
+            return await _bankAccountRepository.GetBy(agency, number, code);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _bankAccountRepository.DisposeAsync();
+            await _userRepository.DisposeAsync();
+        }
     }
 }
