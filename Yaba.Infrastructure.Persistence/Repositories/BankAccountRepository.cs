@@ -54,13 +54,13 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             return await _context.BankAccounts.AnyAsync(e => e.Id == id);
         }
 
-        public BankAccount? Find(BankAccount bankAccount)
+        public async Task<BankAccount> GetBy(string agency, string number, short code)
         {
-            return _context.BankAccounts
-                        .FirstOrDefault(bk =>
-                            bk.Number == bankAccount.Number &&
-                            bk.Agency == bankAccount.Agency &&
-                            bk.Code == bankAccount.Code);
+            return await _context.BankAccounts
+                        .FirstOrDefaultAsync(bk =>
+                            bk.Number == agency &&
+                            bk.Agency == number &&
+                            bk.Code == code);
         }
 
         public async Task<IEnumerable<BankAccount>> GetAll()

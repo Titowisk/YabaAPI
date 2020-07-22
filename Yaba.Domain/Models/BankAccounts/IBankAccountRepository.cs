@@ -8,7 +8,7 @@ namespace Yaba.Domain.Models.BankAccounts
     {
         Task<IEnumerable<BankAccount>> GetAll();
         Task<BankAccount> GetById(int id);
-        BankAccount? Find(BankAccount bankAccount);
+        Task<BankAccount> GetBy(string agency, string number, short code);
         Task Update(BankAccount entity);
         Task Delete(int id);
         Task Delete(BankAccount id);
