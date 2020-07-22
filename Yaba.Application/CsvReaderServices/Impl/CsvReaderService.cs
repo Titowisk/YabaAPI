@@ -74,13 +74,10 @@ namespace Yaba.Application.CsvReaderServices.Impl
         {
             var enumBankCode = BankCode.FromValue<BankCode>(bankCode);
 
-            var newBankAccount = new BankAccount(parsedFile.AccountNumber, parsedFile.AgencyNumber, enumBankCode);
+            var bankAccount = await _bankAccountRepository.GetBy(parsedFile.AgencyNumber, parsedFile.AccountNumber, enumBankCode.Value);
 
-            var bankAccount = _bankAccountRepository.Find(newBankAccount);
-            if (bankAccount == null)
-            {
-                bankAccount = newBankAccount;
-            }
+            Validate.NotNull(bankAccount, 
+                $"Conta bancária do banco {enumBankCode.Name}, agência: {parsedFile.AgencyNumber} e número: {parsedFile.AccountNumber} não foi cadastrada para o usuário ainda.");
 
             foreach (var data in parsedFile.Transactions)
             {
@@ -93,10 +90,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
                 bankAccount.Transactions.Add(newTransaction);
             }
 
-            if (bankAccount.Id > 0)
-                await _bankAccountRepository.Update(bankAccount);
-            else
-                await _bankAccountRepository.Create(bankAccount);
+            await _bankAccountRepository.Update(bankAccount);
         }
     }
     /*NOTES:
