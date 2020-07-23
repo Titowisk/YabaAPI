@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.BankAccountServices;
 using Yaba.Domain.Models.BankAccounts;
@@ -47,7 +47,7 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message); 
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
@@ -119,6 +119,12 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
+                // TODO : better way to do this? 
+                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(user.Value) || user.Value != dto.UserId.ToString())
+                    return Unauthorized();
+
                 await _bankAccountService.CreateBankAccountForUser(dto);
 
                 return Ok("Conta bancária criada com sucesso");
