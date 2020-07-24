@@ -57,9 +57,10 @@ namespace Yaba.Infrastructure.Persistence.Repositories
         public async Task<BankAccount> GetBy(string agency, string number, short code)
         {
             return await _context.BankAccounts
+                        .Include(bk => bk.User)
                         .FirstOrDefaultAsync(bk =>
-                            bk.Number == agency &&
-                            bk.Agency == number &&
+                            bk.Number == number &&
+                            bk.Agency == agency &&
                             bk.Code == code);
         }
 
