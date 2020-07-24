@@ -1,15 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.CsvReaderServices;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Infrastructure.DTO;
 
 namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class CsvReaderController : ControllerBase
     {
@@ -32,7 +37,19 @@ namespace Yaba.WebApi.Controllers
             {
                 BankCode.ValidateCode(bankCode);
 
-                var result = await _csvReaderService.ReadTransactionsFromFiles(csvFiles, bankCode);
+                // TODO : better way to do this? 
+                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(user?.Value))
+                    return Unauthorized();
+
+                var dto = new CsvFileReaderDTO()
+                {
+                    FilesOwnerId = int.Parse(user.Value),
+                    BankCode = bankCode,
+                    CsvFiles = csvFiles
+                };
+
+                var result = await _csvReaderService.ReadTransactionsFromFiles(dto);
 
                 return Ok(result);
             }
