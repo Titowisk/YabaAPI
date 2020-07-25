@@ -8,6 +8,7 @@ namespace Yaba.Application.BankAccountServices
     public interface IBankAccountService : IAsyncDisposable
     {
         Task CreateBankAccountForUser(CreateUserBankAccountDTO dto);
-        Task<BankAccount> GetBankAccount(string agency, string number, short code);
+        Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto);
+        Task<BankAccountResponseDTO> GetBankAccountById(GetUserBankAccountDTO dto);
     }
 }

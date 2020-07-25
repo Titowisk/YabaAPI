@@ -37,9 +37,31 @@ namespace Yaba.Application.BankAccountServices.Impl
             await _bankAccountRepository.Create(bankAccount);
         }
 
-        public async Task<BankAccount> GetBankAccount(string agency, string number, short code)
+        public async Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto)
         {
-            return await _bankAccountRepository.GetBy(agency, number, code);
+            var bankAccount = await _bankAccountRepository.GetBy(dto.Agency, dto.Number, dto.Code);
+            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
+
+            return bankAccount;
+        }
+
+        public async Task<BankAccountResponseDTO> GetBankAccountById(GetUserBankAccountDTO dto)
+        {
+            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+
+            Validate.NotNull(bankAccount, "Bank account not found");
+            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
+
+            var response = new BankAccountResponseDTO()
+            {
+                Id = bankAccount.Id,
+                Agency = bankAccount.Agency,
+                AccountNumber = bankAccount.Number,
+                BankCode = bankAccount.Code,
+                BankName = BankCode.FromValue<BankCode>(bankAccount.Code).Name
+            };
+
+            return response;
         }
 
         public async ValueTask DisposeAsync()
@@ -47,5 +69,11 @@ namespace Yaba.Application.BankAccountServices.Impl
             await _bankAccountRepository.DisposeAsync();
             await _userRepository.DisposeAsync();
         }
+
+        /*NOTES
+         * Inject Token User in service or expect an UserId from a DTO?
+         * Maybe is better to receive UserId in a DTO and in the Presentation layer I can
+         * use this service for the logged user or for some admin user with privilege access.
+         */
     }
 }
