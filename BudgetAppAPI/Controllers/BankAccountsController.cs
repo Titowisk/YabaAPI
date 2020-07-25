@@ -8,7 +8,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.BankAccountServices;
 using Yaba.Domain.Models.BankAccounts;
-using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
 
@@ -66,16 +65,10 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                // TODO : better way to do this? 
-                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-                if (string.IsNullOrEmpty(user.Value))
-                    return Unauthorized();
-
                 var dto = new GetUserBankAccountDTO()
                 {
                     BankAccountId = id,
-                    UserId = int.Parse(user.Value)
+                    UserId = GetLoggedUserId()
                 };
 
                 var bankAccount = await _bankAccountService.GetBankAccountById(dto);
@@ -102,12 +95,7 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                // TODO : better way to do this? 
-                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-                if (string.IsNullOrEmpty(user.Value))
-                    return Unauthorized();
-
+                dto.UserId = GetLoggedUserId();
                 dto.BankAccountId = id;
                 await _bankAccountService.UpdateBankAccount(dto);
 
@@ -133,11 +121,7 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                // TODO : better way to do this? 
-                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-                if (string.IsNullOrEmpty(user.Value) || user.Value != dto.UserId.ToString())
-                    return Unauthorized();
+                dto.UserId = GetLoggedUserId();
 
                 await _bankAccountService.CreateBankAccountForUser(dto);
 
@@ -161,15 +145,9 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                // TODO : better way to do this? 
-                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-                if (string.IsNullOrEmpty(user.Value))
-                    return Unauthorized();
-
                 var dto = new DeleteUserBankAccountDTO()
                 {
-                    UserId = int.Parse(user.Value),
+                    UserId = GetLoggedUserId(),
                     BankAccountId = id
                 };
 
@@ -188,9 +166,17 @@ namespace Yaba.WebApi.Controllers
                 return StatusCode(500);
             }
         }
+
+        #region Priv Methods
+        private int GetLoggedUserId()
+        {
+            // TODO : better way to do this? 
+            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+            Validate.IsTrue(string.IsNullOrEmpty(user.Value), "Acesso negado");
+
+            return int.Parse(user.Value);
+        }
+        #endregion
     }
-    /*NOTES:
-     -file generated using Visual Studio Controller Scaffold
-     - deals with DbUpdateConcurrencyException
-     - uses EntityState.Modified fpr update*/
 }
