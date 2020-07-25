@@ -9,6 +9,7 @@ namespace Yaba.Application.BankAccountServices
     {
         Task CreateBankAccountForUser(CreateUserBankAccountDTO dto);
         Task UpdateBankAccount(UpdateUserBankAccountDTO dto);
+        Task DeleteBankAccount(DeleteUserBankAccountDTO dto);
         Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto);
         Task<BankAccountResponseDTO> GetBankAccountById(GetUserBankAccountDTO dto);
     }

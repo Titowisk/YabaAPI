@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Transactions;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
@@ -10,13 +13,16 @@ namespace Yaba.Application.BankAccountServices.Impl
     public class BankAccountService : IBankAccountService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ITransactionRepository _transactionRepository;
         private readonly IBankAccountRepository _bankAccountRepository;
 
         public BankAccountService(
             IUserRepository userRepository,
+            ITransactionRepository transactionRepository,
             IBankAccountRepository bankAccountRepository)
         {
             _userRepository = userRepository;
+            _transactionRepository = transactionRepository;
             _bankAccountRepository = bankAccountRepository;
         }
         public async Task CreateBankAccountForUser(CreateUserBankAccountDTO dto)
@@ -53,6 +59,25 @@ namespace Yaba.Application.BankAccountServices.Impl
             bankAccount.SetCode(dto.Code);
 
             await _bankAccountRepository.Update(bankAccount);
+        }
+
+        public async Task DeleteBankAccount(DeleteUserBankAccountDTO dto)
+        {
+            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+
+            Validate.NotNull(bankAccount, "Bank account not found");
+            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
+
+            // TODO: check if bankAccount have Transactions
+            //var transactions = await _transactionRepository.GetByBankAccount(dto.BankAccountId);
+
+            // TODO: UnitOfWork
+            //if(transactions.Count() > 0)
+            //{
+            //    await _transactionRepository.DeleteRange(transactions);
+            //}
+
+            await _bankAccountRepository.Delete(bankAccount.Id);
         }
 
         public async Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto)
