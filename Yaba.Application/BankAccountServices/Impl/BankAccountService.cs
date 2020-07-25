@@ -37,6 +37,24 @@ namespace Yaba.Application.BankAccountServices.Impl
             await _bankAccountRepository.Create(bankAccount);
         }
 
+        public async Task UpdateBankAccount(UpdateUserBankAccountDTO dto)
+        {
+            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+
+            Validate.NotNull(bankAccount, "Bank account not found");
+            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
+
+            BankCode.ValidateCode(dto.Code);
+            Validate.NotNullOrEmpty(dto.Agency, "É necessário fornecer uma agência.");
+            Validate.NotNullOrEmpty(dto.Number, "É necessário fornecer o número da conta bancária.");
+
+            bankAccount.SetAgency(dto.Agency);
+            bankAccount.SetNumber(dto.Number);
+            bankAccount.SetCode(dto.Code);
+
+            await _bankAccountRepository.Update(bankAccount);
+        }
+
         public async Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto)
         {
             var bankAccount = await _bankAccountRepository.GetBy(dto.Agency, dto.Number, dto.Code);
