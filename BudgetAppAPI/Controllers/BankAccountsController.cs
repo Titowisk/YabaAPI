@@ -60,13 +60,23 @@ namespace Yaba.WebApi.Controllers
 
         // GET: api/BankAccounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BankAccount>> GetBankAccount(int id)
+        public async Task<ActionResult<BankAccountResponseDTO>> GetBankAccount(int id)
         {
             try
             {
-                var bankAccount = await _bankAccountRepository.GetById(id);
+                // TODO : better way to do this? 
+                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-                Validate.NotNull(bankAccount, "Bank account not found");
+                if (string.IsNullOrEmpty(user.Value))
+                    return Unauthorized();
+
+                var dto = new GetUserBankAccountDTO()
+                {
+                    BankAccountId = id,
+                    UserId = int.Parse(user.Value)
+                };
+
+                var bankAccount = await _bankAccountService.GetBankAccountById(dto);
 
                 return bankAccount;
             }
