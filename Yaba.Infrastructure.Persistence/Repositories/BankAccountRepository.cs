@@ -75,7 +75,7 @@ namespace Yaba.Infrastructure.Persistence.Repositories
         {
             return await _context
                 .BankAccounts
-                .Include(b => b.Transactions)
+                .Include(b => b.User)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
