@@ -161,11 +161,19 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                var bankAccount = _bankAccountRepository.GetById(id);
+                // TODO : better way to do this? 
+                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-                Validate.NotNull(bankAccount, "Bank account not found.");
+                if (string.IsNullOrEmpty(user.Value))
+                    return Unauthorized();
 
-                await _bankAccountRepository.Delete(id);
+                var dto = new DeleteUserBankAccountDTO()
+                {
+                    UserId = int.Parse(user.Value),
+                    BankAccountId = id
+                };
+
+                await _bankAccountService.DeleteBankAccount(dto);
 
                 return Ok();
             }
