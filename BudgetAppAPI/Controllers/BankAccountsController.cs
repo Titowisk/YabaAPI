@@ -34,9 +34,11 @@ namespace Yaba.WebApi.Controllers
         }
 
         // GET: api/BankAccounts
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
         {
+            // TODO: remove this method??
             try
             {
                 var bankAccounts = await _bankAccountRepository.GetAll();
@@ -96,17 +98,19 @@ namespace Yaba.WebApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBankAccount(int id, BankAccount bankAccount)
+        public async Task<IActionResult> UpdateBankAccount(int id, UpdateUserBankAccountDTO dto)
         {
             try
             {
-                Validate.IsTrue(id == bankAccount.Id, "Parameter id must be equal to body id");
+                // TODO : better way to do this? 
+                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-                Validate.IsTrue(await _bankAccountRepository.Exists(id), $"Bank account {bankAccount.Number} not found");
+                if (string.IsNullOrEmpty(user.Value))
+                    return Unauthorized();
 
-                BankCode.ValidateCode(bankAccount.Code);
+                dto.BankAccountId = id;
+                await _bankAccountService.UpdateBankAccount(dto);
 
-                await _bankAccountRepository.Update(bankAccount);
                 return NoContent();
             }
             catch (ArgumentException aex)
