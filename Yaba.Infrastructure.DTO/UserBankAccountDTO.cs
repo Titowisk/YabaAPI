@@ -25,4 +25,10 @@
         public string Agency { get; set; }
         public short Code { get; set; }
     }
+
+    public class DeleteUserBankAccountDTO
+    {
+        public int UserId { get; set; }
+        public int BankAccountId { get; set; }
+    }
 }
