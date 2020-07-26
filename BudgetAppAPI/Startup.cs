@@ -22,6 +22,7 @@ using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.Context;
 using Yaba.Infrastructure.Persistence.Repositories;
+using Yaba.Infrastructure.Persistence.UnitOfWork;
 
 namespace Yaba.WebApi
 {
@@ -45,6 +46,7 @@ namespace Yaba.WebApi
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddDbContext<DataContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("SqlServerDB")));
+            services.AddScoped<UnitOfWork>();
 
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IBankAccountRepository, BankAccountRepository>();
