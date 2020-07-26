@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,12 +29,12 @@ namespace Yaba.Application.CsvReaderServices.Impl
             _bankAccountRepository = bankAccountRepository;
         }
 
-        public async Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(IFormFileCollection csvFiles, short bankCode)
+        public async Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(CsvFileReaderDTO dto)
         {
-            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(bankCode));
+            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(dto.BankCode));
             var fileStatusResult = new List<FileStatusDTO>();
 
-            foreach (var csv in csvFiles)
+            foreach (var csv in dto.CsvFiles)
             {
                 var fileStatus = new FileStatusDTO();
                 fileStatus.FileName = csv.FileName;
@@ -48,7 +47,9 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
                     var parsedFile = reader.ProcessBankInformation(csv);
 
-                    await PersistBankEstatementInformation(parsedFile, bankCode);
+                    var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankCode);
+
+                    await PersistBankEstatementInformation(parsedFile, bankAccount);
 
                     fileStatus.IsSuccessfullRead = true;
                     fileStatus.TransactionsSaved = parsedFile.Transactions.Count;
@@ -70,18 +71,20 @@ namespace Yaba.Application.CsvReaderServices.Impl
             return fileStatusResult;
         }
 
-        private async Task PersistBankEstatementInformation(StandardBankStatementDTO parsedFile, short bankCode)
+        private async Task<BankAccount> GetFilesOwnerBankAccount(int filesOwnerId, string agencyNumber, string accountNumber, short bankCode)
         {
-            var enumBankCode = BankCode.FromValue<BankCode>(bankCode);
+            var bankAccount = await _bankAccountRepository.GetBy(agencyNumber, accountNumber, bankCode);
 
-            var newBankAccount = new BankAccount(parsedFile.AccountNumber, parsedFile.AgencyNumber, enumBankCode);
+            Validate.NotNull(bankAccount,
+                $"Conta bancária do banco {bankCode}, agência: {agencyNumber} e número: {accountNumber} não foi cadastrada para o usuário ainda.");
 
-            var bankAccount = _bankAccountRepository.Find(newBankAccount);
-            if (bankAccount == null)
-            {
-                bankAccount = newBankAccount;
-            }
+            Validate.IsTrue(filesOwnerId == bankAccount.UserId, "Acesso negado");
 
+            return bankAccount;
+        }
+
+        private async Task PersistBankEstatementInformation(StandardBankStatementDTO parsedFile, BankAccount bankAccount)
+        {
             foreach (var data in parsedFile.Transactions)
             {
                 // TODO: create mapping between Transaction and StandardTransaction
@@ -93,10 +96,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
                 bankAccount.Transactions.Add(newTransaction);
             }
 
-            if (bankAccount.Id > 0)
-                await _bankAccountRepository.Update(bankAccount);
-            else
-                await _bankAccountRepository.Create(bankAccount);
+            await _bankAccountRepository.Update(bankAccount);
         }
     }
     /*NOTES:

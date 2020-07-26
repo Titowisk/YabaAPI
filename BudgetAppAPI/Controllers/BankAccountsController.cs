@@ -1,35 +1,43 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Yaba.Application.BankAccountServices;
 using Yaba.Domain.Models.BankAccounts;
-using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BankAccountsController : ControllerBase
     {
         private readonly ILogger<BankAccountsController> _logger;
+        private readonly IBankAccountService _bankAccountService;
         private readonly IBankAccountRepository _bankAccountRepository;
 
         public BankAccountsController(
             ILogger<BankAccountsController> logger,
-            IBankAccountRepository bankAccountRepository)
+            IBankAccountRepository bankAccountRepository,
+            IBankAccountService bankAccountService)
         {
             _logger = logger;
+            _bankAccountService = bankAccountService;
             _bankAccountRepository = bankAccountRepository;
         }
 
         // GET: api/BankAccounts
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
         {
+            // TODO: remove this method??
             try
             {
                 var bankAccounts = await _bankAccountRepository.GetAll();
@@ -40,7 +48,7 @@ namespace Yaba.WebApi.Controllers
             }
             catch (ArgumentException aex)
             {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message); 
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
                 return BadRequest(aex.Message);
             }
             catch (Exception ex)
@@ -53,13 +61,17 @@ namespace Yaba.WebApi.Controllers
 
         // GET: api/BankAccounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BankAccount>> GetBankAccount(int id)
+        public async Task<ActionResult<BankAccountResponseDTO>> GetBankAccount(int id)
         {
             try
             {
-                var bankAccount = await _bankAccountRepository.GetById(id);
+                var dto = new GetUserBankAccountDTO()
+                {
+                    BankAccountId = id,
+                    UserId = GetLoggedUserId()
+                };
 
-                Validate.NotNull(bankAccount, "Bank account not found");
+                var bankAccount = await _bankAccountService.GetBankAccountById(dto);
 
                 return bankAccount;
             }
@@ -79,17 +91,14 @@ namespace Yaba.WebApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBankAccount(int id, BankAccount bankAccount)
+        public async Task<IActionResult> UpdateBankAccount(int id, UpdateUserBankAccountDTO dto)
         {
             try
             {
-                Validate.IsTrue(id == bankAccount.Id, "Parameter id must be equal to body id");
+                dto.UserId = GetLoggedUserId();
+                dto.BankAccountId = id;
+                await _bankAccountService.UpdateBankAccount(dto);
 
-                Validate.IsTrue(await _bankAccountRepository.Exists(id), $"Bank account {bankAccount.Number} not found");
-
-                BankCode.ValidateCode(bankAccount.Code);
-
-                await _bankAccountRepository.Update(bankAccount);
                 return NoContent();
             }
             catch (ArgumentException aex)
@@ -108,13 +117,15 @@ namespace Yaba.WebApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<BankAccount>> PostBankAccount(BankAccount bankAccount)
+        public async Task<ActionResult<BankAccount>> Create(CreateUserBankAccountDTO dto)
         {
             try
             {
-                await _bankAccountRepository.Create(bankAccount);
+                dto.UserId = GetLoggedUserId();
 
-                return CreatedAtAction("GetBankAccount", new { id = bankAccount.Id }, bankAccount);
+                await _bankAccountService.CreateBankAccountForUser(dto);
+
+                return Ok("Conta bancária criada com sucesso");
             }
             catch (ArgumentException aex)
             {
@@ -134,11 +145,13 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                var bankAccount = _bankAccountRepository.GetById(id);
+                var dto = new DeleteUserBankAccountDTO()
+                {
+                    UserId = GetLoggedUserId(),
+                    BankAccountId = id
+                };
 
-                Validate.NotNull(bankAccount, "Bank account not found.");
-
-                await _bankAccountRepository.Delete(id);
+                await _bankAccountService.DeleteBankAccount(dto);
 
                 return Ok();
             }
@@ -153,9 +166,17 @@ namespace Yaba.WebApi.Controllers
                 return StatusCode(500);
             }
         }
+
+        #region Priv Methods
+        private int GetLoggedUserId()
+        {
+            // TODO : better way to do this? 
+            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+            Validate.IsTrue(string.IsNullOrEmpty(user.Value), "Acesso negado");
+
+            return int.Parse(user.Value);
+        }
+        #endregion
     }
-    /*NOTES:
-     -file generated using Visual Studio Controller Scaffold
-     - deals with DbUpdateConcurrencyException
-     - uses EntityState.Modified fpr update*/
 }

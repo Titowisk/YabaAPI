@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Text;
+using Yaba.Application.BankAccountServices;
+using Yaba.Application.BankAccountServices.Impl;
 using Yaba.Application.BankStatementReaders;
 using Yaba.Application.BankStatementReaders.ReaderResolver;
 using Yaba.Application.CsvReaderServices;
@@ -49,6 +51,7 @@ namespace Yaba.WebApi
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBankAccountService, BankAccountService>();
             services.AddScoped<ICsvReaderService, CsvReaderService>();
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();

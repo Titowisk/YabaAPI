@@ -7,11 +7,13 @@ namespace Yaba.Domain.Models.BankAccounts
 {
 	public class BankAccount
 	{
-		public BankAccount(string number, string agency, BankCode code)
+		public BankAccount(string number, string agency, BankCode code, int userId)
 		{
 			Number = number;
 			Agency = agency;
 			Code = code.Value;
+			UserId = userId;
+			Transactions = new List<Transaction>();
 		}
 
 		public BankAccount()
@@ -19,12 +21,33 @@ namespace Yaba.Domain.Models.BankAccounts
 			// System.NotSupportedException: Deserialization of reference types without parameterless constructor is not supported. Type 'YabaAPI.
 		}
 
-		public int Id { get; set; }
-		public string Number { get; set; }
-		public string Agency { get; set; }
-		public short Code { get; set; }
-		public List<Transaction> Transactions { get; set; } = new List<Transaction>();
+        #region Public Methods
+		// TODO: Refactor Validatioins of BankAccount ?
+		public void SetNumber(string number)
+        {
+			Number = number;
+        }
+
+		public void SetAgency(string agency)
+        {
+			Agency = agency;
+        }
+
+        public void SetCode(short code)
+        {
+			Code = code;
+        }
+        #endregion
+
+        #region Props
+        public int Id { get; private set; }
+		public string Number { get; private set; }
+		public string Agency { get; private set; }
+		public short Code { get; private set; }
+		public List<Transaction> Transactions { get; private set; }
         public User? User { get; set; }
         public int? UserId { get; set; }
+
+        #endregion
     }
 }

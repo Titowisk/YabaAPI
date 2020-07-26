@@ -7,6 +7,6 @@ namespace Yaba.Application.CsvReaderServices
 {
     public interface ICsvReaderService
     {
-        Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(IFormFileCollection csvFiles, short bankCode);
+        Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(CsvFileReaderDTO dto);
     }
 }
