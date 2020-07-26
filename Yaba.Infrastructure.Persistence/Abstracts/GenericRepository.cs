@@ -5,12 +5,12 @@ using Yaba.Infrastructure.Persistence.Context;
 
 namespace Yaba.Infrastructure.Persistence.Abstracts
 {
-    public abstract class GenericAsyncRepository<TEntity> where TEntity : class
+    public abstract class GenericRepository<TEntity> where TEntity : class
     {
         protected DataContext context;
         protected DbSet<TEntity> entityContext;
 
-        public GenericAsyncRepository(DataContext context)
+        public GenericRepository(DataContext context)
         {
             this.context = context;
             entityContext = context.Set<TEntity>();
@@ -54,11 +54,6 @@ namespace Yaba.Infrastructure.Persistence.Abstracts
         {
             entityContext.Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
-        }
-
-        public virtual async ValueTask DisposeAsync()
-        {
-            await context.DisposeAsync();
         }
     }
 }
