@@ -9,21 +9,25 @@ using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tools.Validations;
 
 namespace Yaba.Application.CsvReaderServices.Impl
 {
     public class CsvReaderService : ICsvReaderService
     {
+        private readonly UnitOfWork _uow;
         private readonly ILogger<CsvReaderService> _logger;
         private readonly IReaderResolver _readerResolver;
         private readonly IBankAccountRepository _bankAccountRepository;
 
         public CsvReaderService(
+            UnitOfWork uow,
             ILogger<CsvReaderService> logger,
             IReaderResolver readerResolver,
             IBankAccountRepository bankAccountRepository)
         {
+            _uow = uow;
             _logger = logger;
             _readerResolver = readerResolver;
             _bankAccountRepository = bankAccountRepository;
@@ -96,7 +100,8 @@ namespace Yaba.Application.CsvReaderServices.Impl
                 bankAccount.Transactions.Add(newTransaction);
             }
 
-            await _bankAccountRepository.Update(bankAccount);
+            _bankAccountRepository.Update(bankAccount);
+            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível salvar as transações lidas");
         }
     }
     /*NOTES:
