@@ -5,7 +5,7 @@ using Yaba.Infrastructure.DTO;
 
 namespace Yaba.Application.BankAccountServices
 {
-    public interface IBankAccountService : IAsyncDisposable
+    public interface IBankAccountService : IDisposable
     {
         Task CreateBankAccountForUser(CreateUserBankAccountDTO dto);
         Task UpdateBankAccount(UpdateUserBankAccountDTO dto);

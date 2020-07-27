@@ -4,15 +4,13 @@ using System.Threading.Tasks;
 
 namespace Yaba.Domain.Models.BankAccounts
 {
-    public interface IBankAccountRepository : IAsyncDisposable
+    public interface IBankAccountRepository
     {
         Task<IEnumerable<BankAccount>> GetAll();
-        Task<BankAccount> GetById(int id);
+        Task<BankAccount> GetById(object id);
         Task<BankAccount> GetBy(string agency, string number, short code);
-        Task Update(BankAccount entity);
-        Task Delete(int id);
-        Task Delete(BankAccount id);
-        Task Create(BankAccount entity);
-        Task<bool> Exists(int id);
+        void Update(BankAccount entity);
+        void Delete(BankAccount entity);
+        void Insert(BankAccount entity);
     }
 }
