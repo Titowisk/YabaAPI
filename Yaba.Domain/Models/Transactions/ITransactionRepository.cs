@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Yaba.Domain.Models.Transactions
 {
     public interface ITransactionRepository
     {
-        Transaction GetById(long id);
-        Transaction GetByIdWithBankAccount(long id);
-        IEnumerable<Transaction> GetAll();
-        void Create(Transaction entity);
+        Task<Transaction> GetById(object id);
+        Task<Transaction> GetByIdWithBankAccount(long id);
+        Task<IEnumerable<Transaction>> GetAll();
+        void Insert(Transaction entity);
         void Update(Transaction entity);
-        void Delete(long id);
         void Delete(Transaction entity);
     }
 }
