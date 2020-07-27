@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Yaba.Application.TransactionServices;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Infrastructure.DTO;
@@ -10,16 +13,20 @@ using Yaba.Tools.Validations;
 namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class TransactionsController : ControllerBase
     {
+        private readonly ITransactionService _transactionService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ILogger<TransactionsController> _logger;
 
         public TransactionsController(
+            ITransactionService transactionService,
             ITransactionRepository transactionRepository,
             ILogger<TransactionsController> logger)
         {
+            _transactionService = transactionService;
             _transactionRepository = transactionRepository;
             _logger = logger;
         }
@@ -29,7 +36,7 @@ namespace Yaba.WebApi.Controllers
         {
             try
             {
-                _transactionRepository.Create(transaction);
+                _transactionRepository.Insert(transaction);
 
                 return Ok();
             }
@@ -111,15 +118,17 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> Delete(long id)
         {
             try
             {
-                var transaction = _transactionRepository.GetById(id);
+                var dto = new DeleteUserTransactionDTO()
+                {
+                    UserId = GetLoggedUserId(),
+                    TransactionId = id
+                };
 
-                Validate.NotNull(transaction, "Transaction not found");
-
-                _transactionRepository.Delete(transaction);
+                await _transactionService.Delete(dto);
 
                 return Ok();
             }
@@ -134,6 +143,7 @@ namespace Yaba.WebApi.Controllers
                 return StatusCode(500);
             }
         }
+
 
         [HttpPut("{id}")]
         public IActionResult Update(long id, [FromBody] TransactionDTO newTransaction)
@@ -166,6 +176,17 @@ namespace Yaba.WebApi.Controllers
                 return StatusCode(500);
             }
         }
+        #region Priv Methods
+        private int GetLoggedUserId()
+        {
+            // TODO : better way to do this? 
+            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
+
+            return int.Parse(user.Value);
+        }
+        #endregion
     }
     /* NOTES:
 		- Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)
