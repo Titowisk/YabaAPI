@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Transactions;
+﻿using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tools.Validations;
 
 namespace Yaba.Application.BankAccountServices.Impl
@@ -15,8 +14,10 @@ namespace Yaba.Application.BankAccountServices.Impl
         private readonly IUserRepository _userRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IBankAccountRepository _bankAccountRepository;
+        private readonly UnitOfWork _uow;
 
         public BankAccountService(
+            UnitOfWork uow,
             IUserRepository userRepository,
             ITransactionRepository transactionRepository,
             IBankAccountRepository bankAccountRepository)
@@ -24,6 +25,7 @@ namespace Yaba.Application.BankAccountServices.Impl
             _userRepository = userRepository;
             _transactionRepository = transactionRepository;
             _bankAccountRepository = bankAccountRepository;
+            _uow = uow;
         }
         public async Task CreateBankAccountForUser(CreateUserBankAccountDTO dto)
         {
@@ -40,7 +42,8 @@ namespace Yaba.Application.BankAccountServices.Impl
 
             var bankAccount = new BankAccount(dto.Number, dto.Agency, code, dto.UserId);
 
-            await _bankAccountRepository.Create(bankAccount);
+            _bankAccountRepository.Insert(bankAccount);
+            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível criar a conta bancária");
         }
 
         public async Task UpdateBankAccount(UpdateUserBankAccountDTO dto)
@@ -58,7 +61,8 @@ namespace Yaba.Application.BankAccountServices.Impl
             bankAccount.SetNumber(dto.Number);
             bankAccount.SetCode(dto.Code);
 
-            await _bankAccountRepository.Update(bankAccount);
+            _bankAccountRepository.Update(bankAccount);
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na atualização");
         }
 
         public async Task DeleteBankAccount(DeleteUserBankAccountDTO dto)
@@ -77,7 +81,8 @@ namespace Yaba.Application.BankAccountServices.Impl
             //    await _transactionRepository.DeleteRange(transactions);
             //}
 
-            await _bankAccountRepository.Delete(bankAccount.Id);
+            _bankAccountRepository.Delete(bankAccount);
+            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível remover a conta bancária");
         }
 
         public async Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto)
@@ -107,10 +112,9 @@ namespace Yaba.Application.BankAccountServices.Impl
             return response;
         }
 
-        public async ValueTask DisposeAsync()
+        public void Dispose()
         {
-            await _bankAccountRepository.DisposeAsync();
-            await _userRepository.DisposeAsync();
+            _uow.Dispose();
         }
 
         /*NOTES
