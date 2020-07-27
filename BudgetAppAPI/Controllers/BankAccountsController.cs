@@ -173,7 +173,7 @@ namespace Yaba.WebApi.Controllers
             // TODO : better way to do this? 
             var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-            Validate.IsTrue(string.IsNullOrEmpty(user.Value), "Acesso negado");
+            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
 
             return int.Parse(user.Value);
         }
