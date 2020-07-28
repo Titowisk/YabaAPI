@@ -25,4 +25,12 @@ namespace Yaba.Infrastructure.DTO
         public DateTime Initial { get; set; }
         public DateTime Final { get; set; }
     }
+
+    public class GetUserTransactionsByMonthDTO
+    {
+        public int UserId { get; set; }
+        public int BankAccountId { get; set; }
+        public short Month { get; set; }
+        public short Year { get; set; }
+    }
 }
