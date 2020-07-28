@@ -5,6 +5,7 @@ namespace Yaba.Infrastructure.DTO
     public class DeleteUserTransactionDTO
     {
         public int UserId { get; set; }
+        public int BankAccountId { get; set; }
         public long TransactionId { get; set; }
     }
 
@@ -15,5 +16,13 @@ namespace Yaba.Infrastructure.DTO
         public string Origin { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
+    }
+
+    public class DeleteUserTransactionBatchDTO
+    {
+        public int UserId { get; set; }
+        public int BankAccountId { get; set; }
+        public DateTime Initial { get; set; }
+        public DateTime Final { get; set; }
     }
 }
