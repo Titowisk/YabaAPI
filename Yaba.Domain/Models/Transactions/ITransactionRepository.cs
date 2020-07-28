@@ -11,5 +11,6 @@ namespace Yaba.Domain.Models.Transactions
         void Insert(Transaction entity);
         void Update(Transaction entity);
         void Delete(Transaction entity);
+        void DeleteRange(IEnumerable<Transaction> entities);
     }
 }
