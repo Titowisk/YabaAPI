@@ -9,9 +9,7 @@ namespace Yaba.Application.TransactionServices
 {
     public interface ITransactionService : IDisposable
     {
-        Task Delete(DeleteUserTransactionDTO dto);
-        Task DeleteBatchBetween(DeleteUserTransactionBatchDTO dto);
-        Task<IEnumerable<Transaction>> GetByMonth(GetUserTransactionsByMonthDTO dto);
+        Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto);
         Task Create(CreateUserTransactionDTO dto);
     }
 }

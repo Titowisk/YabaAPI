@@ -38,39 +38,10 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na remoção da transação");
         }
 
-        public async Task Delete(DeleteUserTransactionDTO dto)
+        public async Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto)
         {
-            var transaction = await _transactionRepository.GetById(dto.TransactionId);
-            Validate.NotNull(transaction, "Transação não encontrada");
-            Validate.IsTrue(transaction.BankAccountId == dto.BankAccountId, "Acesso negado");
-
-            var bankAccount = await _bankAccountRepository.GetById(transaction.BankAccountId);
-            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
-
-            _transactionRepository.Delete(transaction);
-
-            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na remoção da transação");
-        }
-
-        public async Task DeleteBatchBetween(DeleteUserTransactionBatchDTO dto)
-        {
-            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
-            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
-
-            var transactions = await _transactionRepository.GetByDate(dto.Initial, dto.Final, dto.BankAccountId);
-
-            _transactionRepository.DeleteRange(transactions);
-
-            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na remoção das transações");
-        }
-
-        public async Task<IEnumerable<Transaction>> GetByMonth(GetUserTransactionsByMonthDTO dto)
-        {
-            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
-            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
-
-            var transactions = await _transactionRepository.GetByMonth(dto.BankAccountId, dto.Month, dto.Year);
-            Validate.IsTrue(transactions.Count() > 0, $"Não foram encontradas transações para a data {dto.Month}/{dto.Year}");
+            var transactions = await _transactionRepository.GetByMonthBankAccountUser(dto.Year, dto.Month, dto.BankAccountId, dto.UserId); ;
+            Validate.IsTrue(transactions.Count > 0, $"Não foram encontradas transações para a data {dto.Month}/{dto.Year}");
 
             return transactions;
         }
