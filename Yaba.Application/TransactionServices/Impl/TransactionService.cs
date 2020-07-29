@@ -42,7 +42,7 @@ namespace Yaba.Application.TransactionServices.Impl
         public async Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto)
         {
             var transactions = await _transactionRepository.GetByMonthBankAccountUser(dto.Year, dto.Month, dto.BankAccountId, dto.UserId); ;
-            Validate.IsTrue(transactions.Count > 0, $"Não foram encontradas transações para a data {dto.Month}/{dto.Year}");
+            Validate.IsTrue(transactions.Count > 0, "Não foram encontradas transações");
 
             return transactions;
         }
