@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.Transactions;
+using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.Abstracts;
 using Yaba.Infrastructure.Persistence.Context;
 
@@ -32,6 +33,25 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                     .FirstOrDefaultAsync(t => t.Id == id);
 
             return transaction;
+        }
+
+        public async Task<ICollection<TransactionsDateFilterResponseDTO>> GetByMonthBankAccountUser(short year, short month, int bankAccountId, int userId)
+        {
+            var transactions = await _context.Transactions
+                .Where(t => t.Date.Year == year)
+                .Where(t => t.Date.Month == month)
+                .Include(t => t.BankAccount)
+                .Where(t => t.BankAccountId == bankAccountId)
+                .Where(t => t.BankAccount.UserId == userId)
+                .Select(t => new TransactionsDateFilterResponseDTO() 
+                { 
+                    Amount = t.Amount, 
+                    Date = t.Date, 
+                    Origin = t.Origin 
+                })
+                .ToListAsync();
+
+            return transactions;
         }
     }
 }
