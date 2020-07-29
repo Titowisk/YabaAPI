@@ -28,14 +28,15 @@ namespace Yaba.Application.TransactionServices.Impl
         public async Task Create(CreateUserTransactionDTO dto)
         {
             var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+            Validate.IsTrue(bankAccount != null, "A conta bancária fornecida não foi encontrada");
             Validate.IsTrue(bankAccount.UserId == dto.UserId, "Acesso negado");
 
             // TODO: Validations?
-            var transaction = new Transaction(dto.Origin, dto.Date, dto.Amount);
+            var transaction = new Transaction(dto.Origin, dto.Date, dto.Amount, dto.BankAccountId);
 
-            _transactionRepository.Delete(transaction);
+            _transactionRepository.Insert(transaction);
 
-            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na remoção da transação");
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
         }
 
         public async Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto)
