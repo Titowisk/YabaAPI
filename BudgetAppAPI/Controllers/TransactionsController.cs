@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.TransactionServices;
-using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
@@ -33,11 +32,13 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Transaction transaction)
+        [Route("Create")]
+        public async Task<IActionResult> Create([FromBody] CreateUserTransactionDTO dto)
         {
             try
             {
-                _transactionRepository.Insert(transaction);
+                dto.UserId = GetLoggedUserId();
+                await _transactionService.Create(dto);
 
                 return Ok();
             }
