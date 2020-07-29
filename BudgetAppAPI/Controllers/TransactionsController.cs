@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.TransactionServices;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
@@ -53,24 +54,15 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        [Route("[Action]")]
+        public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
         {
             try
             {
-                var transactions = _transactionRepository.GetAll();
+                dto.UserId = GetLoggedUserId();
+                var transactions = await _transactionService.GetByMonth(dto);
 
-                var results = from t in transactions
-                              select new
-                              {
-                                  t.Id,
-                                  t.Origin,
-                                  t.Amount,
-                                  t.Date,
-                                  Bank = t.BankAccount != null ? BankCode.FromValue<BankCode>(t.BankAccount.Code).Name : "",
-                                  Category = t.Category != null ? t.Category.ToString() : ""
-                              };
-
-                return Ok(results);
+                return Ok(transactions);
             }
             catch (ArgumentException aex)
             {
@@ -93,17 +85,17 @@ namespace Yaba.WebApi.Controllers
 
                 Validate.NotNull(transaction, "Transaction not found");
 
-                var result = new
-                {
-                    transaction.Id,
-                    transaction.Origin,
-                    transaction.Amount,
-                    transaction.Date,
-                    Bank = transaction.BankAccount != null ? BankCode.FromValue<BankCode>(transaction.BankAccount.Code).Name : "",
-                    Category = transaction.Category != null ? transaction.Category.ToString() : ""
-                };
+                //var result = new
+                //{
+                //    transaction.Id,
+                //    transaction.Origin,
+                //    transaction.Amount,
+                //    transaction.Date,
+                //    Bank = transaction.BankAccount != null ? BankCode.FromValue<BankCode>(transaction.BankAccount.Code).Name : "",
+                //    Category = transaction.Category != null ? transaction.Category.ToString() : ""
+                //};
 
-                return Ok(result);
+                return Ok();
             }
             catch (ArgumentException aex)
             {
@@ -128,7 +120,7 @@ namespace Yaba.WebApi.Controllers
                     TransactionId = id
                 };
 
-                await _transactionService.Delete(dto);
+                //await _transactionService.Delete(dto);
 
                 return Ok();
             }
@@ -156,12 +148,12 @@ namespace Yaba.WebApi.Controllers
 
                 Validate.NotNull(transaction, "Transaction not found");
 
-                transaction.SetOrigin(newTransaction.Origin);
-                transaction.SetDate(newTransaction.Date);
-                transaction.SetAmount(newTransaction.Amount);
-                transaction.BankAccountId = newTransaction.BankAccountId;
+                //transaction.SetOrigin(newTransaction.Origin);
+                //transaction.SetDate(newTransaction.Date);
+                //transaction.SetAmount(newTransaction.Amount);
+                //transaction.BankAccountId = newTransaction.BankAccountId;
 
-                _transactionRepository.Update(transaction);
+                //_transactionRepository.Update(transaction);
 
                 return Ok();
             }
