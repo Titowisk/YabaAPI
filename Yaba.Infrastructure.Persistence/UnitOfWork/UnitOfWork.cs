@@ -28,7 +28,7 @@ namespace Yaba.Infrastructure.Persistence.UnitOfWork
 
         public void Dispose()
         {
-            _context.Dispose();
+            _context.Dispose(); // TODO: this is hitting two times... ???
         }
     }
 }
