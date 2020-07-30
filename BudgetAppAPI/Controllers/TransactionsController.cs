@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.TransactionServices;
-using Yaba.Domain.Models.Transactions;
 using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
 
@@ -18,18 +17,17 @@ namespace Yaba.WebApi.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
-        private readonly ITransactionRepository _transactionRepository;
         private readonly ILogger<TransactionsController> _logger;
 
         public TransactionsController(
             ITransactionService transactionService,
-            ITransactionRepository transactionRepository,
             ILogger<TransactionsController> logger)
         {
             _transactionService = transactionService;
-            _transactionRepository = transactionRepository;
             _logger = logger;
         }
+
+        // TODO: Action to update the category of similar Transactions?
 
         [HttpPost]
         [Route("Create")]
@@ -77,98 +75,6 @@ namespace Yaba.WebApi.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(long id)
-        {
-            try
-            {
-                var transaction = _transactionRepository.GetByIdWithBankAccount(id);
-
-                Validate.NotNull(transaction, "Transaction not found");
-
-                //var result = new
-                //{
-                //    transaction.Id,
-                //    transaction.Origin,
-                //    transaction.Amount,
-                //    transaction.Date,
-                //    Bank = transaction.BankAccount != null ? BankCode.FromValue<BankCode>(transaction.BankAccount.Code).Name : "",
-                //    Category = transaction.Category != null ? transaction.Category.ToString() : ""
-                //};
-
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(long id)
-        {
-            try
-            {
-                var dto = new DeleteUserTransactionDTO()
-                {
-                    UserId = GetLoggedUserId(),
-                    TransactionId = id
-                };
-
-                //await _transactionService.Delete(dto);
-
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-        }
-
-
-        [HttpPut("{id}")]
-        public IActionResult Update(long id, [FromBody] TransactionDTO newTransaction)
-        {
-            try
-            {
-                Validate.IsTrue(id == newTransaction.Id, "Parameter id must be equal to body id");
-
-                var transaction = _transactionRepository.GetById(id);
-
-                Validate.NotNull(transaction, "Transaction not found");
-
-                //transaction.SetOrigin(newTransaction.Origin);
-                //transaction.SetDate(newTransaction.Date);
-                //transaction.SetAmount(newTransaction.Amount);
-                //transaction.BankAccountId = newTransaction.BankAccountId;
-
-                //_transactionRepository.Update(transaction);
-
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-        }
         #region Priv Methods
         private int GetLoggedUserId()
         {
