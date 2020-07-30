@@ -6,11 +6,12 @@ namespace Yaba.Domain.Models.Transactions
 {
 	public class Transaction
 	{
-		public Transaction(string origin, DateTime date, decimal amount)
+		public Transaction(string origin, DateTime date, decimal amount, int? bankAccountId = null)
 		{
 			Origin = origin;
 			Date = date;
 			Amount = amount;
+			BankAccountId = bankAccountId;
 		}
 
 		public Transaction() 

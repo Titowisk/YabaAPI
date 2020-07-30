@@ -1,35 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using Yaba.Domain.Models.BankAccounts.Enumerations;
-using Yaba.Domain.Models.Transactions;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Yaba.Application.TransactionServices;
 using Yaba.Infrastructure.DTO;
 using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-        private readonly ITransactionRepository _transactionRepository;
+        private readonly ITransactionService _transactionService;
         private readonly ILogger<TransactionsController> _logger;
 
         public TransactionsController(
-            ITransactionRepository transactionRepository,
+            ITransactionService transactionService,
             ILogger<TransactionsController> logger)
         {
-            _transactionRepository = transactionRepository;
+            _transactionService = transactionService;
             _logger = logger;
         }
 
+        // TODO: Action to update the category of similar Transactions?
+
         [HttpPost]
-        public IActionResult Create([FromBody] Transaction transaction)
+        [Route("Create")]
+        public async Task<IActionResult> Create([FromBody] CreateUserTransactionDTO dto)
         {
             try
             {
-                _transactionRepository.Create(transaction);
+                dto.UserId = GetLoggedUserId();
+                await _transactionService.Create(dto);
 
                 return Ok();
             }
@@ -46,24 +53,15 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        [Route("[Action]")]
+        public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
         {
             try
             {
-                var transactions = _transactionRepository.GetAll();
+                dto.UserId = GetLoggedUserId();
+                var transactions = await _transactionService.GetByMonth(dto);
 
-                var results = from t in transactions
-                              select new
-                              {
-                                  t.Id,
-                                  t.Origin,
-                                  t.Amount,
-                                  t.Date,
-                                  Bank = t.BankAccount != null ? BankCode.FromValue<BankCode>(t.BankAccount.Code).Name : "",
-                                  Category = t.Category != null ? t.Category.ToString() : ""
-                              };
-
-                return Ok(results);
+                return Ok(transactions);
             }
             catch (ArgumentException aex)
             {
@@ -77,95 +75,17 @@ namespace Yaba.WebApi.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(long id)
+        #region Priv Methods
+        private int GetLoggedUserId()
         {
-            try
-            {
-                var transaction = _transactionRepository.GetByIdWithBankAccount(id);
+            // TODO : better way to do this? 
+            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
-                Validate.NotNull(transaction, "Transaction not found");
+            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
 
-                var result = new
-                {
-                    transaction.Id,
-                    transaction.Origin,
-                    transaction.Amount,
-                    transaction.Date,
-                    Bank = transaction.BankAccount != null ? BankCode.FromValue<BankCode>(transaction.BankAccount.Code).Name : "",
-                    Category = transaction.Category != null ? transaction.Category.ToString() : ""
-                };
-
-                return Ok(result);
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return int.Parse(user.Value);
         }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
-        {
-            try
-            {
-                var transaction = _transactionRepository.GetById(id);
-
-                Validate.NotNull(transaction, "Transaction not found");
-
-                _transactionRepository.Delete(transaction);
-
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Update(long id, [FromBody] TransactionDTO newTransaction)
-        {
-            try
-            {
-                Validate.IsTrue(id == newTransaction.Id, "Parameter id must be equal to body id");
-
-                var transaction = _transactionRepository.GetById(id);
-
-                Validate.NotNull(transaction, "Transaction not found");
-
-                transaction.SetOrigin(newTransaction.Origin);
-                transaction.SetDate(newTransaction.Date);
-                transaction.SetAmount(newTransaction.Amount);
-                transaction.BankAccountId = newTransaction.BankAccountId;
-
-                _transactionRepository.Update(transaction);
-
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-        }
+        #endregion
     }
     /* NOTES:
 		- Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)

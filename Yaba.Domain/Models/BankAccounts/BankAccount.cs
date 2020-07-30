@@ -13,7 +13,6 @@ namespace Yaba.Domain.Models.BankAccounts
 			Agency = agency;
 			Code = code.Value;
 			UserId = userId;
-			Transactions = new List<Transaction>();
 		}
 
 		public BankAccount()
@@ -44,8 +43,8 @@ namespace Yaba.Domain.Models.BankAccounts
 		public string Number { get; private set; }
 		public string Agency { get; private set; }
 		public short Code { get; private set; }
-		public List<Transaction> Transactions { get; private set; }
-        public User? User { get; set; }
+		public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
+		public User? User { get; set; }
         public int? UserId { get; set; }
 
         #endregion

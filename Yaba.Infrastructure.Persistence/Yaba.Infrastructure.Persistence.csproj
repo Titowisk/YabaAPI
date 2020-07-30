@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yaba.Domain\Yaba.Domain.csproj" />
+    <ProjectReference Include="..\Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj" />
   </ItemGroup>
 
 </Project>
