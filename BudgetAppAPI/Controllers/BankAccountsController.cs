@@ -125,7 +125,15 @@ namespace Yaba.WebApi.Controllers
 
                 await _bankAccountService.CreateBankAccountForUser(dto);
 
-                return Ok("Conta bancária criada com sucesso");
+                // TODO: create common success handler
+
+                var response = new
+                {
+                    Success = true,
+                    Data = "Conta bancária criada com sucesso"
+                };
+
+                return Ok(response);
             }
             catch (ArgumentException aex)
             {
