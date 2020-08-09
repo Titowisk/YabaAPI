@@ -32,17 +32,18 @@ namespace Yaba.WebApi.Controllers
             _bankAccountRepository = bankAccountRepository;
         }
 
-        // GET: api/BankAccounts
-        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
+        [Route("[Action]")]
+        public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetBankAccountsByUser()
         {
-            // TODO: remove this method??
             try
             {
-                var bankAccounts = await _bankAccountRepository.GetAll();
+                var dto = new GetUserBankAccountsDTO()
+                {
+                    UserId = GetLoggedUserId()
+                };
 
-                Validate.IsTrue(bankAccounts.Count() > 0, "No bank accounts found.");
+                var bankAccounts = await _bankAccountService.GetUserBankAccounts(dto);
 
                 return Ok(bankAccounts);
             }
