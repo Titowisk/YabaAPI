@@ -17,6 +17,12 @@
         public short Code { get; set; }
     }
 
+    public class GetUserBankAccountsDTO
+    {
+        public int UserId { get; set; }
+
+    }
+
     public class UpdateUserBankAccountDTO
     {
         public int UserId { get; set; }

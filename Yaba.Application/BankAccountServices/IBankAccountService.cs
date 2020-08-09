@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Infrastructure.DTO;
@@ -12,5 +13,6 @@ namespace Yaba.Application.BankAccountServices
         Task DeleteBankAccount(DeleteUserBankAccountDTO dto);
         Task<BankAccount> GetBankAccountBy(GetUserBankAccountDTO dto);
         Task<BankAccountResponseDTO> GetBankAccountById(GetUserBankAccountDTO dto);
+        Task<IEnumerable<BankAccountsResponseDTO>> GetUserBankAccounts(GetUserBankAccountsDTO dto);
     }
 }

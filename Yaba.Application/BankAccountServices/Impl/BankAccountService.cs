@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
@@ -112,10 +114,30 @@ namespace Yaba.Application.BankAccountServices.Impl
             return response;
         }
 
+        public async Task<IEnumerable<BankAccountsResponseDTO>> GetUserBankAccounts(GetUserBankAccountsDTO dto)
+        {
+            var bankAccounts = await _bankAccountRepository.GetAllByUser(dto.UserId);
+
+            Validate.IsTrue(bankAccounts.Count() > 0, "No bank accounts were found");
+
+            var bankAccountsDto = bankAccounts.Select(bk => new BankAccountsResponseDTO
+            {
+                Id = bk.Id,
+                Agency = bk.Agency,
+                AccountNumber = bk.Number,
+                BankCode = bk.Code,
+                BankName = BankCode.FromValue<BankCode>(bk.Code).Name,
+                UserId = (int)bk.UserId
+            });
+
+            return bankAccountsDto;
+        }
+
         public void Dispose()
         {
             _uow.Dispose();
         }
+
 
         /*NOTES
          * Inject Token User in service or expect an UserId from a DTO?
