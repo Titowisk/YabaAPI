@@ -21,6 +21,15 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<BankAccount>> GetAllByUser(int userId)
+        {
+            var query = from b in _context.BankAccounts
+                        where b.UserId == userId
+                        select b;
+
+            return await query.ToListAsync();
+        }
+
         public async Task<BankAccount> GetBy(string agency, string number, short code)
         {
             return await _context.BankAccounts
