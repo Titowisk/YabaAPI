@@ -65,6 +65,8 @@ namespace Yaba.WebApi
             var secretKey = Configuration.GetSection("JwtConfig:SecretKey").Value;
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
             ConfigureTokenValidation(services, securityKey);
+
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +82,8 @@ namespace Yaba.WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthentication();
             app.UseAuthorization();
