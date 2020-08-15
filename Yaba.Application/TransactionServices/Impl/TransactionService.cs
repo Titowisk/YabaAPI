@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
@@ -47,9 +48,34 @@ namespace Yaba.Application.TransactionServices.Impl
             return transactions;
         }
 
+        public async Task<IEnumerable<ExistentTransactionsDatesResponseDTO>> GetExistentTransactionsDatesByUser(GetTransactionDatesDTO dto)
+        {
+            var dates = await _transactionRepository.GetDatesByUser(dto.UserId, dto.BankaccountId);
+
+            var existentDates = new List<ExistentTransactionsDatesResponseDTO>();
+
+            foreach (var date in dates)
+            {
+                var existentDate = existentDates.FirstOrDefault(d => d.Year == date.Year);
+                if (existentDate == null)
+                {
+                    existentDate = new ExistentTransactionsDatesResponseDTO()
+                    {
+                        Year = date.Year,
+                    };
+
+                    existentDates.Add(existentDate);
+                }
+                existentDate.Months.Add(date.Month);
+            }
+
+            return existentDates;
+        }
+
         public void Dispose()
         {
             _uow.Dispose(); // TODO: does it really dispose all resources from the context (BankAccount, User, Transaction ) ??
         }
+
     }
 }

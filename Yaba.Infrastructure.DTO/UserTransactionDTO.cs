@@ -33,4 +33,10 @@ namespace Yaba.Infrastructure.DTO
         public short Month { get; set; }
         public short Year { get; set; }
     }
+
+    public class GetTransactionDatesDTO
+    {
+        public int UserId { get; set; }
+        public int BankaccountId { get; set; }
+    }
 }
