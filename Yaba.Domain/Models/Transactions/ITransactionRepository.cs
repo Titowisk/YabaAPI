@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yaba.Infrastructure.DTO;
 
@@ -6,6 +7,7 @@ namespace Yaba.Domain.Models.Transactions
 {
     public interface ITransactionRepository
     {
+        Task<IEnumerable<DateDTO>> GetDatesByUser(int userId, int bankAccountId);
         Task<Transaction> GetById(object id);
         Task<Transaction> GetByIdWithBankAccount(long id);
         Task<IEnumerable<Transaction>> GetAll();

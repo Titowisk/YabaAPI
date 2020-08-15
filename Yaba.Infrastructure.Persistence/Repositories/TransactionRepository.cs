@@ -25,6 +25,17 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             _context.Transactions.Add(entity);
         }
 
+        public async Task<IEnumerable<DateDTO>> GetDatesByUser(int userId, int bankAccountId)
+        {
+            var query = _context.Transactions
+                         .Where(t => t.BankAccountId == bankAccountId)
+                         .Where(t => t.BankAccount.UserId == userId)
+                         .Select(t => new DateDTO() { Year = t.Date.Year, Month = t.Date.Month });
+
+            return await query.ToListAsync();
+        }
+
+
         public async Task<Transaction> GetByIdWithBankAccount(long id)
         {
             var transaction = await _context
