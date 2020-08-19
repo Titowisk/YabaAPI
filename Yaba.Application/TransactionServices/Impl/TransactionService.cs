@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
+using Yaba.Domain.Models.Transactions.Enumerations;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tools.Validations;
@@ -72,10 +73,48 @@ namespace Yaba.Application.TransactionServices.Impl
             return existentDates;
         }
 
+        public async Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto)
+        {
+            var transactionToUpdate = await _transactionRepository.GetById(dto.TransactionId);
+            Validate.NotNull(transactionToUpdate, "This Transaction doesn't exist");
+
+            var bankAccount = await _bankAccountRepository.GetById(transactionToUpdate.BankAccountId);
+            Validate.NotNull(bankAccount, "Access Denied");
+
+            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
+
+            _transactionRepository.Update(transactionToUpdate);
+
+            await UpdateAllTransactionsWithSimilarOriginsByMonth(transactionToUpdate, dto.CategoryId);
+
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
+
+            // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
+        }
+
+
         public void Dispose()
         {
             _uow.Dispose(); // TODO: does it really dispose all resources from the context (BankAccount, User, Transaction ) ??
         }
 
+        #region Priv Methods
+
+        private async Task UpdateAllTransactionsWithSimilarOriginsByMonth(Transaction transaction, short categoryId)
+        {
+            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
+
+            if (similarTransactions.Count() == 0)
+                return;
+
+            foreach (var t in similarTransactions)
+            {
+                t.Category = (Category)categoryId;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
+        }
+
+        #endregion
     }
 }

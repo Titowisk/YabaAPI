@@ -9,6 +9,13 @@ namespace Yaba.Infrastructure.DTO
         public long TransactionId { get; set; }
     }
 
+    public class CategorizeUserTransactionsDTO
+    {
+        public long TransactionId { get; set; }
+        public int UserId { get; set; }
+        public short CategoryId { get; set; }
+    }
+
     public class CreateUserTransactionDTO
     {
         public int UserId { get; set; }

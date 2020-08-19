@@ -10,5 +10,6 @@ namespace Yaba.Application.TransactionServices
         Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto);
         Task Create(CreateUserTransactionDTO dto);
         Task<IEnumerable<ExistentTransactionsDatesResponseDTO>> GetExistentTransactionsDatesByUser(GetTransactionDatesDTO dto);
+        Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto);
     }
 }
