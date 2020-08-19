@@ -55,5 +55,10 @@ namespace Yaba.Infrastructure.Persistence.Abstracts
             entityContext.Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
         }
+
+        public virtual void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            context.UpdateRange(entities);
+        }
     }
 }
