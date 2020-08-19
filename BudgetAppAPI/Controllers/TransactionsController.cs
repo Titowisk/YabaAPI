@@ -28,7 +28,28 @@ namespace Yaba.WebApi.Controllers
             _logger = logger;
         }
 
-        // TODO: Action to update the category of similar Transactions?
+        [HttpPut]
+        [Route("[Action]")]
+        public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins([FromBody] CategorizeUserTransactionsDTO dto)
+        {
+            try
+            {
+                dto.UserId = GetLoggedUserId();
+                await _transactionService.CategorizeAllTransactionsWithSimilarOrigins(dto);
+
+                return Ok();
+            }
+            catch (ArgumentException aex)
+            {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Message: {0}", ex.Message);
+                return StatusCode(500);
+            }
+        }
 
         [HttpPost]
         [Route("Create")]
@@ -53,7 +74,7 @@ namespace Yaba.WebApi.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[Action]")]
         public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
         {
@@ -76,7 +97,7 @@ namespace Yaba.WebApi.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[Action]")]
         public async Task<IActionResult> GetTransactionDatesByUser([FromBody] GetTransactionDatesDTO dto)
         {
