@@ -5,6 +5,7 @@ namespace Yaba.Infrastructure.DTO
 {
     public class TransactionsDateFilterResponseDTO
     {
+        public long Id { get; set; }
         public string Origin { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
