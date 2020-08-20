@@ -9,6 +9,7 @@ namespace Yaba.Infrastructure.DTO
         public string Origin { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
+        public string Category { get; set; }
     }
 
     public class ExistentTransactionsDatesResponseDTO
