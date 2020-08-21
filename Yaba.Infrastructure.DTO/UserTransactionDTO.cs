@@ -9,6 +9,13 @@ namespace Yaba.Infrastructure.DTO
         public long TransactionId { get; set; }
     }
 
+    public class CategorizeUserTransactionsDTO
+    {
+        public long TransactionId { get; set; }
+        public int UserId { get; set; }
+        public short CategoryId { get; set; }
+    }
+
     public class CreateUserTransactionDTO
     {
         public int UserId { get; set; }
@@ -32,5 +39,11 @@ namespace Yaba.Infrastructure.DTO
         public int BankAccountId { get; set; }
         public short Month { get; set; }
         public short Year { get; set; }
+    }
+
+    public class GetTransactionDatesDTO
+    {
+        public int UserId { get; set; }
+        public int BankaccountId { get; set; }
     }
 }

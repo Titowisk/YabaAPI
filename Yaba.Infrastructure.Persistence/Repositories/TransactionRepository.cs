@@ -25,6 +25,18 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             _context.Transactions.Add(entity);
         }
 
+        public async Task<IEnumerable<DateDTO>> GetDatesByUser(int userId, int bankAccountId)
+        {
+            var query = _context.Transactions
+                         .Where(t => t.BankAccountId == bankAccountId)
+                         .Where(t => t.BankAccount.UserId == userId)
+                         .Select(t => new DateDTO() { Year = t.Date.Year, Month = t.Date.Month })
+                         .OrderByDescending(t => t.Year).ThenByDescending(t => t.Month);
+
+            return await query.ToListAsync();
+        }
+
+
         public async Task<Transaction> GetByIdWithBankAccount(long id)
         {
             var transaction = await _context
@@ -44,14 +56,28 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 .Where(t => t.BankAccountId == bankAccountId)
                 .Where(t => t.BankAccount.UserId == userId)
                 .Select(t => new TransactionsDateFilterResponseDTO() 
-                { 
+                {
+                    Id = t.Id,
                     Amount = t.Amount, 
                     Date = t.Date, 
-                    Origin = t.Origin 
+                    Origin = t.Origin,
+                    Category = t.Category.ToString()
                 })
+                .OrderBy(t => t.Date)
                 .ToListAsync();
 
             return transactions;
+        }
+
+        public async Task<IEnumerable<Transaction>> GetByDateAndOrigin(DateTime date, string origin, int bankAccountId)
+        {
+            var query = _context.Transactions
+                .Where(t => t.Date.Year == date.Year)
+                .Where(t => t.Date.Month == date.Month)
+                .Where(t => t.BankAccountId == bankAccountId)
+                .Where((t) => t.Origin.Equals(origin));
+                
+            return await query.ToListAsync();
         }
     }
 }

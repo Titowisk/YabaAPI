@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yaba.Infrastructure.DTO;
 
@@ -6,13 +7,16 @@ namespace Yaba.Domain.Models.Transactions
 {
     public interface ITransactionRepository
     {
+        Task<IEnumerable<DateDTO>> GetDatesByUser(int userId, int bankAccountId);
         Task<Transaction> GetById(object id);
         Task<Transaction> GetByIdWithBankAccount(long id);
         Task<IEnumerable<Transaction>> GetAll();
         Task<ICollection<TransactionsDateFilterResponseDTO>> GetByMonthBankAccountUser(short year, short month, int bankAccountId, int userId);
+        Task<IEnumerable<Transaction>> GetByDateAndOrigin(DateTime date, string origin, int bankAccountId);
         void Insert(Transaction entity);
         void Update(Transaction entity);
         void Delete(Transaction entity);
         void DeleteRange(IEnumerable<Transaction> entities);
+        void UpdateRange(IEnumerable<Transaction> entities);
     }
 }

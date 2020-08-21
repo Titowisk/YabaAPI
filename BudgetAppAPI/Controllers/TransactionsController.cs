@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -27,7 +28,28 @@ namespace Yaba.WebApi.Controllers
             _logger = logger;
         }
 
-        // TODO: Action to update the category of similar Transactions?
+        [HttpPut]
+        [Route("[Action]")]
+        public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins([FromBody] CategorizeUserTransactionsDTO dto)
+        {
+            try
+            {
+                dto.UserId = GetLoggedUserId();
+                await _transactionService.CategorizeAllTransactionsWithSimilarOrigins(dto);
+
+                return Ok();
+            }
+            catch (ArgumentException aex)
+            {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Message: {0}", ex.Message);
+                return StatusCode(500);
+            }
+        }
 
         [HttpPost]
         [Route("Create")]
@@ -52,7 +74,7 @@ namespace Yaba.WebApi.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[Action]")]
         public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
         {
@@ -62,6 +84,29 @@ namespace Yaba.WebApi.Controllers
                 var transactions = await _transactionService.GetByMonth(dto);
 
                 return Ok(transactions);
+            }
+            catch (ArgumentException aex)
+            {
+                _logger.LogWarning(aex, "Message: {0}", aex.Message);
+                return BadRequest(aex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Message: {0}", ex.Message);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("[Action]")]
+        public async Task<IActionResult> GetTransactionDatesByUser([FromBody] GetTransactionDatesDTO dto)
+        {
+            try
+            {
+                dto.UserId = GetLoggedUserId();
+                var existentDates = await _transactionService.GetExistentTransactionsDatesByUser(dto);
+
+                return Ok(existentDates);
             }
             catch (ArgumentException aex)
             {
