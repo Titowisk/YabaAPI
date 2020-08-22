@@ -13,6 +13,7 @@ namespace Yaba.WebJob
             builder.ConfigureWebJobs(b =>
             {
                 b.AddAzureStorageCoreServices();
+                b.AddAzureStorage();
             });
             builder.ConfigureLogging((context, b) =>
             {
