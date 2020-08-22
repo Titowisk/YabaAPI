@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Yaba.Infrastructure.DTO
+﻿namespace Yaba.Infrastructure.DTO
 {
-    public class JwtConfig 
+    public class JwtConfig
     {
         public string SecretKey { get; set; }
+    }
+
+    public class AzureConfig
+    {
+        public string AzureWebJobsStorage { get; set; }
     }
 
 }
