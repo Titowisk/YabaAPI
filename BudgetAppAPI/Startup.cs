@@ -21,6 +21,8 @@ using Yaba.Application.UserServices.Impl;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
+using Yaba.Infrastructure.AzureStorageQueue.Contracts;
+using Yaba.Infrastructure.AzureStorageQueue.Implementations;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.Context;
 using Yaba.Infrastructure.Persistence.Repositories;
@@ -43,6 +45,7 @@ namespace Yaba.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
+            services.Configure<AzureConfig>(Configuration.GetSection("AzureConfig"));
 
             services.AddControllers()
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
@@ -61,6 +64,8 @@ namespace Yaba.WebApi
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
             services.AddTransient<BradescoReader>();
+
+            services.AddScoped<IQueueMessageService, QueueMessageService>();
 
             var secretKey = Configuration.GetSection("JwtConfig:SecretKey").Value;
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
