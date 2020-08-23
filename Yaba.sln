@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.Securit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebJob", "Yaba.WebJob\Yaba.WebJob.csproj", "{55CA9595-8510-47C6-8E2C-D4802DAD0400}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure.AzureStorageQueue", "Yaba.Infrastructure.AzureStorageQueue\Yaba.Infrastructure.AzureStorageQueue.csproj", "{D51DAB31-4142-4115-B86E-72501A7764D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.AzureStorageQueue", "Yaba.Infrastructure.AzureStorageQueue\Yaba.Infrastructure.AzureStorageQueue.csproj", "{D51DAB31-4142-4115-B86E-72501A7764D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure.IoC", "Yaba.Infrastructure.IoC\Yaba.Infrastructure.IoC.csproj", "{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{D51DAB31-4142-4115-B86E-72501A7764D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D51DAB31-4142-4115-B86E-72501A7764D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D51DAB31-4142-4115-B86E-72501A7764D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +99,7 @@ Global
 		{4B3F1754-8AAE-4128-ADD2-C0F97929898C} = {D616B286-080E-4DD8-87F3-F6320260DA03}
 		{55CA9595-8510-47C6-8E2C-D4802DAD0400} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
 		{D51DAB31-4142-4115-B86E-72501A7764D5} = {D616B286-080E-4DD8-87F3-F6320260DA03}
+		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02} = {1F1D7F71-91FA-495A-934B-CB35E547F236}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABB214B-4FF9-4C2C-9926-1467825E1EFE}
