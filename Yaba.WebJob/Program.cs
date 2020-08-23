@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -10,14 +13,27 @@ namespace Yaba.WebJob
         static async Task Main()
         {
             var builder = new HostBuilder();
-            builder.ConfigureWebJobs(b =>
+            builder
+            .UseEnvironment("Development")
+            .ConfigureWebJobs(b =>
             {
                 b.AddAzureStorageCoreServices();
                 b.AddAzureStorage();
-            });
-            builder.ConfigureLogging((context, b) =>
+            })
+            .ConfigureLogging((context, b) =>
             {
                 b.AddConsole();
+            })
+            .ConfigureServices(b =>
+            {
+                IServiceCollection services = new ServiceCollection();
+                var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+                Infrastructure.IoC.DependencyResolver.RegisterServices(services, configuration);
             });
 
             var host = builder.Build();
