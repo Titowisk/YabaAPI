@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yaba.Application\Yaba.Application.csproj" />
+    <ProjectReference Include="..\Yaba.Domain\Yaba.Domain.csproj" />
+    <ProjectReference Include="..\Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj" />
+  </ItemGroup>
 
 </Project>
