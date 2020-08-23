@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Transactions.Enumerations;
+using Yaba.Infrastructure.AzureStorageQueue.Contracts;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tools.Validations;
@@ -13,15 +14,18 @@ namespace Yaba.Application.TransactionServices.Impl
 {
     public class TransactionService : ITransactionService
     {
+        private readonly IQueueMessageService _queueMessageService;
         private readonly IBankAccountRepository _bankAccountRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly UnitOfWork _uow;
 
         public TransactionService(
             UnitOfWork uow,
+            IQueueMessageService queueMessageService,
             ITransactionRepository transactionRepository,
             IBankAccountRepository bankAccountRepository)
         {
+            _queueMessageService = queueMessageService;
             _bankAccountRepository = bankAccountRepository;
             _transactionRepository = transactionRepository;
             _uow = uow;
@@ -89,6 +93,8 @@ namespace Yaba.Application.TransactionServices.Impl
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
 
+            var message = transactionToUpdate.Id.ToString();
+            _queueMessageService.SendMessage(message);
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 
