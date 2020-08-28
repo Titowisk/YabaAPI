@@ -24,16 +24,16 @@ namespace Yaba.WebJob
             {
                 b.AddConsole();
             })
-            .ConfigureServices(b =>
+            .ConfigureServices((context, b) =>
             {
-                IServiceCollection services = new ServiceCollection();
+                
                 var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
-                Infrastructure.IoC.DependencyResolver.RegisterServices(services, configuration);
+                Infrastructure.IoC.DependencyResolver.RegisterServices(b, configuration);
             });
 
             var host = builder.Build();
