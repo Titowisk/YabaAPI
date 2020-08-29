@@ -79,5 +79,15 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 
             return await query.ToListAsync();
         }
+
+        public async Task<IEnumerable<Transaction>> GetAllOtherTransactions(Transaction recentlyUpdatedtransaction)
+        {
+            var query = _context.Transactions
+                .Where(t => t.BankAccountId == recentlyUpdatedtransaction.BankAccountId)
+                .Where(t => t.Category.Value != recentlyUpdatedtransaction.Category)
+                .Where((t) => t.Origin.Equals(recentlyUpdatedtransaction.Origin));
+
+            return await query.ToListAsync();
+        }
     }
 }

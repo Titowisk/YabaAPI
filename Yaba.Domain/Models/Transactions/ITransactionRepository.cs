@@ -13,6 +13,7 @@ namespace Yaba.Domain.Models.Transactions
         Task<IEnumerable<Transaction>> GetAll();
         Task<ICollection<TransactionsDateFilterResponseDTO>> GetByMonthBankAccountUser(short year, short month, int bankAccountId, int userId);
         Task<IEnumerable<Transaction>> GetByDateAndOrigin(DateTime date, string origin, int bankAccountId);
+        Task<IEnumerable<Transaction>> GetAllOtherTransactions(Transaction recentlyUpdatedtransaction);
         void Insert(Transaction entity);
         void Update(Transaction entity);
         void Delete(Transaction entity);
