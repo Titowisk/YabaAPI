@@ -77,6 +77,7 @@ namespace Yaba.Application.TransactionServices.Impl
             return existentDates;
         }
 
+        // TODO: change name, this service categorizes all the transactions of a month with similar origins
         public async Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto)
         {
             var transactionToUpdate = await _transactionRepository.GetById(dto.TransactionId);
@@ -94,10 +95,24 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
 
             var message = transactionToUpdate.Id.ToString();
-            _queueMessageService.SendMessage(message);
+            _queueMessageService.SendMessage(message); // TODO: use a valid key (and try to use UserSecrets), this is using a invalid key from appsettings.json
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 
+        public async Task CategorizeAllOtherTransactions(long transactionId)
+        {
+            var transaction = await _transactionRepository.GetById(transactionId);
+            var similarTransactions = await _transactionRepository.GetAllOtherTransactions(transaction);
+
+            foreach (var tr in similarTransactions)
+            {
+                tr.Category = transaction.Category;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
+
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+        }
 
         public void Dispose()
         {
