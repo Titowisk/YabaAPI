@@ -95,7 +95,7 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
 
             var message = transactionToUpdate.Id.ToString();
-            _queueMessageService.SendMessage(message);
+            _queueMessageService.SendMessage(message); // TODO: use a valid key (and try to use UserSecrets), this is using a invalid key from appsettings.json
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 

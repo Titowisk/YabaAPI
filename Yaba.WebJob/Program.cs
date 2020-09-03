@@ -15,6 +15,12 @@ namespace Yaba.WebJob
             var builder = new HostBuilder();
             builder
             .UseEnvironment("Development")
+            .ConfigureAppConfiguration((context, b) =>
+            {
+                // TODO: try to use usersecrets (tried so many times but didn't work :/ )
+                //if(context.HostingEnvironment.IsDevelopment())
+                //    b.AddUserSecrets<Program>();
+            })
             .ConfigureWebJobs(b =>
             {
                 b.AddAzureStorageCoreServices();
@@ -26,14 +32,7 @@ namespace Yaba.WebJob
             })
             .ConfigureServices((context, b) =>
             {
-                
-                var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-                Infrastructure.IoC.DependencyResolver.RegisterServices(b, configuration);
+                Infrastructure.IoC.DependencyResolver.RegisterServices(b, context.Configuration);
             });
 
             var host = builder.Build();
