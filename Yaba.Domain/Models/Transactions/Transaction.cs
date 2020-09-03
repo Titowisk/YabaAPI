@@ -26,7 +26,7 @@ namespace Yaba.Domain.Models.Transactions
 		public int? BankAccountId { get; set; }
 		public BankAccount? BankAccount { get; set; }
 		public Category? Category { get; set; }
-        public string Metadata { get; set; }
+        public string? Metadata { get; set; }
 
         public void SetOrigin(string? origin)
         {
