@@ -71,8 +71,6 @@ namespace Yaba.Application.BankStatementReaders
         #region Priv Methods
         private StandardTransactionDTO CreateTransaction(CsvReader csvReader)
         {
-            // TODO: how to prevent duplicated transactions ?? build something based on transaction dates
-            // variable names according to csv bradesco header
             var data = csvReader.GetField(0);
             var historico = csvReader.GetField(1);
             var docto = csvReader.GetField(2);
@@ -80,9 +78,12 @@ namespace Yaba.Application.BankStatementReaders
             var debito = csvReader.GetField(4);
             var saldo = csvReader.GetField(5);
 
-            var transaction = new StandardTransactionDTO();
-            transaction.Date = DateTime.Parse(data);
-            transaction.TypeDescription = historico;
+            var transaction = new StandardTransactionDTO
+            {
+                Date = DateTime.Parse(data),
+                TypeDescription = historico,
+                TransactionUniqueHash = $"BRADESCO{docto}"
+            };
 
             var amount = string.IsNullOrEmpty(credito) ? debito : credito;
             transaction.Amount = decimal.Parse(amount);
