@@ -20,6 +20,12 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
+        public async Task<bool> DoesTransactionExists(string hash) 
+        {
+            return await _context.Transactions.AnyAsync(t => t.Metadata == hash);
+        }
+
+
         public void Create(Transaction entity)
         {
             _context.Transactions.Add(entity);
