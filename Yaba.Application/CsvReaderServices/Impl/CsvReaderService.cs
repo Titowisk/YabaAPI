@@ -19,16 +19,19 @@ namespace Yaba.Application.CsvReaderServices.Impl
         private readonly UnitOfWork _uow;
         private readonly ILogger<CsvReaderService> _logger;
         private readonly IReaderResolver _readerResolver;
+        private readonly ITransactionRepository _transactionRepository;
         private readonly IBankAccountRepository _bankAccountRepository;
 
         public CsvReaderService(
             UnitOfWork uow,
             ILogger<CsvReaderService> logger,
+            ITransactionRepository transactionRepository,
             IReaderResolver readerResolver,
             IBankAccountRepository bankAccountRepository)
         {
             _uow = uow;
             _logger = logger;
+            _transactionRepository = transactionRepository;
             _readerResolver = readerResolver;
             _bankAccountRepository = bankAccountRepository;
         }
@@ -91,11 +94,16 @@ namespace Yaba.Application.CsvReaderServices.Impl
         {
             foreach (var data in parsedFile.Transactions)
             {
+                if (await _transactionRepository.DoesTransactionExists(data.TransactionUniqueHash))
+                    continue;
                 // TODO: create mapping between Transaction and StandardTransaction
                 var newTransaction = new Transaction(
                     data.Origin,
                     data.Date,
-                    data.Amount);
+                    data.Amount)
+                { 
+                    Metadata = data.TransactionUniqueHash
+                };
 
                 bankAccount.Transactions.Add(newTransaction);
             }
