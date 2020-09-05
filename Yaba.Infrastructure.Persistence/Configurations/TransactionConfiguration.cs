@@ -37,6 +37,11 @@ namespace Yaba.Infrastructure.Persistence.Configurations
 
             builder.Property(t => t.Category)
                 .HasColumnName("TR_Category");
+
+            builder.Property(t => t.Metadata)
+                .HasColumnName("TR_Metadata")
+                .HasMaxLength(100);
+                
         }
     }
 }

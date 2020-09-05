@@ -23,6 +23,7 @@ namespace Yaba.Infrastructure.DTO
         public string TypeDescription { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
+        public string TransactionUniqueHash { get; set; }
     }
 
 }

@@ -7,6 +7,7 @@ namespace Yaba.Domain.Models.Transactions
 {
     public interface ITransactionRepository
     {
+        Task<bool> DoesTransactionExists(string hash);
         Task<IEnumerable<DateDTO>> GetDatesByUser(int userId, int bankAccountId);
         Task<Transaction> GetById(object id);
         Task<Transaction> GetByIdWithBankAccount(long id);
