@@ -35,13 +35,23 @@ namespace Yaba.Infrastructure.Persistence.Configurations
                 .HasColumnType("date")
                 .IsRequired();
 
+            builder
+                .Property(t => t.BankAccountId)
+                .HasColumnName("TR_BankAccountId")
+                .IsRequired();
+
+            builder
+                .HasOne(t => t.BankAccount)
+                .WithMany(bk => bk.Transactions)
+                .HasForeignKey(t => t.BankAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(t => t.Category)
                 .HasColumnName("TR_Category");
 
             builder.Property(t => t.Metadata)
                 .HasColumnName("TR_Metadata")
                 .HasMaxLength(100);
-                
         }
     }
 }
