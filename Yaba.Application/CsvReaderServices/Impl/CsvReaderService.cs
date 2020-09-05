@@ -43,8 +43,10 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
             foreach (var csv in dto.CsvFiles)
             {
-                var fileStatus = new FileStatusDTO();
-                fileStatus.FileName = csv.FileName;
+                var fileStatus = new FileStatusDTO
+                {
+                    FileName = csv.FileName
+                };
 
                 try
                 {
@@ -53,13 +55,19 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     Validate.IsTrue(csv.Length > 0, $"File {csv.FileName} is empty");
 
                     var parsedFile = reader.ProcessBankInformation(csv);
+                    fileStatus.TransactionsRead = parsedFile.Transactions.Count;
 
                     var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankCode);
 
-                    await PersistBankEstatementInformation(parsedFile, bankAccount);
+                    RemoveExistentTransactions(parsedFile);
+
+                    if(parsedFile.Transactions.Count > 0)
+                        await PersistBankEstatementInformation(parsedFile, bankAccount);
+
 
                     fileStatus.IsSuccessfullRead = true;
                     fileStatus.TransactionsSaved = parsedFile.Transactions.Count;
+                    // TODO: Get initial and final date from file
                     fileStatus.InitialDate = parsedFile.Transactions.First().Date;
                     fileStatus.FinalDate = parsedFile.Transactions.Last().Date;
                 }
@@ -78,6 +86,13 @@ namespace Yaba.Application.CsvReaderServices.Impl
             return fileStatusResult;
         }
 
+        #region Priv methods
+        private void RemoveExistentTransactions(StandardBankStatementDTO parsedFile)
+        {
+            parsedFile.Transactions
+                .RemoveAll(t => _transactionRepository.DoesTransactionExists(t.TransactionUniqueHash).Result);
+        }
+
         private async Task<BankAccount> GetFilesOwnerBankAccount(int filesOwnerId, string agencyNumber, string accountNumber, short bankCode)
         {
             var bankAccount = await _bankAccountRepository.GetBy(agencyNumber, accountNumber, bankCode);
@@ -94,8 +109,6 @@ namespace Yaba.Application.CsvReaderServices.Impl
         {
             foreach (var data in parsedFile.Transactions)
             {
-                if (await _transactionRepository.DoesTransactionExists(data.TransactionUniqueHash))
-                    continue;
                 // TODO: create mapping between Transaction and StandardTransaction
                 var newTransaction = new Transaction(
                     data.Origin,
@@ -111,6 +124,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
             _bankAccountRepository.Update(bankAccount);
             Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível salvar as transações lidas");
         }
+        #endregion
     }
     /*NOTES:
      // TODO: Create custom exceptions: custom excepttions are managed through fileStatusDTO, all other must end up in BadRequest or 500 Internal Error*/
