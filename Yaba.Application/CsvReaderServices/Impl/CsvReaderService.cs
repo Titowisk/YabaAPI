@@ -113,7 +113,8 @@ namespace Yaba.Application.CsvReaderServices.Impl
                 var newTransaction = new Transaction(
                     data.Origin,
                     data.Date,
-                    data.Amount)
+                    data.Amount,
+                    bankAccount.Id)
                 { 
                     Metadata = data.TransactionUniqueHash
                 };
