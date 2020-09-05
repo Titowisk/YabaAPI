@@ -13,10 +13,6 @@ namespace Yaba.Infrastructure.Persistence.Configurations
                 .HasKey(bk => bk.Id);
 
             builder
-                .HasMany(bk => bk.Transactions)
-                .WithOne(t => t.BankAccount);
-
-            builder
                 .Property(bk => bk.Id)
                 .HasColumnName("BK_Id")
                 .IsRequired();
