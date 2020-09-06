@@ -6,7 +6,7 @@ namespace Yaba.Domain.Models.Transactions
 {
 	public class Transaction
 	{
-		public Transaction(string origin, DateTime date, decimal amount, int? bankAccountId = null)
+		public Transaction(string origin, DateTime date, decimal amount, int bankAccountId)
 		{
 			Origin = origin;
 			Date = date;
@@ -23,8 +23,8 @@ namespace Yaba.Domain.Models.Transactions
 		public string? Origin { get; private set; }
 		public DateTime Date { get; private set; }
 		public decimal Amount { get; private set; }
-		public int? BankAccountId { get; set; }
-		public BankAccount? BankAccount { get; set; }
+		public int BankAccountId { get; set; }
+		public BankAccount BankAccount { get; set; }
 		public Category? Category { get; set; }
         public string? Metadata { get; set; }
 

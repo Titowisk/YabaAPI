@@ -44,8 +44,8 @@ namespace Yaba.Domain.Models.BankAccounts
 		public string Agency { get; private set; }
 		public short Code { get; private set; }
 		public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
-		public User? User { get; set; }
-        public int? UserId { get; set; }
+		public User User { get; set; }
+        public int UserId { get; set; }
 
         #endregion
     }
