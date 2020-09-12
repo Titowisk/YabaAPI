@@ -81,7 +81,7 @@ namespace Yaba.Application.BankStatementReaders
 
             var transaction = new StandardTransactionDTO
             {
-                Date = DateTime.Parse(data, CultureInfo.GetCultureInfo("pt-BR").NumberFormat),
+                Date = DateTime.ParseExact(data, new string[] { "dd/MM/yyyy", "dd/MM/yy" } , CultureInfo.GetCultureInfo("pt-BR").NumberFormat),
                 TypeDescription = historico,
                 TransactionUniqueHash = $"BRADESCO{docto}"
             };
