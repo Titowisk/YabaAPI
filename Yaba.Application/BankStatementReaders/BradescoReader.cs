@@ -23,7 +23,7 @@ namespace Yaba.Application.BankStatementReaders
             var bankStatement = new StandardBankStatementDTO();
 
             using var reader = new StreamReader(csvFile.OpenReadStream());
-            using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
+            using (var csvReader = new CsvReader(reader, new CultureInfo("pt-BR")))
             {
                 csvReader.Configuration.Delimiter = ";";
                 csvReader.Configuration.IgnoreBlankLines = false;
