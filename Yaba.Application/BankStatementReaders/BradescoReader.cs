@@ -18,6 +18,7 @@ namespace Yaba.Application.BankStatementReaders
             _logger = logger;
         }
 
+        // TODO: Create AbstractReader.cs that implements IBankEstatementReader and make each reader to implement its own GetStandardBankStatementDTO
         public StandardBankStatementDTO ProcessBankInformation(IFormFile csvFile)
         {
             var bankStatement = new StandardBankStatementDTO();
@@ -80,13 +81,13 @@ namespace Yaba.Application.BankStatementReaders
 
             var transaction = new StandardTransactionDTO
             {
-                Date = DateTime.Parse(data),
+                Date = DateTime.Parse(data, CultureInfo.GetCultureInfo("pt-BR").NumberFormat),
                 TypeDescription = historico,
                 TransactionUniqueHash = $"BRADESCO{docto}"
             };
 
             var amount = string.IsNullOrEmpty(credito) ? debito : credito;
-            transaction.Amount = decimal.Parse(amount);
+            transaction.Amount = decimal.Parse(amount, CultureInfo.GetCultureInfo("pt-BR").NumberFormat);
 
             return transaction;
         }
