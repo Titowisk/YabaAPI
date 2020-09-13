@@ -7,8 +7,12 @@
 
     public class AzureConfig
     {
-        public string AzureWebJobsStorage { get; set; }
         public string QueueName { get; set; }
+    }
+
+    public class ConnectionStrings
+    {
+        public string AzureWebJobsStorage { get; set; }
     }
 
 }
