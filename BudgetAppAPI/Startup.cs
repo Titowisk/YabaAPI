@@ -28,6 +28,7 @@ namespace Yaba.WebApi
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
             services.Configure<AzureConfig>(Configuration.GetSection("AzureConfig"));
+            services.Configure<ConnectionStrings>(Configuration.GetSection("ConnectionStrings"));
 
             services.AddControllers()
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
