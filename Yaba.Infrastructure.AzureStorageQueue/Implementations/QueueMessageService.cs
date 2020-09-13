@@ -7,17 +7,19 @@ namespace Yaba.Infrastructure.AzureStorageQueue.Implementations
 {
     public class QueueMessageService : IQueueMessageService
     {
-        private readonly AzureConfig _option;
+        private readonly AzureConfig _azureConfig;
+        private readonly ConnectionStrings _connectionStrings;
 
-        public QueueMessageService(IOptions<AzureConfig> option)
+        public QueueMessageService(IOptions<AzureConfig> azureConfig, IOptions<ConnectionStrings> connectionStrings)
         {
-            _option = option.Value;
+            _azureConfig = azureConfig.Value;
+            _connectionStrings = connectionStrings.Value;
         }
 
         public void SendMessage(string message)
         {
             // Instantiate a QueueClient which will be used to create and manipulate the queue
-            QueueClient queueClient = new QueueClient(_option.AzureWebJobsStorage, _option.QueueName);
+            QueueClient queueClient = new QueueClient(_connectionStrings.AzureWebJobsStorage, _azureConfig.QueueName);
 
             if (queueClient.Exists())
             {
