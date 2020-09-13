@@ -17,9 +17,10 @@ namespace Yaba.WebJob
             .UseEnvironment("Development")
             .ConfigureAppConfiguration((context, b) =>
             {
-                // TODO: try to use usersecrets (tried so many times but didn't work :/ )
-                //if(context.HostingEnvironment.IsDevelopment())
-                //    b.AddUserSecrets<Program>();
+                if (context.HostingEnvironment.IsDevelopment())
+                {
+                    b.AddUserSecrets<Program>();
+                }
             })
             .ConfigureWebJobs(b =>
             {
