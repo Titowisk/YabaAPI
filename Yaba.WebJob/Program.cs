@@ -14,7 +14,7 @@ namespace Yaba.WebJob
         {
             var builder = new HostBuilder();
             builder
-            .UseEnvironment("Development")
+            .UseEnvironment(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
             .ConfigureAppConfiguration((context, b) =>
             {
                 if (context.HostingEnvironment.IsDevelopment())
