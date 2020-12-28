@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace Yaba.WebJob
 {
@@ -12,6 +10,7 @@ namespace Yaba.WebJob
     {
         static async Task Main()
         {
+            // $Env:ASPNETCORE_ENVIRONMENT = "Development"
             var builder = new HostBuilder();
             builder
             .UseEnvironment(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
