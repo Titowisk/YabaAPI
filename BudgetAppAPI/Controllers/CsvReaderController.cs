@@ -33,37 +33,23 @@ namespace Yaba.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> ReadBankStatements(IFormFileCollection csvFiles, [FromForm] short bankCode)
         {
-            try
+            BankCode.ValidateCode(bankCode);
+
+            // TODO : better way to do this? 
+            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(user?.Value))
+                return Unauthorized();
+
+            var dto = new CsvFileReaderDTO()
             {
-                BankCode.ValidateCode(bankCode);
+                FilesOwnerId = int.Parse(user.Value),
+                BankCode = bankCode,
+                CsvFiles = csvFiles
+            };
 
-                // TODO : better way to do this? 
-                var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(user?.Value))
-                    return Unauthorized();
+            var result = await _csvReaderService.ReadTransactionsFromFiles(dto);
 
-                var dto = new CsvFileReaderDTO()
-                {
-                    FilesOwnerId = int.Parse(user.Value),
-                    BankCode = bankCode,
-                    CsvFiles = csvFiles
-                };
-
-                var result = await _csvReaderService.ReadTransactionsFromFiles(dto);
-
-                return Ok(result);
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-
+            return Ok(result);
         }
     }
 }

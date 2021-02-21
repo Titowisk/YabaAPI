@@ -36,56 +36,29 @@ namespace Yaba.WebApi.Controllers
         [Route("[Action]")]
         public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetBankAccountsByUser()
         {
-            try
+            var dto = new GetUserBankAccountsDTO()
             {
-                var dto = new GetUserBankAccountsDTO()
-                {
-                    UserId = GetLoggedUserId()
-                };
+                UserId = GetLoggedUserId()
+            };
 
-                var bankAccounts = await _bankAccountService.GetUserBankAccounts(dto);
+            var bankAccounts = await _bankAccountService.GetUserBankAccounts(dto);
 
-                return Ok(bankAccounts);
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
-
+            return Ok(bankAccounts);
         }
 
         // GET: api/BankAccounts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BankAccountResponseDTO>> GetBankAccount(int id)
         {
-            try
+            var dto = new GetUserBankAccountDTO()
             {
-                var dto = new GetUserBankAccountDTO()
-                {
-                    BankAccountId = id,
-                    UserId = GetLoggedUserId()
-                };
+                BankAccountId = id,
+                UserId = GetLoggedUserId()
+            };
 
-                var bankAccount = await _bankAccountService.GetBankAccountById(dto);
+            var bankAccount = await _bankAccountService.GetBankAccountById(dto);
 
-                return bankAccount;
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return bankAccount;
         }
 
         // PUT: api/BankAccounts/5
@@ -94,24 +67,11 @@ namespace Yaba.WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBankAccount(int id, UpdateUserBankAccountDTO dto)
         {
-            try
-            {
-                dto.UserId = GetLoggedUserId();
-                dto.BankAccountId = id;
-                await _bankAccountService.UpdateBankAccount(dto);
+            dto.UserId = GetLoggedUserId();
+            dto.BankAccountId = id;
+            await _bankAccountService.UpdateBankAccount(dto);
 
-                return NoContent();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return NoContent();
         }
 
         // POST: api/BankAccounts
@@ -120,60 +80,34 @@ namespace Yaba.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<BankAccount>> Create(CreateUserBankAccountDTO dto)
         {
-            try
+            dto.UserId = GetLoggedUserId();
+
+            await _bankAccountService.CreateBankAccountForUser(dto);
+
+            // TODO: create common success handler
+
+            var response = new
             {
-                dto.UserId = GetLoggedUserId();
+                Success = true,
+                Data = "Conta bancária criada com sucesso"
+            };
 
-                await _bankAccountService.CreateBankAccountForUser(dto);
-
-                // TODO: create common success handler
-
-                var response = new
-                {
-                    Success = true,
-                    Data = "Conta bancária criada com sucesso"
-                };
-
-                return Ok(response);
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return Ok(response);
         }
 
         // DELETE: api/BankAccounts/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<BankAccount>> DeleteBankAccount(int id)
         {
-            try
+            var dto = new DeleteUserBankAccountDTO()
             {
-                var dto = new DeleteUserBankAccountDTO()
-                {
-                    UserId = GetLoggedUserId(),
-                    BankAccountId = id
-                };
+                UserId = GetLoggedUserId(),
+                BankAccountId = id
+            };
 
-                await _bankAccountService.DeleteBankAccount(dto);
+            await _bankAccountService.DeleteBankAccount(dto);
 
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return Ok();
         }
 
         #region Priv Methods
