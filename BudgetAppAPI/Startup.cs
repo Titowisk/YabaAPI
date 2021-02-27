@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.IoC;
+using Yaba.WebApi.Middlewares;
 
 namespace Yaba.WebApi
 {
@@ -65,11 +66,7 @@ namespace Yaba.WebApi
         public void Configure(IApplicationBuilder app)
         {
             // $Env:ASPNETCORE_ENVIRONMENT = "Development"
-
-            if (_env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 
