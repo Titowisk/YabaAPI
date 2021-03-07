@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Bogus;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
+using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Transactions.Enumerations;
 using Yaba.Infrastructure.AzureStorageQueue.Contracts;
@@ -131,6 +133,28 @@ namespace Yaba.Application.TransactionServices.Impl
             _transactionRepository.UpdateRange(similarTransactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+        }
+
+        public async Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto)
+        {
+            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+            Validate.NotNull(bankAccount);
+            Validate.IsTrue(bankAccount.Code == BankCode.GENERICBANK.Value, "Access Denied");
+
+            Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
+
+            var fakeTransactions = new Faker<Transaction>()
+                .RuleFor(t => t.BankAccountId, dto.BankAccountId)
+                .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)) )
+                .RuleFor(t => t.Category, f => f.PickRandom<Category>())
+                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Origin, f => f.Company.CompanyName())
+                .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
+                .Generate(dto.Quantity);
+
+            _transactionRepository.InsertRange(fakeTransactions);
+
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação das transações");
         }
 
         public void Dispose()

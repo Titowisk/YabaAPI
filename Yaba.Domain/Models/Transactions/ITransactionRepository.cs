@@ -16,6 +16,7 @@ namespace Yaba.Domain.Models.Transactions
         Task<IEnumerable<Transaction>> GetByDateAndOrigin(DateTime date, string origin, int bankAccountId);
         Task<IEnumerable<Transaction>> GetAllOtherTransactions(Transaction recentlyUpdatedtransaction);
         void Insert(Transaction entity);
+        void InsertRange(IEnumerable<Transaction> transactions);
         void Update(Transaction entity);
         void Delete(Transaction entity);
         void DeleteRange(IEnumerable<Transaction> entities);

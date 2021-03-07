@@ -13,6 +13,8 @@ namespace Yaba.Application.TransactionServices
         Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto);
         Task CategorizeAllOtherTransactions(long transactionId);
 
+        Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto);
+
         IEnumerable<CategoryDTO> GetCategories();
     }
 }

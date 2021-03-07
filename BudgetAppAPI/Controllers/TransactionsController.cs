@@ -76,6 +76,16 @@ namespace Yaba.WebApi.Controllers
             return Ok(existentDates);
         }
 
+        [HttpPost]
+        [Route("[Action]")]
+        public async Task<IActionResult> GenerateRandomizedDataForGenericBank([FromBody] GenerateDataDTO dto)
+        {
+            dto.UserId = GetLoggedUserId();
+            await _transactionService.GenerateRandomizedDataForGenericBank(dto);
+
+            return Ok();
+        }
+
         #region Priv Methods
         private int GetLoggedUserId()
         {
