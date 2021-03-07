@@ -67,7 +67,8 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                     Amount = t.Amount, 
                     Date = t.Date, 
                     Origin = t.Origin,
-                    Category = t.Category.ToString()
+                    Category = t.Category.ToString(),
+                    CategoryId = (short?)t.Category 
                 })
                 .OrderBy(t => t.Date)
                 .ToListAsync();
