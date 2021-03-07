@@ -18,4 +18,11 @@ namespace Yaba.Infrastructure.DTO
         public int Year { get; set; }
         public HashSet<int> Months { get; set; } = new HashSet<int>();
     }
+
+    public class CategoryDTO
+    {
+        public int Key { get; set; }
+        public int Value { get; set; }
+        public string Text { get; set; }
+    }
 }

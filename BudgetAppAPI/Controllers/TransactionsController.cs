@@ -57,6 +57,15 @@ namespace Yaba.WebApi.Controllers
             return Ok(transactions);
         }
 
+        [HttpGet]
+        [Route("[Action]")]
+        public IActionResult GetCategories()
+        {
+            var categories = _transactionService.GetCategories();
+
+            return Ok(categories);
+        }
+
         [HttpPost]
         [Route("[Action]")]
         public async Task<IActionResult> GetTransactionDatesByUser([FromBody] GetTransactionDatesDTO dto)

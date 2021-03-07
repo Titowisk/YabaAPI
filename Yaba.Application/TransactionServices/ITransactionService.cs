@@ -12,5 +12,7 @@ namespace Yaba.Application.TransactionServices
         Task<IEnumerable<ExistentTransactionsDatesResponseDTO>> GetExistentTransactionsDatesByUser(GetTransactionDatesDTO dto);
         Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto);
         Task CategorizeAllOtherTransactions(long transactionId);
+
+        IEnumerable<CategoryDTO> GetCategories();
     }
 }

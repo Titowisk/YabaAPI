@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
@@ -51,6 +52,24 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(transactions.Count > 0, "Não foram encontradas transações");
 
             return transactions;
+        }
+
+        public IEnumerable<CategoryDTO> GetCategories()
+        {
+            var categoryType = typeof(Category);
+            var categories = new List<CategoryDTO>();
+            foreach (var value in Enum.GetValues(categoryType))
+            {
+                var category = new CategoryDTO
+                {
+                    Key = (short)value,
+                    Value = (short)value,
+                    Text = Enum.GetName(categoryType, value)
+                };
+                categories.Add(category);
+            }
+
+            return categories;
         }
 
         public async Task<IEnumerable<ExistentTransactionsDatesResponseDTO>> GetExistentTransactionsDatesByUser(GetTransactionDatesDTO dto)
