@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 using Yaba.Application.UserServices;
 using Yaba.Infrastructure.DTO;
@@ -25,44 +24,18 @@ namespace Yaba.WebApi.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> SignIn([FromBody] UserSignInDTO dto)
         {
-            try
-            {
-                await _userService.UserSignIn(dto);
+            await _userService.UserSignIn(dto);
 
-                return Ok();
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return Ok();
         }
 
         [HttpPost]
         [Route("[Action]")]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO dto)
         {
-            try
-            {
-                var result = await _userService.Login(dto);
+            var result = await _userService.Login(dto);
 
-                return Ok(result);
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogWarning(aex, "Message: {0}", aex.Message);
-                return BadRequest(aex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Message: {0}", ex.Message);
-                return StatusCode(500);
-            }
+            return Ok(result);
         }
     }
     // TODO: Add google auth

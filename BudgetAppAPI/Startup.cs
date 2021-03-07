@@ -5,10 +5,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.Text;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.IoC;
+using Yaba.WebApi.Middlewares;
 
 namespace Yaba.WebApi
 {
@@ -33,30 +35,51 @@ namespace Yaba.WebApi
             services.AddControllers()
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "YabaAPI", Version = "v1" });
+            });
+
             DependencyResolver.RegisterServices(services, Configuration);
 
             var secretKey = Configuration.GetSection("JwtConfig:SecretKey").Value;
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
             ConfigureTokenValidation(services, securityKey);
 
-            services.AddCors();
+            services.AddCors(opt => 
+            {
+                opt.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyHeader();
+                });
+
+                //opt.AddPolicy("CorsPolicy", policy =>
+                //{
+                //    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000/");
+                //});
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
             // $Env:ASPNETCORE_ENVIRONMENT = "Development"
-
-            if (_env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "YabaAPI V1"));
+
             app.UseRouting();
 
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

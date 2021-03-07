@@ -32,7 +32,8 @@ namespace Yaba.Application.UserServices.Impl
 
             return new UserLoginResponseDTO()
             {
-                Message = "Login realizado com sucesso",
+                Name = user.Name,
+                Email = user.Email,
                 Token = JwtHandler.GenerateToken(_options.Value.SecretKey, user.Id, user.Name)
             };
         }
