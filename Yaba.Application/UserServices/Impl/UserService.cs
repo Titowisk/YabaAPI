@@ -32,6 +32,7 @@ namespace Yaba.Application.UserServices.Impl
 
             return new UserLoginResponseDTO()
             {
+                Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 Token = JwtHandler.GenerateToken(_options.Value.SecretKey, user.Id, user.Name)
