@@ -37,7 +37,7 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                          .Where(t => t.BankAccountId == bankAccountId)
                          .Where(t => t.BankAccount.UserId == userId)
                          .Select(t => new DateDTO() { Year = t.Date.Year, Month = t.Date.Month })
-                         .OrderByDescending(t => t.Year).ThenByDescending(t => t.Month);
+                         .OrderByDescending(t => t.Year).ThenBy(t => t.Month);
 
             return await query.ToListAsync();
         }
