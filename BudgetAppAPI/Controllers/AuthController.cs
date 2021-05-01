@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.UserServices;
 using Yaba.Infrastructure.DTO;
+using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
@@ -34,6 +37,20 @@ namespace Yaba.WebApi.Controllers
         public async Task<IActionResult> Login([FromBody] UserLoginDTO dto)
         {
             var result = await _userService.Login(dto);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("[Action]")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            // TODO : better way to do this? 
+            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
+
+            // TODO: safer way to do this? (if someone hijacks a valid token, this could be problematic)
+            var result = await _userService.GetCurrentUserById(int.Parse(user.Value));
 
             return Ok(result);
         }

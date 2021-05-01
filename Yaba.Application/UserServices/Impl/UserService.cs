@@ -50,6 +50,14 @@ namespace Yaba.Application.UserServices.Impl
             await _userRepository.Create(user);
         }
 
+        public async Task<UserLoginResponseDTO> GetCurrentUserById(int id)
+        {
+            var user = await _userRepository.GetById(id);
+            Validate.NotNull(user, "User not found");
+
+            return new UserLoginResponseDTO { Id = user.Id, Name = user.Name, Email = user.Email };
+        }
+
         #region Priv Methods
         private string EncryptPassword(string password)
         {
