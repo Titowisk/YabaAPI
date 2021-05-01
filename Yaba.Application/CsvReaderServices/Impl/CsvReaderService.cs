@@ -115,7 +115,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     data.Date,
                     data.Amount,
                     bankAccount.Id)
-                { 
+                {
                     Metadata = data.TransactionUniqueHash
                 };
 
@@ -124,6 +124,35 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
             _bankAccountRepository.Update(bankAccount);
             Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível salvar as transações lidas");
+
+            // TODO: send message
+            await CategorizeTransactionsBasedOnUserHistory(bankAccount.Transactions, bankAccount);
+        }
+
+        private async Task CategorizeTransactionsBasedOnUserHistory(List<Transaction> transactions, BankAccount bankAccount)
+        {
+            var recentTransactionsWithCategory = await _transactionRepository.GetRecentWithCategory(DateTime.Now.AddMonths(-6), bankAccount.Id);
+
+            if (!recentTransactionsWithCategory.Any())
+                return;
+
+            var categorizedTransactions = new List<Transaction>();
+            var currentOrigin = string.Empty;
+            foreach (var currentTransaction in transactions.OrderBy(t => t.Origin))
+            {
+                if(currentTransaction.Origin != currentOrigin)
+                {
+                    var transactionWithCategory = recentTransactionsWithCategory.FirstOrDefault(t => t.Origin == currentTransaction.Origin);
+                    if (transactionWithCategory is null) continue;
+
+                    currentTransaction.Category = transactionWithCategory.Category;
+                    categorizedTransactions.Add(currentTransaction);
+                    currentOrigin = currentTransaction.Origin;
+                }
+            }
+
+            _transactionRepository.UpdateRange(categorizedTransactions);
+            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível atualizar as transações salvas");
         }
         #endregion
     }

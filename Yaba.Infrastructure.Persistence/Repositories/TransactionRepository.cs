@@ -20,7 +20,7 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<bool> DoesTransactionExists(string hash) 
+        public async Task<bool> DoesTransactionExists(string hash)
         {
             return await _context.Transactions.AnyAsync(t => t.Metadata == hash);
         }
@@ -61,14 +61,14 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 .Include(t => t.BankAccount)
                 .Where(t => t.BankAccountId == bankAccountId)
                 .Where(t => t.BankAccount.UserId == userId)
-                .Select(t => new TransactionsDateFilterResponseDTO() 
+                .Select(t => new TransactionsDateFilterResponseDTO()
                 {
                     Id = t.Id,
-                    Amount = t.Amount, 
-                    Date = t.Date, 
+                    Amount = t.Amount,
+                    Date = t.Date,
                     Origin = t.Origin,
                     Category = t.Category.ToString(),
-                    CategoryId = (short?)t.Category 
+                    CategoryId = (short?)t.Category
                 })
                 .OrderBy(t => t.Date)
                 .ToListAsync();
@@ -83,7 +83,7 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 .Where(t => t.Date.Month == date.Month)
                 .Where(t => t.BankAccountId == bankAccountId)
                 .Where((t) => t.Origin.Equals(origin));
-                
+
             return await query.ToListAsync();
         }
 
@@ -93,6 +93,17 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 .Where(t => t.BankAccountId == recentlyUpdatedtransaction.BankAccountId)
                 .Where(t => t.Category.Value != recentlyUpdatedtransaction.Category)
                 .Where((t) => t.Origin.Equals(recentlyUpdatedtransaction.Origin));
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Transaction>> GetRecentWithCategory(DateTime fromDateUntilToday, int bankAccountId)
+        {
+            var query = _context.Transactions
+                .Where(t => t.BankAccountId == bankAccountId)
+                .Where(t => t.Date > fromDateUntilToday)
+                .Where(t => t.Category != null)
+                ;
 
             return await query.ToListAsync();
         }
