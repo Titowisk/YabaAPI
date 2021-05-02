@@ -25,7 +25,6 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             return await _context.Transactions.AnyAsync(t => t.Metadata == hash);
         }
 
-
         public void Create(Transaction entity)
         {
             _context.Transactions.Add(entity);
@@ -41,7 +40,6 @@ namespace Yaba.Infrastructure.Persistence.Repositories
 
             return await query.ToListAsync();
         }
-
 
         public async Task<Transaction> GetByIdWithBankAccount(long id)
         {
@@ -97,12 +95,21 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> GetRecentWithCategory(DateTime fromDateUntilToday, int bankAccountId)
+        public async Task<IEnumerable<Transaction>> GetPredecessors(DateTime referenceDate, int bankAccountId)
         {
+            // TODO: months with 30/31 days or frebuary can break it?
             var query = _context.Transactions
                 .Where(t => t.BankAccountId == bankAccountId)
-                .Where(t => t.Date > fromDateUntilToday)
+                .Where(t => t.Date > referenceDate.AddMonths(-6) && t.Date < referenceDate)
                 .Where(t => t.Category != null)
+                ;
+
+            return await query.ToListAsync();
+        }
+        public async Task<IEnumerable<Transaction>> GetByIds(long[] ids)
+        {
+            var query = _context.Transactions
+                .Where(t => ids.Contains(t.Id))
                 ;
 
             return await query.ToListAsync();

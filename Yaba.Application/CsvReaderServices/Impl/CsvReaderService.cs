@@ -86,6 +86,11 @@ namespace Yaba.Application.CsvReaderServices.Impl
             return fileStatusResult;
         }
 
+        public void Dispose()
+        {
+            _uow.Dispose(); // TODO: does it really dispose all resources from the context (BankAccount, User, Transaction ) ??
+        }
+
         #region Priv methods
         private void RemoveExistentTransactions(StandardBankStatementDTO parsedFile)
         {
@@ -126,12 +131,19 @@ namespace Yaba.Application.CsvReaderServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível salvar as transações lidas");
 
             // TODO: send message
-            await CategorizeTransactionsBasedOnUserHistory(bankAccount.Transactions, bankAccount);
+            await CategorizeTransactionsBasedOnUserHistory(bankAccount.Transactions.Select(t => t.Id).ToArray(), bankAccount);
         }
 
-        private async Task CategorizeTransactionsBasedOnUserHistory(List<Transaction> transactions, BankAccount bankAccount)
+        private async Task CategorizeTransactionsBasedOnUserHistory(long[] transactionsIds, BankAccount bankAccount)
         {
-            var recentTransactionsWithCategory = await _transactionRepository.GetRecentWithCategory(DateTime.Now.AddMonths(-6), bankAccount.Id);
+            var transactions = await _transactionRepository.GetByIds(transactionsIds);
+
+            if (!transactions.Any())
+                return;
+
+            var referenceDate = transactions.Select(t => t.Date).First();
+            // get previous transactions ?
+            var recentTransactionsWithCategory = await _transactionRepository.GetPredecessors(referenceDate, bankAccount.Id);
 
             if (!recentTransactionsWithCategory.Any())
                 return;
