@@ -134,26 +134,32 @@ namespace Yaba.Application.CsvReaderServices.Impl
             await CategorizeTransactionsBasedOnUserHistory(bankAccount.Transactions.Select(t => t.Id).ToArray(), bankAccount);
         }
 
+        // TODO: make it a transactionService and create endpoint to client use
         private async Task CategorizeTransactionsBasedOnUserHistory(long[] transactionsIds, BankAccount bankAccount)
         {
             var transactions = await _transactionRepository.GetByIds(transactionsIds);
-
             if (!transactions.Any())
                 return;
 
             var referenceDate = transactions.Select(t => t.Date).First();
-            // get previous transactions ?
             var recentTransactionsWithCategory = await _transactionRepository.GetPredecessors(referenceDate, bankAccount.Id);
-
             if (!recentTransactionsWithCategory.Any())
                 return;
 
+            List<Transaction> categorizedTransactions = CategorizeTransactions(transactions, recentTransactionsWithCategory);
+
+            _transactionRepository.UpdateRange(categorizedTransactions);
+            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível atualizar as transações salvas");
+        }
+
+        private List<Transaction> CategorizeTransactions(IEnumerable<Transaction> transactions, IEnumerable<Transaction> recentTransactionsWithCategory)
+        {
             var categorizedTransactions = new List<Transaction>();
             var currentOrigin = string.Empty;
             Transaction transactionWithCategory = null;
             foreach (var currentTransaction in transactions.OrderBy(t => t.Origin))
             {
-                if(currentTransaction.Origin != currentOrigin)
+                if (currentTransaction.Origin != currentOrigin)
                 {
                     transactionWithCategory = recentTransactionsWithCategory.FirstOrDefault(t => t.Origin == currentTransaction.Origin);
                     if (transactionWithCategory is null) continue;
@@ -163,8 +169,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
                 categorizedTransactions.Add(currentTransaction);
             }
 
-            _transactionRepository.UpdateRange(categorizedTransactions);
-            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível atualizar as transações salvas");
+            return categorizedTransactions;
         }
         #endregion
     }
