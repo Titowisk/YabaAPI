@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Yaba.WebJob": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

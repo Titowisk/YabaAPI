@@ -168,7 +168,7 @@ namespace Yaba.Application.TransactionServices.Impl
         {
             var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
 
-            if (similarTransactions.Count() == 0)
+            if (!similarTransactions.Any())
                 return;
 
             foreach (var t in similarTransactions)

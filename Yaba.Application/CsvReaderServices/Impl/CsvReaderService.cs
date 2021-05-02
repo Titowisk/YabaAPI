@@ -86,6 +86,11 @@ namespace Yaba.Application.CsvReaderServices.Impl
             return fileStatusResult;
         }
 
+        public void Dispose()
+        {
+            _uow.Dispose(); // TODO: does it really dispose all resources from the context (BankAccount, User, Transaction ) ??
+        }
+
         #region Priv methods
         private void RemoveExistentTransactions(StandardBankStatementDTO parsedFile)
         {
@@ -115,7 +120,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     data.Date,
                     data.Amount,
                     bankAccount.Id)
-                { 
+                {
                     Metadata = data.TransactionUniqueHash
                 };
 
@@ -124,6 +129,47 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
             _bankAccountRepository.Update(bankAccount);
             Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível salvar as transações lidas");
+
+            // TODO: send message
+            await CategorizeTransactionsBasedOnUserHistory(bankAccount.Transactions.Select(t => t.Id).ToArray(), bankAccount);
+        }
+
+        // TODO: make it a transactionService and create endpoint to client use
+        private async Task CategorizeTransactionsBasedOnUserHistory(long[] transactionsIds, BankAccount bankAccount)
+        {
+            var transactions = await _transactionRepository.GetByIds(transactionsIds);
+            if (!transactions.Any())
+                return;
+
+            var referenceDate = transactions.Select(t => t.Date).First();
+            var recentTransactionsWithCategory = await _transactionRepository.GetPredecessors(referenceDate, bankAccount.Id);
+            if (!recentTransactionsWithCategory.Any())
+                return;
+
+            List<Transaction> categorizedTransactions = CategorizeTransactions(transactions, recentTransactionsWithCategory);
+
+            _transactionRepository.UpdateRange(categorizedTransactions);
+            Validate.IsTrue(await _uow.CommitAsync(), "Não foi possível atualizar as transações salvas");
+        }
+
+        private List<Transaction> CategorizeTransactions(IEnumerable<Transaction> transactions, IEnumerable<Transaction> recentTransactionsWithCategory)
+        {
+            var categorizedTransactions = new List<Transaction>();
+            var currentOrigin = string.Empty;
+            Transaction transactionWithCategory = null;
+            foreach (var currentTransaction in transactions.OrderBy(t => t.Origin))
+            {
+                if (currentTransaction.Origin != currentOrigin)
+                {
+                    transactionWithCategory = recentTransactionsWithCategory.FirstOrDefault(t => t.Origin == currentTransaction.Origin);
+                    if (transactionWithCategory is null) continue;
+                    currentOrigin = currentTransaction.Origin;
+                }
+                currentTransaction.Category = transactionWithCategory.Category;
+                categorizedTransactions.Add(currentTransaction);
+            }
+
+            return categorizedTransactions;
         }
         #endregion
     }
