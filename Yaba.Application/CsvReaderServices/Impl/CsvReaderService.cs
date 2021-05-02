@@ -150,17 +150,17 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
             var categorizedTransactions = new List<Transaction>();
             var currentOrigin = string.Empty;
+            Transaction transactionWithCategory = null;
             foreach (var currentTransaction in transactions.OrderBy(t => t.Origin))
             {
                 if(currentTransaction.Origin != currentOrigin)
                 {
-                    var transactionWithCategory = recentTransactionsWithCategory.FirstOrDefault(t => t.Origin == currentTransaction.Origin);
+                    transactionWithCategory = recentTransactionsWithCategory.FirstOrDefault(t => t.Origin == currentTransaction.Origin);
                     if (transactionWithCategory is null) continue;
-
-                    currentTransaction.Category = transactionWithCategory.Category;
-                    categorizedTransactions.Add(currentTransaction);
                     currentOrigin = currentTransaction.Origin;
                 }
+                currentTransaction.Category = transactionWithCategory.Category;
+                categorizedTransactions.Add(currentTransaction);
             }
 
             _transactionRepository.UpdateRange(categorizedTransactions);
