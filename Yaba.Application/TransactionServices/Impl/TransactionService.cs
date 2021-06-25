@@ -143,15 +143,26 @@ namespace Yaba.Application.TransactionServices.Impl
 
             Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
 
-            var fakeTransactions = new Faker<Transaction>()
+            var incomeQuantity = dto.Quantity / 3;
+            var fakeExpenseTransactions = new Faker<Transaction>()
                 .RuleFor(t => t.BankAccountId, dto.BankAccountId)
                 .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)) )
                 .RuleFor(t => t.Category, f => f.PickRandom<Category>())
-                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Amount, f => f.Finance.Amount() * -1)
                 .RuleFor(t => t.Origin, f => f.Company.CompanyName())
                 .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
-                .Generate(dto.Quantity);
+                .Generate(dto.Quantity - incomeQuantity);
 
+            var fakeIncomeTransactions = new Faker<Transaction>()
+                .RuleFor(t => t.BankAccountId, dto.BankAccountId)
+                .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)))
+                .RuleFor(t => t.Category, f => Category.Income)
+                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Origin, f => "Some Income")
+                .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
+                .Generate(incomeQuantity);
+
+            var fakeTransactions = fakeExpenseTransactions.Union(fakeIncomeTransactions);
             _transactionRepository.InsertRange(fakeTransactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação das transações");
