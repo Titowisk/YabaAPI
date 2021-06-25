@@ -10,6 +10,8 @@
 		Entertainment = 6,
 		Education = 7,
 		Savings = 8,
-		Personal = 9
+		Personal = 9,
+
+		Income = 99
 	}
 }
