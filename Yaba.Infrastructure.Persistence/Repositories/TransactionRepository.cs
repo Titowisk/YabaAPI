@@ -51,15 +51,15 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             return transaction;
         }
 
-        public async Task<ICollection<TransactionsDateFilterResponseDTO>> GetByMonthBankAccountUser(short year, short month, int bankAccountId, int userId)
+        public async Task<ICollection<TransactionsResponseDTO>> GetByMonthBankAccountUser(short year, short month, int bankAccountId, int userId)
         {
-            var transactions = await _context.Transactions
+            var transactions = _context.Transactions
                 .Where(t => t.Date.Year == year)
                 .Where(t => t.Date.Month == month)
                 .Include(t => t.BankAccount)
                 .Where(t => t.BankAccountId == bankAccountId)
                 .Where(t => t.BankAccount.UserId == userId)
-                .Select(t => new TransactionsDateFilterResponseDTO()
+                .Select(t => new TransactionsResponseDTO()
                 {
                     Id = t.Id,
                     Amount = t.Amount,
@@ -69,9 +69,9 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                     CategoryId = (short?)t.Category
                 })
                 .OrderBy(t => t.Date)
-                .ToListAsync();
+                ;
 
-            return transactions;
+            return await transactions.ToListAsync();
         }
 
         public async Task<IEnumerable<Transaction>> GetByDateAndOrigin(DateTime date, string origin, int bankAccountId)

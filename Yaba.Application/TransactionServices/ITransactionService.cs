@@ -7,7 +7,7 @@ namespace Yaba.Application.TransactionServices
 {
     public interface ITransactionService : IDisposable
     {
-        Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto);
+        Task<TransactionsDateFilterResponseDTO> GetByMonth(GetUserTransactionsByMonthDTO dto);
         Task Create(CreateUserTransactionDTO dto);
         Task<IEnumerable<ExistentTransactionsDatesResponseDTO>> GetExistentTransactionsDatesByUser(GetTransactionDatesDTO dto);
         Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto);
