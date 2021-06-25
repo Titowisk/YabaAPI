@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Yaba.Infrastructure.DTO
 {
-    public class TransactionsDateFilterResponseDTO
+    public class TransactionsResponseDTO
     {
         public long Id { get; set; }
         public string Origin { get; set; }
@@ -11,6 +11,16 @@ namespace Yaba.Infrastructure.DTO
         public decimal Amount { get; set; }
         public string? Category { get; set; }
         public short? CategoryId { get; set; }
+    }
+
+    public class TransactionsDateFilterResponseDTO
+    {
+        public IEnumerable<TransactionsResponseDTO> Transactions { get; set; }
+        public decimal TotalVolume { get; set; } = 0;
+        public decimal TotalIncome { get; set; } = 0;
+        public decimal TotalExpense { get; set; } = 0;
+        public decimal IncomePercentage { get; set; } = 0;
+        public decimal ExpensePercentage { get; set; } = 0;
     }
 
     public class ExistentTransactionsDatesResponseDTO

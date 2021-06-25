@@ -48,12 +48,12 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
         }
 
-        public async Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto)
+        public async Task<TransactionsDateFilterResponseDTO> GetByMonth(GetUserTransactionsByMonthDTO dto)
         {
             var transactions = await _transactionRepository.GetByMonthBankAccountUser(dto.Year, dto.Month, dto.BankAccountId, dto.UserId); ;
             Validate.IsTrue(transactions.Count > 0, "Não foram encontradas transações");
 
-            return transactions;
+            return CalculateTransactionsSummary(transactions);
         }
 
         public IEnumerable<CategoryDTO> GetCategories()
@@ -143,15 +143,26 @@ namespace Yaba.Application.TransactionServices.Impl
 
             Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
 
-            var fakeTransactions = new Faker<Transaction>()
+            var incomeQuantity = dto.Quantity / 3;
+            var fakeExpenseTransactions = new Faker<Transaction>()
                 .RuleFor(t => t.BankAccountId, dto.BankAccountId)
                 .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)) )
                 .RuleFor(t => t.Category, f => f.PickRandom<Category>())
-                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Amount, f => f.Finance.Amount() * -1)
                 .RuleFor(t => t.Origin, f => f.Company.CompanyName())
                 .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
-                .Generate(dto.Quantity);
+                .Generate(dto.Quantity - incomeQuantity);
 
+            var fakeIncomeTransactions = new Faker<Transaction>()
+                .RuleFor(t => t.BankAccountId, dto.BankAccountId)
+                .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)))
+                .RuleFor(t => t.Category, f => Category.Income)
+                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Origin, f => "Some Income")
+                .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
+                .Generate(incomeQuantity);
+
+            var fakeTransactions = fakeExpenseTransactions.Union(fakeIncomeTransactions);
             _transactionRepository.InsertRange(fakeTransactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação das transações");
@@ -179,6 +190,30 @@ namespace Yaba.Application.TransactionServices.Impl
             _transactionRepository.UpdateRange(similarTransactions);
         }
 
+        private static TransactionsDateFilterResponseDTO CalculateTransactionsSummary(IEnumerable<TransactionsResponseDTO> transactions)
+        {
+            decimal totalIncome = 0;
+            decimal totalExpense = 0;
+            foreach (var tr in transactions)
+            {
+                if (tr.Amount > 0)
+                    totalIncome += tr.Amount;
+                else
+                    totalExpense += tr.Amount;
+            }
+
+            var totalVolume = totalIncome + Math.Abs(totalExpense);
+
+            return new TransactionsDateFilterResponseDTO
+            {
+                Transactions = transactions,
+                TotalVolume = totalVolume,
+                TotalExpense = totalExpense,
+                TotalIncome = totalIncome,
+                IncomePercentage = Math.Round((totalIncome / totalVolume) * 100, 1),
+                ExpensePercentage = Math.Round((Math.Abs(totalExpense) / totalVolume) * 100, 1)
+            };
+        }
         #endregion
     }
 }
