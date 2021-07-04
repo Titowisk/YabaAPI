@@ -36,12 +36,12 @@ namespace Yaba.WebApi.Controllers
         [Route("[Action]")]
         public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetBankAccountsByUser()
         {
-            var dto = new GetUserBankAccountsDTO()
+            var bankAccountsDto = new GetUserBankAccountsDTO()
             {
                 UserId = GetLoggedUserId()
             };
 
-            var bankAccounts = await _bankAccountService.GetUserBankAccounts(dto);
+            var bankAccounts = await _bankAccountService.GetUserBankAccounts(bankAccountsDto);
 
             return Ok(bankAccounts);
         }

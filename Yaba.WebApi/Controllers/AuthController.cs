@@ -25,18 +25,18 @@ namespace Yaba.WebApi.Controllers
 
         [HttpPost]
         [Route("[Action]")]
-        public async Task<IActionResult> SignIn([FromBody] UserSignInDTO dto)
+        public async Task<IActionResult> SignIn([FromBody] UserSignInDTO signInDto)
         {
-            await _userService.UserSignIn(dto);
+            await _userService.UserSignIn(signInDto);
 
             return Ok();
         }
 
         [HttpPost]
         [Route("[Action]")]
-        public async Task<IActionResult> Login([FromBody] UserLoginDTO dto)
+        public async Task<IActionResult> Login([FromBody] UserLoginDTO signUpDto)
         {
-            var result = await _userService.Login(dto);
+            var result = await _userService.Login(signUpDto);
 
             return Ok(result);
         }
@@ -55,5 +55,5 @@ namespace Yaba.WebApi.Controllers
             return Ok(result);
         }
     }
-    // TODO: Add google auth
+    // TODO: Add google oauth
 }
