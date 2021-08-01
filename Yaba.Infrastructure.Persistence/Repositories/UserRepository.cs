@@ -5,6 +5,7 @@ using Yaba.Infrastructure.Persistence.Context;
 
 namespace Yaba.Infrastructure.Persistence.Repositories
 {
+    //TODO: remove SaveChanges and use uow on user services
     public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
