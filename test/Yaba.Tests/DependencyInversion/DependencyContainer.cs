@@ -28,11 +28,13 @@ namespace Yaba.Tests.DependencyInversion
 {
     public static class DependencyContainer
     {
-        public static IServiceProvider GetServicesUsingSQLite()
+        public static IServiceProvider GetServicesUsingSQLite(string dbFileName)
         {
+            if (string.IsNullOrEmpty(dbFileName)) throw new Exception("dbFileName must be filled (preferable as the class name of the test)");
+
             IServiceCollection services = new ServiceCollection();
 
-            var sqliteOptions = new DbContextOptionsBuilder<DataContext>().UseSqlite("Filename=Test.db").Options;
+            var sqliteOptions = new DbContextOptionsBuilder<DataContext>().UseSqlite($"Filename={dbFileName}").Options;
             //services.AddDbContext<DataContext>(s => new DataContext(sqliteOptions));
             //var sqliteContext = new DataContext(sqliteOptions);
             //sqliteContext.Database.EnsureDeleted();
