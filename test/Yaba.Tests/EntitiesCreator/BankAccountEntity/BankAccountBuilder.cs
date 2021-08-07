@@ -45,10 +45,11 @@ namespace Yaba.Tests.EntitiesCreator.BankAccountEntity
             return this;
         }
 
-        public async Task<EntitiesCreatorResponse> Build()
+        public EntitiesCreatorResponse Build()
         {
             var user = new User("user-test", "test@email.com", "A1234567");
-            await _userRepository.Create(user);
+            _userRepository.Insert(user);
+            _uow.Commit();
 
             var bankAccount = new BankAccount("08220842", "2514", BankCode, user.Id);
             _bankAccountRepository.Insert(bankAccount);
