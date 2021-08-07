@@ -31,11 +31,13 @@ namespace Yaba.Tests.Application
         public async void CreateBankAccountForUser_CreatesOneBankAccountToExistingUser()
         {
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite("BankAccountServiceParallel_1");
+            var uow = (UnitOfWork)serviceProvider.GetService(typeof(UnitOfWork));
 
             // given an existing user
             var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             var user = new User("test", "test@email.com", "123123");
-            await userRepository.Create(user);
+            userRepository.Insert(user);
+            uow.Commit();
 
             // when service CreateBankAccountForUser is called
             var bankAccountService = (IBankAccountService)serviceProvider.GetService(typeof(IBankAccountService));
@@ -73,11 +75,13 @@ namespace Yaba.Tests.Application
         public async void DeleteBankAccount_DeleteUsersBankAccount()
         {
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite("BankAccountServiceParallel_2");
+            var uow = (UnitOfWork)serviceProvider.GetService(typeof(UnitOfWork));
 
             // given an existing user with one bank account
             var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             var user = new User("test", "test@email.com", "123123");
-            await userRepository.Create(user);
+            userRepository.Insert(user);
+            uow.Commit();
 
             var bankAccountService = (IBankAccountService)serviceProvider.GetService(typeof(IBankAccountService));
             var dto = new CreateUserBankAccountDTO
@@ -123,7 +127,8 @@ namespace Yaba.Tests.Application
 
             var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             var user = new User("test", "test@email.com", "123123");
-            userRepository.Create(user);
+            userRepository.Insert(user);
+            uow.Commit();
 
             var bankAccountRepository = (IBankAccountRepository)serviceProvider.GetService(typeof(IBankAccountRepository));
             var bankAccount = new BankAccount("123", "123", BankCode.GENERICBANK, 1);
@@ -155,7 +160,8 @@ namespace Yaba.Tests.Application
 
             var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             var user = new User("test", "test@email.com", "123123");
-            userRepository.Create(user);
+            userRepository.Insert(user);
+            uow.Commit();
 
             var bankAccountRepository = (IBankAccountRepository)serviceProvider.GetService(typeof(IBankAccountRepository));
             var bankAccount = new BankAccount("456", "456", BankCode.GENERICBANK, 1);

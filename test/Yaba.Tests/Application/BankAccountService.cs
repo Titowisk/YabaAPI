@@ -9,6 +9,7 @@ using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tests.EntitiesCreator.BankAccountEntity;
+using Yaba.Tests.EntitiesCreator.UserEntity;
 
 namespace Yaba.Tests.Application
 {
@@ -34,15 +35,13 @@ namespace Yaba.Tests.Application
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
 
             // given an existing user
-            var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
-            var user = new User("test", "test@email.com", "123123");
-            await userRepository.Create(user);
+            var response = UserBuilder.Create(serviceProvider).Build();
 
             // when service CreateBankAccountForUser is called
             var bankAccountService = (IBankAccountService)serviceProvider.GetService(typeof(IBankAccountService));
             var dto = new CreateUserBankAccountDTO
             {
-                UserId = user.Id,
+                UserId = response.User.Id,
                 Agency = "123456",
                 Code = BankCode.GENERICBANK.Value,
                 Number = "12345678"
@@ -56,7 +55,7 @@ namespace Yaba.Tests.Application
             _outputHelper.WriteLine("======CreateBankAccountForUser_CreatesOneBankAccountToExistingUser");
             _outputHelper.WriteLine($"Thread Id: {Thread.CurrentThread.ManagedThreadId}");
 
-            Assert.Equal(user.Id, bankAccount.UserId);
+            Assert.Equal(response.User.Id, bankAccount.UserId);
         }
 
         [Fact]
@@ -65,7 +64,7 @@ namespace Yaba.Tests.Application
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
 
             // given an existing user with one bank account
-            var entities = await BankAccountBuilder
+            var entities = BankAccountBuilder
                                     .Create(serviceProvider)
                                     .Build();
 
@@ -86,6 +85,37 @@ namespace Yaba.Tests.Application
         }
 
         [Fact]
+        public async void GetUserBankAccounts_ReturnsAllUsersBankAccounts()
+        {
+            var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
+
+            // given a User John with two bankAccounts
+            var johnResponse = UserBuilder.Create(serviceProvider)
+                                        .WithBankAccount()
+                                        .WithBankAccount()
+                                        .WithName("John")
+                                        .Build();
+
+            //  and a BankAccount from another User called Anthony
+            var anthonyResponse = UserBuilder.Create(serviceProvider)
+                                                .WithName("Anthony")
+                                                .Build();
+
+            // when service GetUserBankAccounts is called for John
+            var bankAccountService = (IBankAccountService)serviceProvider.GetService(typeof(IBankAccountService));
+            var dto = new GetUserBankAccountsDTO() { UserId = johnResponse.User.Id };
+
+            var result = await bankAccountService.GetUserBankAccounts(dto);
+
+            // then it should return only two bank accounts
+            Assert.Equal(2, result.Count());
+            Assert.True(result.All(r => r.UserId == johnResponse.User.Id));
+        }
+        #region TestContextIsolation
+        /// <summary>
+        /// Two identical tests that verify that the created entity id is 1
+        /// </summary>
+        [Fact]
         public void TestContextIsolation_1()
         {
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
@@ -93,7 +123,8 @@ namespace Yaba.Tests.Application
 
             var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             var user = new User("test", "test@email.com", "123123");
-            userRepository.Create(user);
+            userRepository.Insert(user);
+            uow.Commit();
 
             var bankAccountRepository = (IBankAccountRepository)serviceProvider.GetService(typeof(IBankAccountRepository));
             var bankAccount = new BankAccount("123", "123", BankCode.GENERICBANK, 1);
@@ -115,7 +146,8 @@ namespace Yaba.Tests.Application
 
             var userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             var user = new User("test", "test@email.com", "123123");
-            userRepository.Create(user);
+            userRepository.Insert(user);
+            uow.Commit();
 
             var bankAccountRepository = (IBankAccountRepository)serviceProvider.GetService(typeof(IBankAccountRepository));
             var bankAccount = new BankAccount("456", "456", BankCode.GENERICBANK, 1);
@@ -128,5 +160,6 @@ namespace Yaba.Tests.Application
 
             Assert.Equal(1, bankAccount.Id);
         }
+        #endregion
     }
 }
