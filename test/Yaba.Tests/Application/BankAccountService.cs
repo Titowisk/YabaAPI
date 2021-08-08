@@ -35,7 +35,7 @@ namespace Yaba.Tests.Application
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
 
             // given an existing user
-            var response = UserBuilder.Create(serviceProvider).Build();
+            var response = UserBuilder.CreateAUser(serviceProvider).Build();
 
             // when service CreateBankAccountForUser is called
             var bankAccountService = (IBankAccountService)serviceProvider.GetService(typeof(IBankAccountService));
@@ -65,7 +65,7 @@ namespace Yaba.Tests.Application
 
             // given an existing user with one bank account
             var entities = BankAccountBuilder
-                                    .Create(serviceProvider)
+                                    .CreateABankAccount(serviceProvider)
                                     .Build();
 
             var bankAccountService = (IBankAccountService)serviceProvider.GetService(typeof(IBankAccountService));
@@ -90,14 +90,14 @@ namespace Yaba.Tests.Application
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
 
             // given a User John with two bankAccounts
-            var johnResponse = UserBuilder.Create(serviceProvider)
+            var johnResponse = UserBuilder.CreateAUser(serviceProvider)
                                         .WithBankAccount()
                                         .WithBankAccount()
                                         .WithName("John")
                                         .Build();
 
             //  and a BankAccount from another User called Anthony
-            var anthonyResponse = UserBuilder.Create(serviceProvider)
+            var anthonyResponse = UserBuilder.CreateAUser(serviceProvider)
                                                 .WithName("Anthony")
                                                 .Build();
 

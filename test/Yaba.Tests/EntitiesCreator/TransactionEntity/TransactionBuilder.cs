@@ -5,63 +5,55 @@ using System.Text;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
+using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
 
-namespace Yaba.Tests.EntitiesCreator.UserEntity
+namespace Yaba.Tests.EntitiesCreator.TransactionEntity
 {
     /// <summary>
-    /// Create a customizable User entity with one or more BakAccounts
+    /// Creates customizable transaction entities for a default bank account
     /// </summary>
-    public class UserBuilder
+    public class TransactionBuilder
     {
         private readonly IUserRepository _userRepository;
         private readonly IBankAccountRepository _bankAccountRepository;
         private readonly UnitOfWork _uow;
 
-        //private BankAccount _bankAccount;
-        private List<BankAccount> _bankAccounts = new();
+        private List<Transaction> _transactions = new();
         private User _user = new("Test", "test@email.com", "123123");
+        private BankAccount _bankAccount;
 
-        private BankCode BankCode = BankCode.GENERICBANK;
-
-        public UserBuilder(IServiceProvider serviceProvider)
+        public TransactionBuilder(IServiceProvider serviceProvider)
         {
             _userRepository = (IUserRepository)serviceProvider.GetService(typeof(IUserRepository));
             _bankAccountRepository = (IBankAccountRepository)serviceProvider.GetService(typeof(IBankAccountRepository));
             _uow = (UnitOfWork)serviceProvider.GetService(typeof(UnitOfWork));
         }
 
-        public static UserBuilder CreateAUser(IServiceProvider serviceProvider)
+        public static TransactionBuilder Create(IServiceProvider serviceProvider)
         {
-            return new UserBuilder(serviceProvider);
+            return new TransactionBuilder(serviceProvider);
         }
 
-        public UserBuilder WithName(string name)
+        public TransactionBuilder AddTransaction(string origin, DateTime date, decimal amount)
         {
-            _user.Name = name;
-            return this;
-        }
-
-        public UserBuilder WithBankAccount(string number = "12345678", string agency = "12345", BankCode bankCode = null)
-        {
-            bankCode ??= BankCode;
-
-            _bankAccounts.Add( new BankAccount(number, agency, bankCode, _user.Id));
+            _transactions.Add(new Transaction(origin, date, amount, _bankAccount.Id));
             return this;
         }
 
         public EntitiesCreatorResponse Build()
         {
-            if (_bankAccounts.Count > 0) _user.BankAccounts = _bankAccounts;
             _userRepository.Insert(_user);
             _uow.Commit();
 
+            _bankAccount = new BankAccount("08220842", "2514", BankCode.GENERICBANK, _user.Id);
+            _bankAccountRepository.Insert(_bankAccount);
+            
             return new EntitiesCreatorResponse()
             {
-                User = _user,
-                BankAccount = _bankAccounts.FirstOrDefault(),
-                BankAccounts = _bankAccounts
+                BankAccount = _bankAccount,
+                User = _user
             };
         }
     }

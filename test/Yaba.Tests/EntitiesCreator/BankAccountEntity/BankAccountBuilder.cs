@@ -12,6 +12,7 @@ using Yaba.Infrastructure.Persistence.UnitOfWork;
 namespace Yaba.Tests.EntitiesCreator.BankAccountEntity
 {
     /// <summary>
+    /// Creates a customizable BankAccount of a default user
     /// Reference: https://github.com/nicopaez/csharp_test_readability/blob/master/Domain.Tests/Support/ObjectBuilder.cs
     /// </summary>
     public class BankAccountBuilder
@@ -33,10 +34,14 @@ namespace Yaba.Tests.EntitiesCreator.BankAccountEntity
 
         private BankCode BankCode = BankCode.GENERICBANK;
 
-        public static BankAccountBuilder Create(IServiceProvider serviceProvider)
+        public static BankAccountBuilder CreateABankAccount(IServiceProvider serviceProvider)
         {
             return new BankAccountBuilder(serviceProvider);
         }
+
+        // public BankAccountBuilder AddOneMoreBankAccount(string number, string agency, BankCode code)
+        // public BankAccountBuilder AddManyBankAccounts(int quantity)
+        // public BankAccountBuilder AddManyBankAccounts(int quantity)
 
         public BankAccountBuilder WithBankCode(BankCode bankCode)
         {
