@@ -120,6 +120,7 @@ namespace Yaba.Application.TransactionServices.Impl
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 
+        // TODO: refactor: CategorizeTransactionsWithinTheLastXMonths
         public async Task CategorizeAllOtherTransactions(long transactionId)
         {
             var transaction = await _transactionRepository.GetById(transactionId);
@@ -175,6 +176,7 @@ namespace Yaba.Application.TransactionServices.Impl
 
         #region Priv Methods
 
+        // TODO: change name -> UpdateTransactionsWithinAMonthAndWithSimilarOrigin
         private async Task UpdateAllTransactionsWithSimilarOriginsByMonth(Transaction transaction, short categoryId)
         {
             var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);

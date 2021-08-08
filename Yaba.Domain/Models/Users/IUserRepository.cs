@@ -3,14 +3,17 @@ using System.Threading.Tasks;
 
 namespace Yaba.Domain.Models.Users
 {
-    public interface IUserRepository : IAsyncDisposable
+    public interface IUserRepository : IDisposable
     {
-        Task<User> GetByEmail(string email);
         Task<bool> UserWithEmailExists(string email);
+
+        Task<User> GetByEmail(string email);
         Task<User> GetById(int id);
-        Task Create(User entity);
-        Task Update(User entity);
-        Task Delete(int id);
-        Task Delete(User entity);
+
+        void Update(User entity);
+
+        void Delete(User entity);
+
+        void Insert(User entity);
     }
 }

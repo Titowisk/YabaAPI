@@ -47,5 +47,10 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 .Include(b => b.User)
                 .FirstOrDefaultAsync(b => b.Id == (int)id);
         }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }
