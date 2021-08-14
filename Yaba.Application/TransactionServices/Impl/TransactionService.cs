@@ -98,26 +98,38 @@ namespace Yaba.Application.TransactionServices.Impl
             return existentDates;
         }
 
-        // TODO: change name, this service categorizes all the transactions of a month with similar origins
-        public async Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto)
+        public async Task CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(CategorizeUserTransactionsDTO dto)
         {
-            var transactionToUpdate = await _transactionRepository.GetById(dto.TransactionId);
-            Validate.NotNull(transactionToUpdate, "This Transaction doesn't exist");
+            var transactionSentByClient = await _transactionRepository.GetById(dto.TransactionId);
+            Validate.NotNull(transactionSentByClient, "This Transaction doesn't exist");
 
-            var bankAccount = await _bankAccountRepository.GetById(transactionToUpdate.BankAccountId);
+            var bankAccount = await _bankAccountRepository.GetById(transactionSentByClient.BankAccountId);
             Validate.NotNull(bankAccount, "Access Denied");
 
             Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
 
-            _transactionRepository.Update(transactionToUpdate);
-
-            await UpdateAllTransactionsWithSimilarOriginsByMonth(transactionToUpdate, dto.CategoryId);
+            await CategorizeTransactionsWithSimilarOriginsWithinAMonth(transactionSentByClient, dto.CategoryId);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
 
-            var message = transactionToUpdate.Id.ToString();
-            _queueMessageService.SendMessage(message); // TODO: use a valid key (and try to use UserSecrets), this is using a invalid key from appsettings.json
+            var message = transactionSentByClient.Id.ToString(); // TODO: create message class with a good name
+            _queueMessageService.SendMessage(message);
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
+        }
+
+        public async Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId)
+        {
+            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
+
+            if (!similarTransactions.Any())
+                return;
+
+            foreach (var t in similarTransactions)
+            {
+                t.Category = (Category)categoryId;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
         }
 
         // TODO: refactor: CategorizeTransactionsWithinTheLastXMonths
@@ -176,21 +188,7 @@ namespace Yaba.Application.TransactionServices.Impl
 
         #region Priv Methods
 
-        // TODO: change name -> UpdateTransactionsWithinAMonthAndWithSimilarOrigin
-        private async Task UpdateAllTransactionsWithSimilarOriginsByMonth(Transaction transaction, short categoryId)
-        {
-            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
-
-            if (!similarTransactions.Any())
-                return;
-
-            foreach (var t in similarTransactions)
-            {
-                t.Category = (Category)categoryId;
-            }
-
-            _transactionRepository.UpdateRange(similarTransactions);
-        }
+        
 
         private static TransactionsDateFilterResponseDTO CalculateTransactionsSummary(IEnumerable<TransactionsResponseDTO> transactions)
         {

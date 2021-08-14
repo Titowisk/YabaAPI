@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,8 @@ namespace Yaba.Tests.DependencyInversion
 
         private static void GetInfrastructureCollection(IServiceCollection services)
         {
-            services.AddScoped<IQueueMessageService, QueueMessageService>(); //TODO Mock
+            
+            services.AddScoped(_ => new Mock<IQueueMessageService>().Object);
         }
 
         private static void GetApplicationCollection(IServiceCollection services)
