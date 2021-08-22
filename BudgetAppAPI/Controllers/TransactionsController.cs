@@ -32,7 +32,7 @@ namespace Yaba.WebApi.Controllers
         public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins([FromBody] CategorizeUserTransactionsDTO dto)
         {
             dto.UserId = GetLoggedUserId();
-            await _transactionService.CategorizeAllTransactionsWithSimilarOrigins(dto);
+            await _transactionService.CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(dto);
 
             return Ok();
         }
