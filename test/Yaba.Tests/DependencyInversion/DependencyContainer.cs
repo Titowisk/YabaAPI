@@ -69,7 +69,8 @@ namespace Yaba.Tests.DependencyInversion
             services.AddScoped<ICsvReaderService, CsvReaderService>();
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
-            services.AddTransient<BradescoReader>();
+            services.AddScoped<BradescoReader>();
+            services.AddScoped<NuBankReader>();
         }
 
         private static void GetDomainCollection(IServiceCollection services)

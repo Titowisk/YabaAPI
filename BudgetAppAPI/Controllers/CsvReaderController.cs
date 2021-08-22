@@ -40,6 +40,7 @@ namespace Yaba.WebApi.Controllers
             if (string.IsNullOrEmpty(user?.Value))
                 return Unauthorized();
 
+            // TODO: make user provide the bankAccount to be used
             var dto = new CsvFileReaderDTO()
             {
                 FilesOwnerId = int.Parse(user.Value),

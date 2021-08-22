@@ -16,6 +16,8 @@ namespace Yaba.Application.BankStatementReaders.ReaderResolver
             if (bank.Name == BankCode.BRADESCO.Name)
                 return (IBankEstatementReader)_serviceProvider.GetService(typeof(BradescoReader));
 
+            if (bank.Name == BankCode.NUBANK.Name)
+                return (IBankEstatementReader)_serviceProvider.GetService(typeof(NuBankReader));
             //if (readerName.Name == BankCode.ITAU.Name)
             //    return (IBankEstatementReader)_serviceProvider.GetService(typeof(ItauReader));
 

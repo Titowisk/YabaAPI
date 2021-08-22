@@ -41,6 +41,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
             IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(dto.BankCode));
             var fileStatusResult = new List<FileStatusDTO>();
 
+            // TODO: Use Refactoring book to change this loop into pipeline (create a test before): Replace Loop With A Pipeline-231
             foreach (var csv in dto.CsvFiles)
             {
                 var fileStatus = new FileStatusDTO
