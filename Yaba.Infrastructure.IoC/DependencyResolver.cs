@@ -40,8 +40,8 @@ namespace Yaba.Infrastructure.IoC
             services.AddScoped<ICsvReaderService, CsvReaderService>();
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
-            services.AddScoped<BradescoReader>();
-            services.AddScoped<NuBankReader>();
+            services.AddTransient<BradescoReader>();
+            services.AddTransient<NuBankReader>();
 
             services.AddScoped<IQueueMessageService, QueueMessageService>();
 
