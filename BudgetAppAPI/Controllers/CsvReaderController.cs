@@ -31,10 +31,8 @@ namespace Yaba.WebApi.Controllers
 
         [Route("[Action]")]
         [HttpPost]
-        public async Task<IActionResult> ReadBankStatements(IFormFileCollection csvFiles, [FromForm] short bankCode)
+        public async Task<IActionResult> ReadBankStatements(IFormFileCollection csvFiles, [FromForm] int bankAccountId)
         {
-            BankCode.ValidateCode(bankCode);
-
             // TODO : better way to do this? 
             var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(user?.Value))
@@ -44,7 +42,7 @@ namespace Yaba.WebApi.Controllers
             var dto = new CsvFileReaderDTO()
             {
                 FilesOwnerId = int.Parse(user.Value),
-                BankCode = bankCode,
+                BankAccountId = bankAccountId,
                 CsvFiles = csvFiles
             };
 

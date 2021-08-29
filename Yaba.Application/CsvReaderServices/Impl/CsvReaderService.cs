@@ -38,7 +38,10 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
         public async Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(CsvFileReaderDTO dto)
         {
-            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(dto.BankCode));
+            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+            Validate.IsTrue(bankAccount.UserId == dto.FilesOwnerId, "Bank account not found");
+
+            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(bankAccount.Code));
             var fileStatusResult = new List<FileStatusDTO>();
 
             // TODO: Use Refactoring book to change this loop into pipeline (create a test before): Replace Loop With A Pipeline-231
@@ -58,7 +61,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     var parsedFile = reader.ProcessBankInformation(csv);
                     fileStatus.TransactionsRead = parsedFile.Transactions.Count;
 
-                    var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankCode);
+                    //var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankAccountId);
 
                     RemoveExistentTransactions(parsedFile);
 
