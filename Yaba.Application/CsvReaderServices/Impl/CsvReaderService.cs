@@ -38,9 +38,13 @@ namespace Yaba.Application.CsvReaderServices.Impl
 
         public async Task<IEnumerable<FileStatusDTO>> ReadTransactionsFromFiles(CsvFileReaderDTO dto)
         {
-            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(dto.BankCode));
+            var bankAccount = await _bankAccountRepository.GetById(dto.BankAccountId);
+            Validate.IsTrue(bankAccount.UserId == dto.FilesOwnerId, "Bank account not found");
+
+            IBankEstatementReader reader = _readerResolver.GetBankEstatementReader(BankCode.FromValue<BankCode>(bankAccount.Code));
             var fileStatusResult = new List<FileStatusDTO>();
 
+            // TODO: Use Refactoring book to change this loop into pipeline (create a test before): Replace Loop With A Pipeline-231
             foreach (var csv in dto.CsvFiles)
             {
                 var fileStatus = new FileStatusDTO
@@ -55,21 +59,23 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     Validate.IsTrue(csv.Length > 0, $"File {csv.FileName} is empty");
 
                     var parsedFile = reader.ProcessBankInformation(csv);
-                    fileStatus.TransactionsRead = parsedFile.Transactions.Count;
+                    var transactionsRead = parsedFile.Transactions.Count;
+                    var initialTransactionDate = parsedFile.Transactions.First().Date;
+                    var finalTransactionDate = parsedFile.Transactions.Last().Date;
 
-                    var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankCode);
+                    //var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankAccountId);
 
                     RemoveExistentTransactions(parsedFile);
 
-                    if(parsedFile.Transactions.Count > 0)
+                    if (parsedFile.Transactions.Count > 0)
                         await PersistBankEstatementInformation(parsedFile, bankAccount);
 
 
                     fileStatus.IsSuccessfullRead = true;
+                    fileStatus.TransactionsRead = transactionsRead;
                     fileStatus.TransactionsSaved = parsedFile.Transactions.Count;
-                    // TODO: Get initial and final date from file
-                    fileStatus.InitialDate = parsedFile.Transactions.First().Date;
-                    fileStatus.FinalDate = parsedFile.Transactions.Last().Date;
+                    fileStatus.InitialDate = initialTransactionDate;
+                    fileStatus.FinalDate = finalTransactionDate;
                 }
                 catch (Exception ex)
                 {
@@ -94,8 +100,9 @@ namespace Yaba.Application.CsvReaderServices.Impl
         #region Priv methods
         private void RemoveExistentTransactions(StandardBankStatementDTO parsedFile)
         {
+            // TODO: get only transactions from user between the period of time on the csvFile and refactor this to async method
             parsedFile.Transactions
-                .RemoveAll(t => _transactionRepository.DoesTransactionExists(t.TransactionUniqueHash).Result);
+                .RemoveAll( t => _transactionRepository.DoesTransactionExists(t.TransactionUniqueHash).Result);
         }
 
         private async Task<BankAccount> GetFilesOwnerBankAccount(int filesOwnerId, string agencyNumber, string accountNumber, short bankCode)

@@ -5,6 +5,10 @@ using Yaba.Domain.Models.Users;
 
 namespace Yaba.Domain.Models.BankAccounts
 {
+	// TODO: Refactor BankAccount -> Create the Account Abstraction that references BankAccounts and CardAccounts
+	// 1 - Use TPH (Table Per Hierarchy) to save BankAccounts and CardAccounts into the same table
+	// AccountAbstraction - InstitutionCode, InstitutionName, Country, , UserId
+	// BankAccount - 
 	public class BankAccount
 	{
 		public BankAccount(string number, string agency, BankCode code, int userId)

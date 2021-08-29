@@ -7,6 +7,7 @@ namespace Yaba.Domain.Models.BankAccounts.Enumerations
     public class BankCode : Enumeration
     {
         public static readonly BankCode BRADESCO = new BankCode(237, "Bradesco");
+        public static readonly BankCode NUBANK = new BankCode(260, "NuBank");
         public static readonly BankCode GENERICBANK = new BankCode(0, "Generic Bank");
 
         private BankCode(short value, string name)

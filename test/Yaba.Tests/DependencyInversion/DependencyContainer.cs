@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -57,8 +58,9 @@ namespace Yaba.Tests.DependencyInversion
 
         private static void GetInfrastructureCollection(IServiceCollection services)
         {
-            
             services.AddScoped(_ => new Mock<IQueueMessageService>().Object);
+            services.AddScoped(_ => new Mock<ILogger<CsvReaderService>>().Object);
+            services.AddScoped(_ => new Mock<ILogger<NuBankReader>>().Object);
         }
 
         private static void GetApplicationCollection(IServiceCollection services)
@@ -69,7 +71,8 @@ namespace Yaba.Tests.DependencyInversion
             services.AddScoped<ICsvReaderService, CsvReaderService>();
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
-            services.AddTransient<BradescoReader>();
+            services.AddScoped<BradescoReader>();
+            services.AddScoped<NuBankReader>();
         }
 
         private static void GetDomainCollection(IServiceCollection services)
