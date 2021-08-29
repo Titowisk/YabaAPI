@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -57,8 +58,8 @@ namespace Yaba.Tests.DependencyInversion
 
         private static void GetInfrastructureCollection(IServiceCollection services)
         {
-            
             services.AddScoped(_ => new Mock<IQueueMessageService>().Object);
+            services.AddScoped(_ => new Mock<ILogger<CsvReaderService>>().Object);
         }
 
         private static void GetApplicationCollection(IServiceCollection services)
