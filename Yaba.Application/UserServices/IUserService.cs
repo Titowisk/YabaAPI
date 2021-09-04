@@ -7,5 +7,6 @@ namespace Yaba.Application.UserServices
     {
         Task UserSignIn(UserSignInDTO dto);
         Task<UserLoginResponseDTO> Login(UserLoginDTO dto);
+        Task<UserLoginResponseDTO> GetCurrentUserById(int id);
     }
 }

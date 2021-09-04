@@ -48,12 +48,12 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
         }
 
-        public async Task<IEnumerable<TransactionsDateFilterResponseDTO>> GetByMonth(GetUserTransactionsByMonthDTO dto)
+        public async Task<TransactionsDateFilterResponseDTO> GetByMonth(GetUserTransactionsByMonthDTO dto)
         {
             var transactions = await _transactionRepository.GetByMonthBankAccountUser(dto.Year, dto.Month, dto.BankAccountId, dto.UserId); ;
             Validate.IsTrue(transactions.Count > 0, "Não foram encontradas transações");
 
-            return transactions;
+            return CalculateTransactionsSummary(transactions);
         }
 
         public IEnumerable<CategoryDTO> GetCategories()
@@ -98,28 +98,41 @@ namespace Yaba.Application.TransactionServices.Impl
             return existentDates;
         }
 
-        // TODO: change name, this service categorizes all the transactions of a month with similar origins
-        public async Task CategorizeAllTransactionsWithSimilarOrigins(CategorizeUserTransactionsDTO dto)
+        public async Task CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(CategorizeUserTransactionsDTO dto)
         {
-            var transactionToUpdate = await _transactionRepository.GetById(dto.TransactionId);
-            Validate.NotNull(transactionToUpdate, "This Transaction doesn't exist");
+            var transactionSentByClient = await _transactionRepository.GetById(dto.TransactionId);
+            Validate.NotNull(transactionSentByClient, "This Transaction doesn't exist");
 
-            var bankAccount = await _bankAccountRepository.GetById(transactionToUpdate.BankAccountId);
+            var bankAccount = await _bankAccountRepository.GetById(transactionSentByClient.BankAccountId);
             Validate.NotNull(bankAccount, "Access Denied");
 
             Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
 
-            _transactionRepository.Update(transactionToUpdate);
-
-            await UpdateAllTransactionsWithSimilarOriginsByMonth(transactionToUpdate, dto.CategoryId);
+            await CategorizeTransactionsWithSimilarOriginsWithinAMonth(transactionSentByClient, dto.CategoryId);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação da transação");
 
-            var message = transactionToUpdate.Id.ToString();
-            _queueMessageService.SendMessage(message); // TODO: use a valid key (and try to use UserSecrets), this is using a invalid key from appsettings.json
+            var message = transactionSentByClient.Id.ToString(); // TODO: create message class with a good name
+            _queueMessageService.SendMessage(message);
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 
+        public async Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId)
+        {
+            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
+
+            if (!similarTransactions.Any())
+                return;
+
+            foreach (var t in similarTransactions)
+            {
+                t.Category = (Category)categoryId;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
+        }
+
+        // TODO: refactor: CategorizeTransactionsWithinTheLastXMonths
         public async Task CategorizeAllOtherTransactions(long transactionId)
         {
             var transaction = await _transactionRepository.GetById(transactionId);
@@ -143,15 +156,26 @@ namespace Yaba.Application.TransactionServices.Impl
 
             Validate.IsTrue(bankAccount.UserId == dto.UserId, "Access Denied");
 
-            var fakeTransactions = new Faker<Transaction>()
+            var incomeQuantity = dto.Quantity / 3;
+            var fakeExpenseTransactions = new Faker<Transaction>()
                 .RuleFor(t => t.BankAccountId, dto.BankAccountId)
                 .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)) )
                 .RuleFor(t => t.Category, f => f.PickRandom<Category>())
-                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Amount, f => f.Finance.Amount() * -1)
                 .RuleFor(t => t.Origin, f => f.Company.CompanyName())
                 .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
-                .Generate(dto.Quantity);
+                .Generate(dto.Quantity - incomeQuantity);
 
+            var fakeIncomeTransactions = new Faker<Transaction>()
+                .RuleFor(t => t.BankAccountId, dto.BankAccountId)
+                .RuleFor(t => t.Date, f => new DateTime(dto.Year, dto.Month, f.Random.Int(1, 27)))
+                .RuleFor(t => t.Category, f => Category.Income)
+                .RuleFor(t => t.Amount, f => f.Finance.Amount())
+                .RuleFor(t => t.Origin, f => "Some Income")
+                .RuleFor(t => t.Metadata, f => $"GenericBank_{Guid.NewGuid()}")
+                .Generate(incomeQuantity);
+
+            var fakeTransactions = fakeExpenseTransactions.Union(fakeIncomeTransactions);
             _transactionRepository.InsertRange(fakeTransactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na criação das transações");
@@ -164,21 +188,32 @@ namespace Yaba.Application.TransactionServices.Impl
 
         #region Priv Methods
 
-        private async Task UpdateAllTransactionsWithSimilarOriginsByMonth(Transaction transaction, short categoryId)
+        
+
+        private static TransactionsDateFilterResponseDTO CalculateTransactionsSummary(IEnumerable<TransactionsResponseDTO> transactions)
         {
-            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
-
-            if (similarTransactions.Count() == 0)
-                return;
-
-            foreach (var t in similarTransactions)
+            decimal totalIncome = 0;
+            decimal totalExpense = 0;
+            foreach (var tr in transactions)
             {
-                t.Category = (Category)categoryId;
+                if (tr.Amount > 0)
+                    totalIncome += tr.Amount;
+                else
+                    totalExpense += tr.Amount;
             }
 
-            _transactionRepository.UpdateRange(similarTransactions);
-        }
+            var totalVolume = totalIncome + Math.Abs(totalExpense);
 
+            return new TransactionsDateFilterResponseDTO
+            {
+                Transactions = transactions,
+                TotalVolume = totalVolume,
+                TotalExpense = totalExpense,
+                TotalIncome = totalIncome,
+                IncomePercentage = Math.Round((totalIncome / totalVolume) * 100, 1),
+                ExpensePercentage = Math.Round((Math.Abs(totalExpense) / totalVolume) * 100, 1)
+            };
+        }
         #endregion
     }
 }

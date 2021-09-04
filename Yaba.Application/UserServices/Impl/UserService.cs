@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Infrastructure.Security;
 using Yaba.Tools.Validations;
 
@@ -11,13 +12,16 @@ namespace Yaba.Application.UserServices.Impl
     {
         private readonly IUserRepository _userRepository;
         private readonly IOptions<JwtConfig> _options;
+        private readonly UnitOfWork _uow;
 
         public UserService(
             IUserRepository userRepository,
+            UnitOfWork uow,
             IOptions<JwtConfig> options)
         {
             _userRepository = userRepository;
             _options = options;
+            this._uow = uow;
         }
 
         public async Task<UserLoginResponseDTO> Login(UserLoginDTO dto)
@@ -32,6 +36,7 @@ namespace Yaba.Application.UserServices.Impl
 
             return new UserLoginResponseDTO()
             {
+                Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 Token = JwtHandler.GenerateToken(_options.Value.SecretKey, user.Id, user.Name)
@@ -46,7 +51,16 @@ namespace Yaba.Application.UserServices.Impl
             dto.Password = EncryptPassword(dto.Password);
 
             var user = new User(dto.Name, dto.Email, dto.Password);
-            await _userRepository.Create(user);
+            _userRepository.Insert(user);
+            await _uow.CommitAsync();
+        }
+
+        public async Task<UserLoginResponseDTO> GetCurrentUserById(int id)
+        {
+            var user = await _userRepository.GetById(id);
+            Validate.NotNull(user, "User not found");
+
+            return new UserLoginResponseDTO { Id = user.Id, Name = user.Name, Email = user.Email };
         }
 
         #region Priv Methods

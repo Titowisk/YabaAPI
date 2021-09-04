@@ -41,6 +41,7 @@ namespace Yaba.Infrastructure.IoC
 
             services.AddSingleton<IReaderResolver, ReaderResolver>();
             services.AddTransient<BradescoReader>();
+            services.AddTransient<NuBankReader>();
 
             services.AddScoped<IQueueMessageService, QueueMessageService>();
 
