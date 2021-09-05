@@ -1,49 +1,40 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.BankAccountServices;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Infrastructure.DTO;
-using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
-    public class BankAccountsController : ControllerBase
+    public class BankAccountsController : BaseYabaController
     {
         private readonly ILogger<BankAccountsController> _logger;
         private readonly IBankAccountService _bankAccountService;
-        private readonly IBankAccountRepository _bankAccountRepository;
 
         public BankAccountsController(
             ILogger<BankAccountsController> logger,
-            IBankAccountRepository bankAccountRepository,
             IBankAccountService bankAccountService)
         {
-            _logger = logger;
-            _bankAccountService = bankAccountService;
-            _bankAccountRepository = bankAccountRepository;
+            this._logger = logger;
+            this._bankAccountService = bankAccountService;
         }
 
         [HttpGet]
-        [Route("[Action]")]
         public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetBankAccountsByUser()
         {
             var bankAccountsDto = new GetUserBankAccountsDTO()
             {
-                UserId = GetLoggedUserId()
+                UserId = base.GetLoggedUserId()
             };
 
-            var bankAccounts = await _bankAccountService.GetUserBankAccounts(bankAccountsDto);
+            var bankAccounts = await this._bankAccountService.GetUserBankAccounts(bankAccountsDto);
 
-            return Ok(bankAccounts);
+            return this.Ok(bankAccounts);
         }
 
         // GET: api/BankAccounts/5
@@ -53,10 +44,10 @@ namespace Yaba.WebApi.Controllers
             var dto = new GetUserBankAccountDTO()
             {
                 BankAccountId = id,
-                UserId = GetLoggedUserId()
+                UserId = base.GetLoggedUserId()
             };
 
-            var bankAccount = await _bankAccountService.GetBankAccountById(dto);
+            var bankAccount = await this._bankAccountService.GetBankAccountById(dto);
 
             return bankAccount;
         }
@@ -67,11 +58,11 @@ namespace Yaba.WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBankAccount(int id, UpdateUserBankAccountDTO dto)
         {
-            dto.UserId = GetLoggedUserId();
+            dto.UserId = base.GetLoggedUserId();
             dto.BankAccountId = id;
-            await _bankAccountService.UpdateBankAccount(dto);
+            await this._bankAccountService.UpdateBankAccount(dto);
 
-            return NoContent();
+            return this.NoContent();
         }
 
         // POST: api/BankAccounts
@@ -80,9 +71,9 @@ namespace Yaba.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<BankAccount>> Create(CreateUserBankAccountDTO dto)
         {
-            dto.UserId = GetLoggedUserId();
+            dto.UserId = base.GetLoggedUserId();
 
-            await _bankAccountService.CreateBankAccountForUser(dto);
+            await this._bankAccountService.CreateBankAccountForUser(dto);
 
             // TODO: create common success handler
 
@@ -92,7 +83,7 @@ namespace Yaba.WebApi.Controllers
                 Data = "Conta bancária criada com sucesso"
             };
 
-            return Ok(response);
+            return this.Ok(response);
         }
 
         // DELETE: api/BankAccounts/5
@@ -101,25 +92,13 @@ namespace Yaba.WebApi.Controllers
         {
             var dto = new DeleteUserBankAccountDTO()
             {
-                UserId = GetLoggedUserId(),
+                UserId = base.GetLoggedUserId(),
                 BankAccountId = id
             };
 
-            await _bankAccountService.DeleteBankAccount(dto);
+            await this._bankAccountService.DeleteBankAccount(dto);
 
-            return Ok();
+            return this.Ok();
         }
-
-        #region Priv Methods
-        private int GetLoggedUserId()
-        {
-            // TODO : better way to do this? 
-            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
-
-            return int.Parse(user.Value);
-        }
-        #endregion
     }
 }
