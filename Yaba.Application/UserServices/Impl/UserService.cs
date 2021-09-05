@@ -39,7 +39,7 @@ namespace Yaba.Application.UserServices.Impl
             };
         }
 
-        public async Task UserSignIn(UserSignInDTO dto)
+        public async Task UserSignUp(UserSignUpDTO dto)
         {
             // TODO: add email confirmation
             await ValidateUser(dto.Name, dto.Email, dto.Password);
