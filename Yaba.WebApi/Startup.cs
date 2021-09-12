@@ -54,11 +54,6 @@ namespace Yaba.WebApi
                     builder.AllowAnyMethod();
                     builder.AllowAnyHeader();
                 });
-
-                //opt.AddPolicy("CorsPolicy", policy =>
-                //{
-                //    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000/");
-                //});
             });
         }
 

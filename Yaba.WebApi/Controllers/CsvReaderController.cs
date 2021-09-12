@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,8 +14,7 @@ namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
-    [ApiController]
-    public class CsvReaderController : ControllerBase
+    public class CsvReaderController : BaseYabaController
     {
         private readonly ICsvReaderService _csvReaderService;
         private readonly ILogger<CsvReaderController> _logger;
@@ -25,8 +23,8 @@ namespace Yaba.WebApi.Controllers
             ICsvReaderService csvReaderService,
             ILogger<CsvReaderController> logger)
         {
-            _csvReaderService = csvReaderService;
-            _logger = logger;
+            this._csvReaderService = csvReaderService;
+            this._logger = logger;
         }
 
         [Route("[Action]")]
@@ -34,9 +32,11 @@ namespace Yaba.WebApi.Controllers
         public async Task<IActionResult> ReadBankStatements(IFormFileCollection csvFiles, [FromForm] int bankAccountId)
         {
             // TODO : better way to do this? 
-            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            var user = this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(user?.Value))
-                return Unauthorized();
+            {
+                return this.Unauthorized();
+            }
 
             // TODO: make user provide the bankAccount to be used
             var dto = new CsvFileReaderDTO()
@@ -46,9 +46,9 @@ namespace Yaba.WebApi.Controllers
                 CsvFiles = csvFiles
             };
 
-            var result = await _csvReaderService.ReadTransactionsFromFiles(dto);
+            var result = await this._csvReaderService.ReadTransactionsFromFiles(dto);
 
-            return Ok(result);
+            return this.Ok(result);
         }
     }
 }
