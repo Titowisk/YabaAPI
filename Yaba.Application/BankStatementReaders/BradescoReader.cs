@@ -54,17 +54,8 @@ namespace Yaba.Application.BankStatementReaders
                             _logger.LogWarning(ex, $"{csvFile.FileName}, line: {rowIndex}");
                         }
                     }
-                    else if (rowIndex == 1)
-                    {
-                        // TODO: encapsulate this block of code ?
-                        var accountAndAgencyNumbers = csvReader.GetField(0);
-                        var splitFirstLine = accountAndAgencyNumbers.Split("|");
-                        bankStatement.AgencyNumber = splitFirstLine[0].Split(":")[2].Trim();
-                        bankStatement.AccountNumber = splitFirstLine[1].Split(":")[1].Trim().Replace("-", "");
-                    }
-
                 }
-            };
+            }
 
             return bankStatement;
         }
@@ -81,7 +72,7 @@ namespace Yaba.Application.BankStatementReaders
 
             var transaction = new StandardTransactionDTO
             {
-                Date = DateTime.ParseExact(data, new string[] { "dd/MM/yyyy", "dd/MM/yy" } , CultureInfo.GetCultureInfo("pt-BR").NumberFormat),
+                Date = DateTime.ParseExact(data, new string[] { "dd/MM/yyyy", "dd/MM/yy" }, CultureInfo.GetCultureInfo("pt-BR").NumberFormat),
                 TypeDescription = historico,
                 TransactionUniqueHash = $"BRADESCO{docto}"
             };
