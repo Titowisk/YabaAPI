@@ -9,6 +9,9 @@ using Yaba.Infrastructure.DTO;
 
 namespace Yaba.WebApi.Controllers
 {
+    /// <summary>
+    /// TODO: change names
+    /// </summary>
     [Route("api/[controller]")]
     [Authorize]
     public class BankAccountsController : BaseYabaController
@@ -25,6 +28,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet("logged-user")]
+        // bank-accounts/
         public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetByLoggedUser()
         {
             var bankAccountsDto = new GetUserBankAccountsDTO()
@@ -37,8 +41,8 @@ namespace Yaba.WebApi.Controllers
             return this.Ok(bankAccounts);
         }
 
-        // GET: api/BankAccounts/5
         [HttpGet("{id}")]
+        // bank-accounts/{id}
         public async Task<ActionResult<BankAccountResponseDTO>> Get(int id)
         {
             var dto = new GetUserBankAccountDTO()
@@ -56,6 +60,7 @@ namespace Yaba.WebApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        // bank-accounts/{id}
         public async Task<IActionResult> Update(int id, UpdateUserBankAccountDTO dto)
         {
             dto.UserId = base.GetLoggedUserId();
@@ -65,10 +70,10 @@ namespace Yaba.WebApi.Controllers
             return this.NoContent();
         }
 
-        // POST: api/BankAccounts
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        // bank-accounts/
         public async Task<ActionResult<BankAccount>> Create(CreateUserBankAccountDTO dto)
         {
             dto.UserId = base.GetLoggedUserId();
@@ -86,8 +91,6 @@ namespace Yaba.WebApi.Controllers
             return this.Ok(response);
         }
 
-        // DELETE: api/BankAccounts/5
-        // https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#delete-methods
         [HttpDelete("{id}")]
         public async Task<ActionResult<BankAccount>> Delete(int id)
         {

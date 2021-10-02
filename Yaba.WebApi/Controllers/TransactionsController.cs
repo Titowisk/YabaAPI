@@ -11,6 +11,10 @@ using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
+    /// <summary>
+    /// TODO: https://restfulapi.net/resource-naming/
+    /// https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#what-is-rest
+    /// </summary>
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
@@ -28,6 +32,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPut]
+        // transactions/similar-transactions/categorize
         [Route("[Action]")]
         public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins([FromBody] CategorizeUserTransactionsDTO dto)
         {
@@ -38,6 +43,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
+        // transactions/
         [Route("Create")]
         public async Task<IActionResult> Create([FromBody] CreateUserTransactionDTO dto)
         {
@@ -47,7 +53,8 @@ namespace Yaba.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost] // GET
+        // transactions?month=1&year=2
         [Route("[Action]")]
         public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
         {
@@ -58,6 +65,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
+        // transactions/categories
         [Route("[Action]")]
         public IActionResult GetCategories()
         {
@@ -67,6 +75,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
+        // transactions/dates
         [Route("[Action]")]
         public async Task<IActionResult> GetTransactionDatesByUser([FromBody] GetTransactionDatesDTO dto)
         {
@@ -77,6 +86,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
+        // transactions/randomized-data
         [Route("[Action]")]
         public async Task<IActionResult> GenerateRandomizedDataForGenericBank([FromBody] GenerateDataDTO dto)
         {
@@ -98,13 +108,4 @@ namespace Yaba.WebApi.Controllers
         }
         #endregion
     }
-    /* NOTES:
-		- Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)
-		- Return types
-			https://docs.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.accepted?view=aspnetcore-3.1
-		- using .Include() normally, it brings the whole object in the response.
-
-		- making fields nullable causes the necessity of checking values before returning
-		- enum is less verbose than Enumeration when , but Enumeration is less verbose for validations
-	 */
 }
