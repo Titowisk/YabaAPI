@@ -10,8 +10,6 @@ namespace Yaba.Infrastructure.DTO
         {
             Transactions = new List<StandardTransactionDTO>();
         }
-        public string AgencyNumber { get; set; }
-        public string AccountNumber { get; set; }
 
         public List<StandardTransactionDTO> Transactions { get; private set; }
     }

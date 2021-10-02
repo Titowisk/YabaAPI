@@ -61,6 +61,7 @@ namespace Yaba.Tests.DependencyInversion
             services.AddScoped(_ => new Mock<IQueueMessageService>().Object);
             services.AddScoped(_ => new Mock<ILogger<CsvReaderService>>().Object);
             services.AddScoped(_ => new Mock<ILogger<NuBankReader>>().Object);
+            services.AddScoped(_ => new Mock<ILogger<BradescoReader>>().Object);
         }
 
         private static void GetApplicationCollection(IServiceCollection services)
