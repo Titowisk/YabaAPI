@@ -24,8 +24,8 @@ namespace Yaba.WebApi.Controllers
             this._bankAccountService = bankAccountService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetBankAccountsByUser()
+        [HttpGet("logged-user")]
+        public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetByLoggedUser()
         {
             var bankAccountsDto = new GetUserBankAccountsDTO()
             {
@@ -39,7 +39,7 @@ namespace Yaba.WebApi.Controllers
 
         // GET: api/BankAccounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BankAccountResponseDTO>> GetBankAccount(int id)
+        public async Task<ActionResult<BankAccountResponseDTO>> Get(int id)
         {
             var dto = new GetUserBankAccountDTO()
             {
@@ -56,7 +56,7 @@ namespace Yaba.WebApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBankAccount(int id, UpdateUserBankAccountDTO dto)
+        public async Task<IActionResult> Update(int id, UpdateUserBankAccountDTO dto)
         {
             dto.UserId = base.GetLoggedUserId();
             dto.BankAccountId = id;
@@ -87,8 +87,9 @@ namespace Yaba.WebApi.Controllers
         }
 
         // DELETE: api/BankAccounts/5
+        // https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#delete-methods
         [HttpDelete("{id}")]
-        public async Task<ActionResult<BankAccount>> DeleteBankAccount(int id)
+        public async Task<ActionResult<BankAccount>> Delete(int id)
         {
             var dto = new DeleteUserBankAccountDTO()
             {
@@ -98,7 +99,7 @@ namespace Yaba.WebApi.Controllers
 
             await this._bankAccountService.DeleteBankAccount(dto);
 
-            return this.Ok();
+            return this.NoContent();
         }
     }
 }
