@@ -13,16 +13,19 @@ COPY ./Yaba.Infrastructure.Persistence ./Yaba.Infrastructure.Persistence
 COPY ./Yaba.Infrastructure.Security ./Yaba.Infrastructure.Security
 COPY ./Yaba.WebApi ./Yaba.WebApi
 
+# RUN Update Database?
+# RUN dotnet ef database update  --project ./Yaba.Infrastructure.Persistence --startup-project ./Yaba.WebApi
+
 # RUN tests
 
 # Publish /p:EnviromentName=Development
 RUN dotnet restore ./Yaba.WebApi/Yaba.WebApi.csproj
-RUN dotnet publish ./Yaba.WebApi/Yaba.WebApi.csproj -v n -o /usr/app -c debug --no-restore
+RUN dotnet publish ./Yaba.WebApi/Yaba.WebApi.csproj -v n -o /usr/app -c release --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /usr/app
 COPY --from=build-env /usr/app .
-ENV ASPNETCORE_ENVIRONMENT="Development"
+ENV ASPNETCORE_ENVIRONMENT="Production"
 ENV ASPNETCORE_URLS=http://+:5000
 CMD ["dotnet", "Yaba.WebApi.dll"] 
 
