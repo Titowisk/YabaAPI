@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    sql-server:
+        image: "mcr.microsoft.com/mssql/server"
+        volumes:
+            - yaba-sqlserver-data:/var/opt/mssql
+        restart: unless-stopped
+        ports:
+            - "1433:1433"
+        environment:
+            SA_PASSWORD: "w-+HZjq0o9PO"
+            ACCEPT_EULA: "Y"
+    yaba-api:
+        restart: unless-stopped
+        depends_on:
+            - sql-server
+        build: .
+        ports:
+            - "5000:5000"
+volumes:
+    yaba-sqlserver-data:
