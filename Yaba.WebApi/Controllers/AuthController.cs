@@ -6,7 +6,7 @@ using Yaba.Infrastructure.DTO;
 
 namespace Yaba.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : BaseYabaController
     {
         private readonly ILogger<AuthController> _logger;
@@ -21,7 +21,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("[Action]")]
+        [Route("sign-up")]
         public async Task<IActionResult> SignUp([FromBody] UserSignUpDTO signUpDto)
         {
             await this._userService.UserSignUp(signUpDto);
@@ -30,7 +30,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("[Action]")]
+        [Route("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO loginDto)
         {
             var result = await this._userService.Login(loginDto);
@@ -39,7 +39,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("[Action]")]
+        [Route("current-user")]
         public async Task<IActionResult> GetCurrentUser()
         {
             var loggedUserId = base.GetLoggedUserId();
