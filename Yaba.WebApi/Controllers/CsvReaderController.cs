@@ -3,16 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.CsvReaderServices;
-using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Infrastructure.DTO;
 
 namespace Yaba.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/csv-management")]
     [Authorize]
     public class CsvReaderController : BaseYabaController
     {
@@ -27,21 +24,15 @@ namespace Yaba.WebApi.Controllers
             this._logger = logger;
         }
 
-        [Route("[Action]")]
+        [Route("statements")]
         [HttpPost]
         public async Task<IActionResult> ReadBankStatements(IFormFileCollection csvFiles, [FromForm] int bankAccountId)
         {
-            // TODO : better way to do this? 
-            var user = this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(user?.Value))
-            {
-                return this.Unauthorized();
-            }
+            var userId = base.GetLoggedUserId();
 
-            // TODO: make user provide the bankAccount to be used
             var dto = new CsvFileReaderDTO()
             {
-                FilesOwnerId = int.Parse(user.Value),
+                FilesOwnerId = userId,
                 BankAccountId = bankAccountId,
                 CsvFiles = csvFiles
             };
