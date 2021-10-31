@@ -85,6 +85,21 @@ namespace Yaba.Infrastructure.Persistence.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<Transaction>> GetByDateAndOrigin(int userId, int bankAccountId, string origin, int? year, int? month)
+        {
+            var query = _context.Transactions
+                //.Include(t => t.BankAccount)
+                .Where(t => t.BankAccount.UserId == userId)
+                .Where(t => t.BankAccountId == bankAccountId)
+                .Where((t) => t.Origin.Equals(origin));
+
+            if (year.HasValue) query.Where(t => t.Date.Year == year.Value);
+            if (month.HasValue) query.Where(t => t.Date.Year == month.Value);
+
+
+            return await query.ToListAsync();
+        }
+
         public async Task<IEnumerable<Transaction>> GetAllOtherTransactions(Transaction recentlyUpdatedtransaction)
         {
             var query = _context.Transactions
@@ -114,5 +129,7 @@ namespace Yaba.Infrastructure.Persistence.Repositories
 
             return await query.ToListAsync();
         }
+
+
     }
 }
