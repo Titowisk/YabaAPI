@@ -9,6 +9,7 @@ using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Transactions.Enumerations;
 using Yaba.Infrastructure.AzureStorageQueue.Contracts;
 using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.DTO.Transactions;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tools.Validations;
 using Transaction = Yaba.Domain.Models.Transactions.Transaction;
@@ -144,6 +145,23 @@ namespace Yaba.Application.TransactionServices.Impl
             }
 
             _transactionRepository.UpdateRange(similarTransactions);
+
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+        }
+
+        public async Task CategorizeTransactionsWithSimilarOrigin(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody)
+        {
+            Validate.NotNullOrEmpty(dtoQuery.Origin, "transaction origin not provided");
+            Validate.IsTrue(dtoQuery.Origin.Length > 2, "origin too short");
+
+            var transactions = await _transactionRepository.GetByDateAndOrigin(dtoQuery.UserId, dtoQuery.BankAccountId, dtoQuery.Origin, dtoQuery.Year, dtoQuery.Month);
+
+            foreach (var tr in transactions)
+            {
+                tr.Category = (Category)dtoBody.CategoryId;
+            }
+
+            _transactionRepository.UpdateRange(transactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
         }
