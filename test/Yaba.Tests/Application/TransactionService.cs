@@ -138,5 +138,31 @@ namespace Yaba.Tests.Application
             Assert.All(transactions, t => Assert.Equal(origin, t.Origin));
             Assert.All(transactions, t => Assert.Equal(Category.Entertainment, t.Category));
         }
+
+        [Fact]
+        public async Task CategorizeTransactionsWithSimilarOrigin_MustUseOriginFilter()
+        {
+            var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
+
+            // when the service CategorizeTransactionsWithSimilarOrigin is called with empty Origin
+            var transactionService = (ITransactionService)serviceProvider.GetService(typeof(ITransactionService));
+            var dtoQuery = new CategorizeTransactionsQueryDTO
+            {
+                UserId = 1,
+                BankAccountId = 1,
+                Year = 1,
+                Month = 1,
+                Origin = string.Empty
+            };
+
+            var dtoBody = new CategorizeTransactionsBodyDTO { CategoryId = 1 };
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async ()  =>
+            {
+                await transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
+            });
+
+            Assert.Equal("transaction origin not provided", exception.Message);
+        }
     }
 }
