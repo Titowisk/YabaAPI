@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.TransactionServices;
 using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.DTO.Transactions;
 using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
@@ -15,7 +16,7 @@ namespace Yaba.WebApi.Controllers
     /// TODO: https://restfulapi.net/resource-naming/
     /// https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#what-is-rest
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/transactions")]
     [Authorize]
     [ApiController]
     public class TransactionsController : ControllerBase
@@ -31,10 +32,27 @@ namespace Yaba.WebApi.Controllers
             _logger = logger;
         }
 
+        [HttpPatch]
+        // transactions?origin=something&month=1&year=2021&bankAccount=12
+        // transactions/{id}/similar-origin-transactions/categorize
+        //[Route("{id}/similar-origin-transactions/categorize")]
+        public async Task<IActionResult> CategorizeTransactions(
+            [FromQuery] CategorizeTransactionsQueryDTO dtoQuery,
+            [FromBody] CategorizeTransactionsBodyDTO dtoBody)
+        {
+            dtoQuery.UserId = GetLoggedUserId();
+            await _transactionService.CategorizeTransactions(dtoQuery, dtoBody);
+
+            return Ok();
+        }
+
         [HttpPut]
-        // transactions/similar-transactions/categorize
-        [Route("[Action]")]
-        public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins([FromBody] CategorizeUserTransactionsDTO dto)
+        // transactions?origin=something
+        // transactions/{id}/similar-origin-transactions/categorize
+        [Route("{id}/similar-origin-transactions/categorize")]
+        public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins(
+            long id,
+            [FromBody] CategorizeUserTransactionsDTO dto)
         {
             dto.UserId = GetLoggedUserId();
             await _transactionService.CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(dto);
@@ -42,9 +60,21 @@ namespace Yaba.WebApi.Controllers
             return Ok();
         }
 
+        //[HttpPut]
+        //// transactions/{id}/similar-origin-transactions/{monthId}/categorize
+        //[Route("{id}/similar-origin-transactions/{month}/categorize")]
+        //public async Task<IActionResult> CategorizeTransactionsWithSimilarOriginsWithinAMonth(
+        //    long id,
+        //    int month,
+        //    [FromBody] CategorizeUserTransactionsDTO dto)
+        //{
+        //    dto.UserId = GetLoggedUserId();
+        //    await _transactionService.CategorizeTransactionsWithSimilarOriginsWithinAMonth(dto, dto.CategoryId);
+
+        //    return Ok();
+        //}
+
         [HttpPost]
-        // transactions/
-        [Route("Create")]
         public async Task<IActionResult> Create([FromBody] CreateUserTransactionDTO dto)
         {
             dto.UserId = GetLoggedUserId();
@@ -53,11 +83,12 @@ namespace Yaba.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost] // GET
-        // transactions?month=1&year=2
-        [Route("[Action]")]
-        public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
+        [HttpGet]
+        [Route("bank-accounts/{id}")]
+        public async Task<IActionResult> GetByDate(int id,
+            [FromQuery] GetUserTransactionsByMonthDTO dto)
         {
+            dto.BankAccountId = id;
             dto.UserId = GetLoggedUserId();
             var transactions = await _transactionService.GetByMonth(dto);
 
@@ -65,8 +96,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
-        // transactions/categories
-        [Route("[Action]")]
+        [Route("categories")]
         public IActionResult GetCategories()
         {
             var categories = _transactionService.GetCategories();
@@ -74,20 +104,20 @@ namespace Yaba.WebApi.Controllers
             return Ok(categories);
         }
 
-        [HttpPost]
-        // transactions/dates
-        [Route("[Action]")]
-        public async Task<IActionResult> GetTransactionDatesByUser([FromBody] GetTransactionDatesDTO dto)
+        [HttpGet]
+        [Route("bank-accounts/{id}/dates")]
+        public async Task<IActionResult> GetTransactionDatesByUser(int id,
+            [FromQuery] GetTransactionDatesDTO dto)
         {
             dto.UserId = GetLoggedUserId();
+            dto.BankaccountId = id;
             var existentDates = await _transactionService.GetExistentTransactionsDatesByUser(dto);
 
             return Ok(existentDates);
         }
 
         [HttpPost]
-        // transactions/randomized-data
-        [Route("[Action]")]
+        [Route("randomized-data")]
         public async Task<IActionResult> GenerateRandomizedDataForGenericBank([FromBody] GenerateDataDTO dto)
         {
             dto.UserId = GetLoggedUserId();
