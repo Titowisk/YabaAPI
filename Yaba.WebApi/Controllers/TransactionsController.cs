@@ -33,15 +33,15 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPatch]
-        // transactions?origin=something&month=1&year=2021&bankAccount=12
-        // transactions/{id}/similar-origin-transactions/categorize
-        //[Route("{id}/similar-origin-transactions/categorize")]
+        [Route("bank-accounts/{bankAccountId}")]
         public async Task<IActionResult> CategorizeTransactions(
+            int bankAccountId,
             [FromQuery] CategorizeTransactionsQueryDTO dtoQuery,
             [FromBody] CategorizeTransactionsBodyDTO dtoBody)
         {
             dtoQuery.UserId = GetLoggedUserId();
-            await _transactionService.CategorizeTransactions(dtoQuery, dtoBody);
+            dtoQuery.BankAccountId = bankAccountId;
+            await _transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
 
             return Ok();
         }
