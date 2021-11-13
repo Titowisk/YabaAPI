@@ -7,11 +7,16 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.TransactionServices;
 using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.DTO.Transactions;
 using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// TODO: https://restfulapi.net/resource-naming/
+    /// https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#what-is-rest
+    /// </summary>
+    [Route("api/transactions")]
     [Authorize]
     [ApiController]
     public class TransactionsController : ControllerBase
@@ -27,18 +32,21 @@ namespace Yaba.WebApi.Controllers
             _logger = logger;
         }
 
-        [HttpPut]
-        [Route("[Action]")]
-        public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins([FromBody] CategorizeUserTransactionsDTO dto)
+        [HttpPatch]
+        [Route("bank-accounts/{bankAccountId}")]
+        public async Task<IActionResult> CategorizeTransactions(
+            int bankAccountId,
+            [FromQuery] CategorizeTransactionsQueryDTO dtoQuery,
+            [FromBody] CategorizeTransactionsBodyDTO dtoBody)
         {
-            dto.UserId = GetLoggedUserId();
-            await _transactionService.CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(dto);
+            dtoQuery.UserId = GetLoggedUserId();
+            dtoQuery.BankAccountId = bankAccountId;
+            await _transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
 
             return Ok();
         }
 
         [HttpPost]
-        [Route("Create")]
         public async Task<IActionResult> Create([FromBody] CreateUserTransactionDTO dto)
         {
             dto.UserId = GetLoggedUserId();
@@ -47,10 +55,12 @@ namespace Yaba.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("[Action]")]
-        public async Task<IActionResult> GetByDate([FromBody] GetUserTransactionsByMonthDTO dto)
+        [HttpGet]
+        [Route("bank-accounts/{id}")]
+        public async Task<IActionResult> GetByDate(int id,
+            [FromQuery] GetUserTransactionsByMonthDTO dto)
         {
+            dto.BankAccountId = id;
             dto.UserId = GetLoggedUserId();
             var transactions = await _transactionService.GetByMonth(dto);
 
@@ -58,7 +68,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("[Action]")]
+        [Route("categories")]
         public IActionResult GetCategories()
         {
             var categories = _transactionService.GetCategories();
@@ -66,18 +76,20 @@ namespace Yaba.WebApi.Controllers
             return Ok(categories);
         }
 
-        [HttpPost]
-        [Route("[Action]")]
-        public async Task<IActionResult> GetTransactionDatesByUser([FromBody] GetTransactionDatesDTO dto)
+        [HttpGet]
+        [Route("bank-accounts/{id}/dates")]
+        public async Task<IActionResult> GetTransactionDatesByUser(int id,
+            [FromQuery] GetTransactionDatesDTO dto)
         {
             dto.UserId = GetLoggedUserId();
+            dto.BankaccountId = id;
             var existentDates = await _transactionService.GetExistentTransactionsDatesByUser(dto);
 
             return Ok(existentDates);
         }
 
         [HttpPost]
-        [Route("[Action]")]
+        [Route("randomized-data")]
         public async Task<IActionResult> GenerateRandomizedDataForGenericBank([FromBody] GenerateDataDTO dto)
         {
             dto.UserId = GetLoggedUserId();
@@ -98,13 +110,4 @@ namespace Yaba.WebApi.Controllers
         }
         #endregion
     }
-    /* NOTES:
-		- Most parsers use ISO 8601 (talking about dates: 2020-01-01T17:16:40)
-		- Return types
-			https://docs.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.accepted?view=aspnetcore-3.1
-		- using .Include() normally, it brings the whole object in the response.
-
-		- making fields nullable causes the necessity of checking values before returning
-		- enum is less verbose than Enumeration when , but Enumeration is less verbose for validations
-	 */
 }

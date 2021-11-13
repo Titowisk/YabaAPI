@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yaba.Infrastructure.DTO;
 using Yaba.Domain.Models.Transactions;
+using Yaba.Infrastructure.DTO.Transactions;
 
 namespace Yaba.Application.TransactionServices
 {
@@ -14,6 +15,7 @@ namespace Yaba.Application.TransactionServices
         Task CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(CategorizeUserTransactionsDTO dto);
         Task CategorizeAllOtherTransactions(long transactionId);
         Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId);
+        Task CategorizeTransactionsWithSimilarOrigin(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody);
 
         Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto);
 
