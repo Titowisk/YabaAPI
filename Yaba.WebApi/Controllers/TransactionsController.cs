@@ -46,34 +46,6 @@ namespace Yaba.WebApi.Controllers
             return Ok();
         }
 
-        [HttpPut]
-        // transactions?origin=something
-        // transactions/{id}/similar-origin-transactions/categorize
-        [Route("{id}/similar-origin-transactions/categorize")]
-        public async Task<IActionResult> CategorizeAllTransactionsWithSimilarOrigins(
-            long id,
-            [FromBody] CategorizeUserTransactionsDTO dto)
-        {
-            dto.UserId = GetLoggedUserId();
-            await _transactionService.CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(dto);
-
-            return Ok();
-        }
-
-        //[HttpPut]
-        //// transactions/{id}/similar-origin-transactions/{monthId}/categorize
-        //[Route("{id}/similar-origin-transactions/{month}/categorize")]
-        //public async Task<IActionResult> CategorizeTransactionsWithSimilarOriginsWithinAMonth(
-        //    long id,
-        //    int month,
-        //    [FromBody] CategorizeUserTransactionsDTO dto)
-        //{
-        //    dto.UserId = GetLoggedUserId();
-        //    await _transactionService.CategorizeTransactionsWithSimilarOriginsWithinAMonth(dto, dto.CategoryId);
-
-        //    return Ok();
-        //}
-
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserTransactionDTO dto)
         {
