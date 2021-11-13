@@ -1,6 +1,12 @@
 # Introduction
 Describe the purpose of the app
 
+## naming convention
+
+- API:
+	- snake-case
+	- REST
+
 # Application
 How the app works
 
