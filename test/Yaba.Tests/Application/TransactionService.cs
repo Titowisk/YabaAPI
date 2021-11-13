@@ -99,7 +99,8 @@ namespace Yaba.Tests.Application
             var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
             const string origin = "similarOrigin";
             // given 10 transactions of a particular month
-            //  and 4 of them have similar origins
+            //  and 6 of them have similar origins
+            //  but only 4 happened in october-2020
             var response = TransactionBuilder.Create(serviceProvider)
                 .AddManyExpenseTransactions(6, 2020, 10, Category.Food)
                 .AddSingleTransaction(origin, new DateTime(2020, 10, 1), 1.0M)
@@ -125,16 +126,14 @@ namespace Yaba.Tests.Application
 
             await transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
 
-            // then all the 4 transactions with similar origin will be categorized with the same provided category
+            // then only the 4 mentioned transactions with similar origin will be categorized with the same provided category
             var context = (DataContext)serviceProvider.GetService(typeof(DataContext));
             var transactions = context.Transactions
                 .Where(t => t.Origin == origin)
-                .Where(t => t.Date.Year == 2020)
-                .Where(t => t.Date.Month == 10)
                 .ToList();
 
-            transactions = transactions.Where(t => t.Date.Year == 2020).ToList();
-            Assert.Equal(4, transactions.Count());
+            transactions = transactions.Where(t => t.Category.HasValue && t.Category == Category.Entertainment).ToList();
+            Assert.Equal(4, transactions.Count);
             Assert.All(transactions, t => Assert.Equal(origin, t.Origin));
             Assert.All(transactions, t => Assert.Equal(Category.Entertainment, t.Category));
         }

@@ -93,8 +93,11 @@ namespace Yaba.Infrastructure.Persistence.Repositories
                 .Where(t => t.BankAccountId == bankAccountId)
                 .Where((t) => t.Origin.Equals(origin));
 
-            if (year.HasValue) query.Where(t => t.Date.Year == year.Value);
-            if (month.HasValue) query.Where(t => t.Date.Year == month.Value);
+            if (year.HasValue)
+            {
+                query = query.Where(t => t.Date.Year == year.Value);
+                if (month.HasValue) query = query.Where(t => t.Date.Month == month.Value);
+            }
 
 
             return await query.ToListAsync();
