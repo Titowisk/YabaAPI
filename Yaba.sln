@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebApi", "BudgetAppAPI\Yaba.WebApi.csproj", "{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E1C134E7-61CD-4E18-8C81-81C1F4E19C31}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Presentation", "1 - Presentation", "{AFAB4D4C-1A62-42C9-9D6A-0284414545E9}"
@@ -39,7 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.IoC", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AE5CFBDE-A864-472E-9DDD-687520CDD876}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Tests", "test\Yaba.Tests\Yaba.Tests.csproj", "{8E7E34B8-28DC-42BA-8844-B3607F767133}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Tests", "test\Yaba.Tests\Yaba.Tests.csproj", "{8E7E34B8-28DC-42BA-8844-B3607F767133}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebApi", "Yaba.WebApi\Yaba.WebApi.csproj", "{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +47,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FCA33D67-0B81-4488-A959-ABCD56142291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FCA33D67-0B81-4488-A959-ABCD56142291}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCA33D67-0B81-4488-A959-ABCD56142291}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -87,12 +83,15 @@ Global
 		{8E7E34B8-28DC-42BA-8844-B3607F767133}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E7E34B8-28DC-42BA-8844-B3607F767133}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E7E34B8-28DC-42BA-8844-B3607F767133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{EB857DD5-0318-4C75-A3D6-7E4E5FA50C99} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
 		{AFAB4D4C-1A62-42C9-9D6A-0284414545E9} = {E1C134E7-61CD-4E18-8C81-81C1F4E19C31}
 		{2D4846EF-599A-426E-8FE9-4838E4A85966} = {E1C134E7-61CD-4E18-8C81-81C1F4E19C31}
 		{C8FCBF3D-B2DE-4754-B3F9-1D076A03C163} = {E1C134E7-61CD-4E18-8C81-81C1F4E19C31}
@@ -109,6 +108,7 @@ Global
 		{D51DAB31-4142-4115-B86E-72501A7764D5} = {D616B286-080E-4DD8-87F3-F6320260DA03}
 		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02} = {1F1D7F71-91FA-495A-934B-CB35E547F236}
 		{8E7E34B8-28DC-42BA-8844-B3607F767133} = {AE5CFBDE-A864-472E-9DDD-687520CDD876}
+		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABB214B-4FF9-4C2C-9926-1467825E1EFE}
