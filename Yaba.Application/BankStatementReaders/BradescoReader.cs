@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,29 +23,36 @@ namespace Yaba.Application.BankStatementReaders
         public StandardBankStatementDTO ProcessBankInformation(IFormFile csvFile)
         {
             var bankStatement = new StandardBankStatementDTO();
-
-            using var reader = new StreamReader(csvFile.OpenReadStream());
-            using (var csvReader = new CsvReader(reader, new CultureInfo("pt-BR")))
+            var config = new CsvConfiguration(new CultureInfo("pt-BR"))
             {
-                csvReader.Configuration.Delimiter = ";";
-                csvReader.Configuration.IgnoreBlankLines = false;
+                Delimiter = ";",
+                IgnoreBlankLines = true,
+            };
+            using var reader = new StreamReader(csvFile.OpenReadStream());
+            using (var csvReader = new CsvReader(reader, config))
+            {
+                //csvReader.Configuration.Delimiter = ";";
+                //csvReader.Configuration.IgnoreBlankLines = false;
 
                 while (csvReader.Read())
                 {
-                    var rowIndex = csvReader.Context.Row;
+                    var rowIndex = csvReader.CurrentIndex;
                     if (rowIndex > 3)
                     {
                         try
                         {
-                            if (string.IsNullOrEmpty(csvReader.Context.RawRecord))
+                            if (string.IsNullOrEmpty(csvReader.Parser.RawRecord))
                                 break;
+
+                            //if (string.IsNullOrEmpty(csvReader.Context.RawRecord))
+                            //    break;
 
                             if (int.TryParse(csvReader.GetField(2), out int i))
                             {
                                 var transaction = CreateTransaction(csvReader);
                                 bankStatement.Transactions.Add(transaction);
                             }
-                            else if (!string.IsNullOrEmpty(csvReader.GetField(1)) && csvReader.Context.Record.Length == 4)
+                            else if (!string.IsNullOrEmpty(csvReader.GetField(1)) && csvReader.Context.Parser.Record.Length == 4)
                             {
                                 bankStatement.Transactions.Last().Origin = csvReader.GetField(1);
                             }

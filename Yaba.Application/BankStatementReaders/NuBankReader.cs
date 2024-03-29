@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,19 +23,25 @@ namespace Yaba.Application.BankStatementReaders
         public StandardBankStatementDTO ProcessBankInformation(IFormFile csvFile)
         {
             var bankStatement = new StandardBankStatementDTO();
+            var config = new CsvConfiguration(new CultureInfo("pt-BR"))
+            {
+                Delimiter = ";",
+                IgnoreBlankLines = true,
+            };
 
             using var reader = new StreamReader(csvFile.OpenReadStream());
-            using (var csvReader = new CsvReader(reader, new CultureInfo("pt-BR")))
+            using (var csvReader = new CsvReader(reader, config))
             {
                 var cleanedBadData = new List<string>();
 
-                csvReader.Configuration.Delimiter = ",";
-                csvReader.Configuration.IgnoreQuotes = true;
+                //csvReader.Configuration.Delimiter = ",";
+                //csvReader.Configuration.IgnoreQuotes = true;
                 while (csvReader.Read())
                 {
                     try
                     {
-                        var rowIndex = csvReader.Context.Row;
+                        //var rowIndex = csvReader.Context.Row;
+                        var rowIndex = csvReader.Parser.RawRow;
                         if (rowIndex == 1) continue;
 
                         var transaction = CreateTransaction(csvReader);
@@ -42,7 +49,8 @@ namespace Yaba.Application.BankStatementReaders
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, $"{csvFile.FileName}, line: {csvReader.Context.Row}");
+                        //_logger.LogWarning(ex, $"{csvFile.FileName}, line: {csvReader.Context.Row}");
+                        _logger.LogWarning(ex, $"{csvFile.FileName}, line: {csvReader.Parser.RawRow}");
                     }
                 }
             }
