@@ -31,6 +31,8 @@ builder.Services
 builder.Services.AddControllers()
     .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swaggerOptions =>
 {
     swaggerOptions.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "YabaAPI", Version = "v1" });
@@ -57,7 +59,7 @@ WebApplication app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseSwagger();
-app.UseSwaggerUI(swaggerOptions => swaggerOptions.SwaggerEndpoint("\"/swagger/v1/swagger.json", "YabaAPI V1"));
+app.UseSwaggerUI(swaggerOptions => swaggerOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "YabaAPI V1"));
 
 app.UseRouting();
 
