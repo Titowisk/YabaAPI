@@ -1,45 +1,91 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
-using System;
+using System.Text;
+using System.Text.Json.Serialization;
+using Yaba.Infrastructure.DTO;
+using Yaba.Infrastructure.IoC;
+using Yaba.WebApi.Middlewares;
 
-namespace Yaba.WebApi
+/// Reference
+/// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0#default-application-configuration-sources
+/// 
+var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(LogLevel.Trace);
+
+builder.Services
+    .Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+builder.Services
+    .Configure<AzureConfig>(builder.Configuration.GetSection("AzureConfig"));
+builder.Services
+    .Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
+
+builder.Services.AddControllers()
+    .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+builder.Services.AddSwaggerGen(swaggerOptions =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-            try
-            {
-                logger.Debug("init main");
-                CreateHostBuilder(args).Build().Run();
-            }
-            catch (Exception exception)
-            {
-                //NLog: catch setup errors
-                logger.Error(exception, "Stopped program because of exception");
-                throw;
-            }
-            finally
-            {
-                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
-            }
-        }
+    swaggerOptions.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "YabaAPI", Version = "v1" });
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-                Host.CreateDefaultBuilder(args)
-                        .ConfigureLogging(logging =>
-                        {
-                            logging.ClearProviders();
-                            logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                        })
-                        .ConfigureWebHostDefaults(webBuilder =>
-                        {
-                            webBuilder.UseStartup<Startup>();
-                        })
-                        .UseNLog();
-    }
+DependencyResolver.RegisterServices(builder.Services, builder.Configuration);
+
+var secretKey = builder.Configuration.GetSection("JwtConfig:SecretKey").Value;
+var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+ConfigureTokenValidation(builder.Services, securityKey);
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policyBuilder =>
+    {
+        policyBuilder.AllowAnyHeader();
+        policyBuilder.AllowAnyMethod();
+        policyBuilder.AllowAnyMethod();
+    });
+});
+
+WebApplication app = builder.Build();
+// <
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI(swaggerOptions => swaggerOptions.SwaggerEndpoint("\"/swagger/v1/swagger.json", "YabaAPI V1"));
+
+app.UseRouting();
+
+app.UseCors();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
+void ConfigureTokenValidation(IServiceCollection services, SecurityKey securityKey)
+{
+    var tokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = "Yaba API",
+        ValidateAudience = true,
+        ValidAudience = "Yaba API",
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = securityKey
+    };
+
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = builder.Environment.IsDevelopment();
+            options.SaveToken = true;
+            options.TokenValidationParameters = tokenValidationParameters;
+        });
 }
