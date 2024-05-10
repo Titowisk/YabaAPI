@@ -1,5 +1,8 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
+# When Visual Studio handles the building of the image, the image seens to work only when Visual Studio run a container from it
+# When I tried to build the image from Dockerfile without any changes, I could run it with no problems:
+# My docker build command (run from the solution folder): docker build -f Yaba.WebApi/Dockerfile -t yaba-tito .
+# My docker run command: docker run --rm -p 5000:8080 -p 5001:8081 -e "ASPNETCORE_ENVIRONMENT=Development" <image-id>
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
