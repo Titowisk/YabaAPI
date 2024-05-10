@@ -41,6 +41,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Tests", "test\Yaba.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebApi", "Yaba.WebApi\Yaba.WebApi.csproj", "{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C55EFD8-6222-4CC4-85EF-9F358248A628}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yml = compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

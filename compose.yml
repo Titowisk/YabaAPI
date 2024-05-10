@@ -1,0 +1,25 @@
+# Why the name compose.yml instead of docker-compose.yml ? > https://docs.docker.com/compose/compose-application-model/#the-compose-file
+
+services:
+    # dockerhub page of sqlserver https://hub.docker.com/_/microsoft-mssql-server
+    sql-server-2022:
+        image: "mcr.microsoft.com/mssql/server:2022-latest"
+        ports:
+            - "1433:1433"
+        environment:
+            SA_PASSWORD: "w-+HZjq0o9PO"
+            ACCEPT_EULA: "Y"
+
+    yaba-api:
+        # build: . use the current directory, so I must use the CLI in the solution directory
+        build:
+            dockerfile: ./Yaba.WebApi/Dockerfile
+        depends_on:
+            - sql-server-2022
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+        # Because of the exposed ports on the api dockerfile
+        ports:
+            - "5000:8080"
+            - "5001:8081"
+        
