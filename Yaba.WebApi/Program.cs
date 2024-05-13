@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.IoC;
+using Yaba.Infrastructure.Persistence.Context;
 using Yaba.WebApi.Middlewares;
 
 /// Reference
@@ -51,6 +52,16 @@ void ConfigureTokenValidation(IServiceCollection services, SecurityKey securityK
 
 static void ConfigWebApplication(WebApplication app)
 {
+    if (app.Environment.IsDevelopment())
+    {
+        using var scope = app.Services.CreateScope();
+
+        var yabaContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+        yabaContext.Database.EnsureCreated();
+
+        yabaContext.Seed();
+    }
+
     app.UseMiddleware<ExceptionMiddleware>();
     app.UseHttpsRedirection();
     app.UseSwagger();
