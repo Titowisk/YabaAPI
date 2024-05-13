@@ -5,8 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using NLog.Web;
-using System;
 using System.Text;
 using System.Text.Json.Serialization;
 using Yaba.Infrastructure.DTO;
