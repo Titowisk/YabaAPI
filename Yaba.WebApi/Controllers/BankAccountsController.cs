@@ -1,35 +1,26 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.BankAccountServices;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Infrastructure.DTO;
-using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class BankAccountsController : ControllerBase
+    public class BankAccountsController : BaseYabaController
     {
-        private readonly ILogger<BankAccountsController> _logger;
         private readonly IBankAccountService _bankAccountService;
-        private readonly IBankAccountRepository _bankAccountRepository;
 
         public BankAccountsController(
             ILogger<BankAccountsController> logger,
-            IBankAccountRepository bankAccountRepository,
             IBankAccountService bankAccountService)
         {
-            _logger = logger;
             _bankAccountService = bankAccountService;
-            _bankAccountRepository = bankAccountRepository;
         }
 
         [HttpGet]
@@ -109,17 +100,5 @@ namespace Yaba.WebApi.Controllers
 
             return Ok();
         }
-
-        #region Priv Methods
-        private int GetLoggedUserId()
-        {
-            // TODO : better way to do this? 
-            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
-
-            return int.Parse(user.Value);
-        }
-        #endregion
     }
 }
