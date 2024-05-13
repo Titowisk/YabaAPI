@@ -1,6 +1,6 @@
 ﻿namespace Yaba.Infrastructure.DTO
 {
-    public class UserSignInDTO
+    public class UserSignUpDTO
     {
         public string Name { get; set; }
         public string Email { get; set; }
