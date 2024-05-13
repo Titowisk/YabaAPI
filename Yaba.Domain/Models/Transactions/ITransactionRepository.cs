@@ -15,6 +15,7 @@ namespace Yaba.Domain.Models.Transactions
         Task<IEnumerable<Transaction>> GetAll();
         Task<ICollection<TransactionsResponseDTO>> GetByMonthBankAccountUser(short year, short month, int bankAccountId, int userId);
         Task<IEnumerable<Transaction>> GetByDateAndOrigin(DateTime date, string origin, int bankAccountId);
+        Task<IEnumerable<Transaction>> GetByDateAndOrigin(int userId, int bankAccountId, string origin, int? year, int? month);
         Task<IEnumerable<Transaction>> GetPredecessors(DateTime fromDateUntilToday, int bankAccountId);
         Task<IEnumerable<Transaction>> GetAllOtherTransactions(Transaction recentlyUpdatedtransaction);
 

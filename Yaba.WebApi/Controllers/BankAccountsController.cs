@@ -9,8 +9,10 @@ using Yaba.Infrastructure.DTO;
 
 namespace Yaba.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    /// <summary>
+    /// TODO: change names
+    /// </summary>
+    [Route("api/bank-accounts")]
     [Authorize]
     public class BankAccountsController : BaseYabaController
     {
@@ -24,8 +26,7 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("[Action]")]
-        public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetBankAccountsByUser()
+        public async Task<ActionResult<IEnumerable<BankAccountsResponseDTO>>> GetAccounts()
         {
             var dto = new GetUserBankAccountsDTO()
             {
@@ -37,9 +38,8 @@ namespace Yaba.WebApi.Controllers
             return Ok(bankAccounts);
         }
 
-        // GET: api/BankAccounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BankAccountResponseDTO>> GetBankAccount(int id)
+        public async Task<ActionResult<BankAccountResponseDTO>> GetAccount(int id)
         {
             var dto = new GetUserBankAccountDTO()
             {
@@ -56,7 +56,8 @@ namespace Yaba.WebApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBankAccount(int id, UpdateUserBankAccountDTO dto)
+        // bank-accounts/{id}
+        public async Task<IActionResult> UpdateAccount(int id, UpdateUserBankAccountDTO dto)
         {
             dto.UserId = GetLoggedUserId();
             dto.BankAccountId = id;
@@ -65,11 +66,11 @@ namespace Yaba.WebApi.Controllers
             return NoContent();
         }
 
-        // POST: api/BankAccounts
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<BankAccount>> Create(CreateUserBankAccountDTO dto)
+        // bank-accounts/
+        public async Task<ActionResult<BankAccount>> CreateAccount(CreateUserBankAccountDTO dto)
         {
             dto.UserId = GetLoggedUserId();
 
@@ -86,9 +87,8 @@ namespace Yaba.WebApi.Controllers
             return Ok(response);
         }
 
-        // DELETE: api/BankAccounts/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<BankAccount>> DeleteBankAccount(int id)
+        public async Task<ActionResult<BankAccount>> DeleteAccount(int id)
         {
             var dto = new DeleteUserBankAccountDTO()
             {
@@ -98,7 +98,7 @@ namespace Yaba.WebApi.Controllers
 
             await _bankAccountService.DeleteBankAccount(dto);
 
-            return Ok();
+            return this.NoContent();
         }
     }
 }
