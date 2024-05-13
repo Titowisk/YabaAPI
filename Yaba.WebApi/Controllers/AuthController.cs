@@ -24,7 +24,7 @@ namespace Yaba.WebApi.Controllers
         [Route("sign-up")]
         public async Task<IActionResult> SignUp([FromBody] UserSignUpDTO signUpDto)
         {
-            await _userService.UserSignUp(dto);
+            await _userService.UserSignUp(signUpDto);
 
             return Ok();
         }
@@ -33,7 +33,7 @@ namespace Yaba.WebApi.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO loginDto)
         {
-            var result = await _userService.Login(dto);
+            var result = await _userService.Login(loginDto);
 
             return Ok(result);
         }
