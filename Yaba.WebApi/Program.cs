@@ -6,20 +6,22 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
+using System;
 using System.Text;
 using System.Text.Json.Serialization;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.IoC;
+using Yaba.Infrastructure.Persistence.Context;
 using Yaba.WebApi.Middlewares;
 
 /// Reference
 /// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0#default-application-configuration-sources
 /// 
-var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
-builder.Logging.SetMinimumLevel(LogLevel.Trace);
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+builder.Logging.AddConsole();
 
 ConfigServiceCollection(builder);
 
@@ -50,6 +52,16 @@ void ConfigureTokenValidation(IServiceCollection services, SecurityKey securityK
 
 static void ConfigWebApplication(WebApplication app)
 {
+    if (app.Environment.IsDevelopment())
+    {
+        using var scope = app.Services.CreateScope();
+
+        var yabaContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+        yabaContext.Database.EnsureCreated();
+
+        yabaContext.Seed();
+    }
+
     app.UseMiddleware<ExceptionMiddleware>();
     app.UseHttpsRedirection();
     app.UseSwagger();
