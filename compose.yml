@@ -7,7 +7,7 @@ services:
         ports:
             - "1433:1433"
         environment:
-            SA_PASSWORD: "w-+HZjq0o9PO"
+            SA_PASSWORD: "A&VeryComplex123Password"
             ACCEPT_EULA: "Y"
 
     yaba-api:
