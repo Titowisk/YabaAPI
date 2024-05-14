@@ -63,13 +63,10 @@ namespace Yaba.Application.CsvReaderServices.Impl
                     var initialTransactionDate = parsedFile.Transactions.First().Date;
                     var finalTransactionDate = parsedFile.Transactions.Last().Date;
 
-                    //var bankAccount = await GetFilesOwnerBankAccount(dto.FilesOwnerId, parsedFile.AgencyNumber, parsedFile.AccountNumber, dto.BankAccountId);
-
                     RemoveExistentTransactions(parsedFile);
 
                     if (parsedFile.Transactions.Count > 0)
                         await PersistBankEstatementInformation(parsedFile, bankAccount);
-
 
                     fileStatus.IsSuccessfullRead = true;
                     fileStatus.TransactionsRead = transactionsRead;
@@ -102,7 +99,7 @@ namespace Yaba.Application.CsvReaderServices.Impl
         {
             // TODO: get only transactions from user between the period of time on the csvFile and refactor this to async method
             parsedFile.Transactions
-                .RemoveAll( t => _transactionRepository.DoesTransactionExists(t.TransactionUniqueHash).Result);
+                .RemoveAll(t => _transactionRepository.DoesTransactionExists(t.TransactionUniqueHash).Result);
         }
 
         private async Task<BankAccount> GetFilesOwnerBankAccount(int filesOwnerId, string agencyNumber, string accountNumber, short bankCode)

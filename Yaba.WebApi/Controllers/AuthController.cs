@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Yaba.Application.UserServices;
 using Yaba.Infrastructure.DTO;
-using Yaba.Tools.Validations;
 
 namespace Yaba.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    [Route("api/auth")]
+    public class AuthController : BaseYabaController
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IUserService _userService;
@@ -24,33 +21,31 @@ namespace Yaba.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("[Action]")]
-        public async Task<IActionResult> SignIn([FromBody] UserSignInDTO dto)
+        [Route("sign-up")]
+        public async Task<IActionResult> SignUp([FromBody] UserSignUpDTO signUpDto)
         {
-            await _userService.UserSignIn(dto);
+            await _userService.UserSignUp(signUpDto);
 
             return Ok();
         }
 
         [HttpPost]
-        [Route("[Action]")]
-        public async Task<IActionResult> Login([FromBody] UserLoginDTO dto)
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDTO loginDto)
         {
-            var result = await _userService.Login(dto);
+            var result = await _userService.Login(loginDto);
 
             return Ok(result);
         }
 
         [HttpGet]
-        [Route("[Action]")]
+        [Route("current-user")]
         public async Task<IActionResult> GetCurrentUser()
         {
-            // TODO : better way to do this? 
-            var user = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Validate.IsTrue(!string.IsNullOrEmpty(user.Value), "Acesso negado");
+            int loggedUserId = GetLoggedUserId();
 
             // TODO: safer way to do this? (if someone hijacks a valid token, this could be problematic)
-            var result = await _userService.GetCurrentUserById(int.Parse(user.Value));
+            var result = await _userService.GetCurrentUserById(loggedUserId);
 
             return Ok(result);
         }

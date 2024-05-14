@@ -110,7 +110,58 @@ namespace Yaba.Tests.Application
             Assert.Equal(10, fileStatus.ExistentTransactionsSkiped);
         }
 
+        [Fact(DisplayName = "Service ReadTransactionsFromFiles should read a csv file from a Bradesco's account statement")]
+        public async Task ReadTransactionsFromFiles_BradescoAccountCsvFile()
+        {
+            var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite("CsvReaderServiceTest");
+
+            // Given a bankAccount
+            var response = BankAccountBuilder
+                .CreateABankAccount(serviceProvider)
+                .WithBankCode(BankCode.BRADESCO)
+                .Build();
+
+            //  and a card statement from Bradesco account with 10 transactions
+            var csvFile = GetCsvFile("BradescoStatement_10Transactions"); // TODO: Duplicated Code -> refactor
+            Mock<IFormFile> fileMock = MockFile(csvFile);
+
+            var fileCollectionMock = MockFormFileCollection(fileMock.Object);
+
+            // when I use service ReadTransactionsFromFiles
+            var csvReaderService = (ICsvReaderService)serviceProvider.GetService(typeof(ICsvReaderService));
+            var dto = new CsvFileReaderDTO
+            {
+                BankAccountId = response.BankAccount.Id,
+                FilesOwnerId = response.User.Id,
+                CsvFiles = fileCollectionMock.Object
+            };
+            var result = await csvReaderService.ReadTransactionsFromFiles(dto);
+
+            // then the result of reading should be successul
+            Assert.Single(result);
+            var fileStatus = result.First();
+            Assert.True(fileStatus.IsSuccessfullRead);
+            Assert.Equal(10, fileStatus.TransactionsRead);
+            Assert.Equal(10, fileStatus.TransactionsSaved);
+            Assert.Equal(0, fileStatus.ExistentTransactionsSkiped);
+
+            //  and those 10 transactions should be saved for the given bankAccount
+            var context = (DataContext)serviceProvider.GetService(typeof(DataContext));
+            var bankAccount = context.BankAccounts.Include(bk => bk.Transactions).First(bk => bk.Id == response.BankAccount.Id);
+            Assert.Equal(10, bankAccount.Transactions.Count);
+        }
+
+
         #region Priv Methods
+        private Mock<IFormFileCollection> MockFormFileCollection(IFormFile formFile)
+        {
+            var fileCollectionMock =  new Mock<IFormFileCollection>();
+            var fileList = new List<IFormFile>() { formFile };
+            fileCollectionMock.Setup(_ => _.GetEnumerator()).Returns(fileList.GetEnumerator());
+
+            return fileCollectionMock;
+        }
+
         private Mock<IFormFile> MockFile(FileInfo csvFile)
         {
             var fileMock = new Mock<IFormFile>();
@@ -126,7 +177,7 @@ namespace Yaba.Tests.Application
             var path = Directory.GetCurrentDirectory();
             var projectPath = Directory.GetParent(path).Parent.Parent.FullName;
 
-            return new FileInfo($"{projectPath}\\CsvFiles\\NuBankReaderServiceTest\\{fileName}.csv");
+            return new FileInfo($"{projectPath}\\CsvFiles\\CsvReaderServiceTest\\{fileName}.csv");
         }
         #endregion
     }

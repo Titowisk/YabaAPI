@@ -5,6 +5,7 @@ using Xunit;
 using Yaba.Application.TransactionServices;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Transactions.Enumerations;
+using Yaba.Infrastructure.DTO.Transactions;
 using Yaba.Infrastructure.Persistence.Context;
 using Yaba.Tests.EntitiesCreator.TransactionEntity;
 
@@ -90,6 +91,77 @@ namespace Yaba.Tests.Application
             Assert.Equal(4, untouchedTransactions.Count);
             Assert.All(categorizedTransactions, t => Assert.Equal(categorizedTransaction.Category, t.Category));
             Assert.All(untouchedTransactions, t => Assert.True(categorizedTransaction.Category != t.Category));
+        }
+
+        [Fact]
+        public async Task CategorizeTransactionsWithSimilarOrigin_ChangeCategoriesOfTransactionsOfAMonthCorrectly()
+        {
+            var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
+            const string origin = "similarOrigin";
+            // given 10 transactions of a particular month
+            //  and 6 of them have similar origins
+            //  but only 4 happened in october-2020
+            var response = TransactionBuilder.Create(serviceProvider)
+                .AddManyExpenseTransactions(6, 2020, 10, Category.Food)
+                .AddSingleTransaction(origin, new DateTime(2020, 10, 1), 1.0M)
+                .AddSingleTransaction(origin, new DateTime(2020, 10, 2), 1.0M)
+                .AddSingleTransaction(origin, new DateTime(2020, 10, 3), 1.0M)
+                .AddSingleTransaction(origin, new DateTime(2020, 10, 4), 1.0M)
+                .AddSingleTransaction(origin, new DateTime(2020, 2, 4), 1.0M)
+                .AddSingleTransaction(origin, new DateTime(2021, 11, 7), 1.0M)
+                .Build();
+
+            // when the service CategorizeTransactionsWithSimilarOrigin is called
+            var transactionService = (ITransactionService)serviceProvider.GetService(typeof(ITransactionService));
+            var dtoQuery = new CategorizeTransactionsQueryDTO
+            {
+                UserId = response.User.Id,
+                BankAccountId = response.BankAccount.Id,
+                Year = 2020,
+                Month = 10,
+                Origin = origin
+            };
+
+            var dtoBody = new CategorizeTransactionsBodyDTO { CategoryId = (int)Category.Entertainment };
+
+            await transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
+
+            // then only the 4 mentioned transactions with similar origin will be categorized with the same provided category
+            var context = (DataContext)serviceProvider.GetService(typeof(DataContext));
+            var transactions = context.Transactions
+                .Where(t => t.Origin == origin)
+                .ToList();
+
+            transactions = transactions.Where(t => t.Category.HasValue && t.Category == Category.Entertainment).ToList();
+            Assert.Equal(4, transactions.Count);
+            Assert.All(transactions, t => Assert.Equal(origin, t.Origin));
+            Assert.All(transactions, t => Assert.Equal(Category.Entertainment, t.Category));
+        }
+
+        [Fact]
+        public async Task CategorizeTransactionsWithSimilarOrigin_MustUseOriginFilter()
+        {
+            var serviceProvider = DependencyInversion.DependencyContainer.GetServicesUsingSQLite(_sqlite_db_filename);
+
+            // when the service CategorizeTransactionsWithSimilarOrigin is called with empty Origin
+            var transactionService = (ITransactionService)serviceProvider.GetService(typeof(ITransactionService));
+            var dtoQuery = new CategorizeTransactionsQueryDTO
+            {
+                UserId = 1,
+                BankAccountId = 1,
+                Year = 1,
+                Month = 1,
+                Origin = string.Empty
+            };
+
+            var dtoBody = new CategorizeTransactionsBodyDTO { CategoryId = 1 };
+
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async ()  =>
+            {
+                await transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
+            });
+
+            Assert.Equal("transaction origin not provided", exception.Message);
         }
     }
 }
