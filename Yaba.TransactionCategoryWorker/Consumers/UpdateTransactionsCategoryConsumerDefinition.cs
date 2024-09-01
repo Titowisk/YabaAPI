@@ -10,11 +10,5 @@ namespace Yaba.TransactionCategoryWorker.Consumers
             // TODO: test EfCore against concurrent calls
             ConcurrentMessageLimit = 1;
         }
-
-        protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<UpdateTransactionsCategoryConsumer> consumerConfigurator)
-        {
-            // TODO: should I keept it?
-            endpointConfigurator.UseMessageRetry(r => r.Interval(5, 1000));
-        }
     }
 }
