@@ -136,7 +136,9 @@ namespace Yaba.Application.TransactionServices.Impl
         // TODO: refactor: CategorizeTransactionsWithinTheLastXMonths
         public async Task CategorizeAllOtherTransactions(long transactionId)
         {
-            var transaction = await _transactionRepository.GetById(transactionId);
+            Transaction transaction = await _transactionRepository.GetById(transactionId);
+            Validate.NotNull(transaction);
+
             var similarTransactions = await _transactionRepository.GetAllOtherTransactions(transaction);
 
             foreach (var tr in similarTransactions)
