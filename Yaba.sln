@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		compose.yml = compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.TransactionCategoryWorker", "Yaba.TransactionCategoryWorker\Yaba.TransactionCategoryWorker.csproj", "{C0C3002D-9E16-420D-A2C6-FEFFC50A7BE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0C3002D-9E16-420D-A2C6-FEFFC50A7BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C3002D-9E16-420D-A2C6-FEFFC50A7BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0C3002D-9E16-420D-A2C6-FEFFC50A7BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0C3002D-9E16-420D-A2C6-FEFFC50A7BE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +120,7 @@ Global
 		{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02} = {1F1D7F71-91FA-495A-934B-CB35E547F236}
 		{8E7E34B8-28DC-42BA-8844-B3607F767133} = {AE5CFBDE-A864-472E-9DDD-687520CDD876}
 		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
+		{C0C3002D-9E16-420D-A2C6-FEFFC50A7BE9} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABB214B-4FF9-4C2C-9926-1467825E1EFE}
