@@ -1,5 +1,4 @@
-﻿
-namespace Yaba.TransactionCategoryWorker.MessageContracts;
+﻿namespace Yaba.Domain.Models.Transactions.MessageContracts;
 
 public record UpdateTransactionsCategory
 {

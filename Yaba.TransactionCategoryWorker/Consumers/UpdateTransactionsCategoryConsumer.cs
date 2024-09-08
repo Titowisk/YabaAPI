@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using Yaba.Application.TransactionServices;
-using Yaba.TransactionCategoryWorker.MessageContracts;
+using Yaba.Domain.Models.Transactions.MessageContracts;
 
 namespace Yaba.TransactionCategoryWorker.Consumers
 {
