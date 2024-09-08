@@ -6,6 +6,14 @@ interesting on the internet
 The application is a CSV bank statement manager. It reads bank statements for different banks and saves them for each user's bank account.
 The user can then categorize this transaction to better help organize their life finances.
 
+### Asynchronous Categorizing
+- https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-8.0&tabs=visual-studio
+- https://www.rabbitmq.com/docs/management
+- https://www.rabbitmq.com/tutorials/tutorial-two-dotnet
+- https://hub.docker.com/_/rabbitmq
+- https://github.com/MassTransit/MassTransit?tab=readme-ov-file
+- 
+
 ## Technologies
 This is the list of technologies I already experimented in this application
 
@@ -42,6 +50,14 @@ You can log in using:
 - email: test-seed@gmail.com
 - password: 123Correct_
 
+### Debug
+- run the sql server container
+`docker run -d -it -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=A&VeryComplex123Password" -p 1433:1433 --name sql-server-2022-debug mcr.microsoft.com/mssql/server:2022-latest`
+- change appsettings.Development.json
+Replace "Server=yabaapi-sql-server-2022-1" with "Server=localhost"
+- run rabbitMQ container
+`TODO`
+- run api and worker projects using Visual Studio
 
 # Notes
 - The webjob and the messaging part is not working yet because of recent changes I had to make in the entire solution
