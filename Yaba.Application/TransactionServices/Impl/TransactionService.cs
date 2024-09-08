@@ -99,6 +99,7 @@ namespace Yaba.Application.TransactionServices.Impl
             return existentDates;
         }
 
+        [Obsolete("Does not work anymero, use CategorizeTransactionsUsingCategoryWorker")]
         public async Task CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(CategorizeUserTransactionsDTO dto)
         {
             var transactionSentByClient = await _transactionRepository.GetById(dto.TransactionId);
@@ -118,22 +119,6 @@ namespace Yaba.Application.TransactionServices.Impl
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 
-        public async Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId)
-        {
-            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
-
-            if (!similarTransactions.Any())
-                return;
-
-            foreach (var t in similarTransactions)
-            {
-                t.Category = (Category)categoryId;
-            }
-
-            _transactionRepository.UpdateRange(similarTransactions);
-        }
-
-        // TODO: refactor: CategorizeTransactionsWithinTheLastXMonths
         public async Task CategorizeAllOtherTransactions(long transactionId)
         {
             Transaction transaction = await _transactionRepository.GetById(transactionId);
@@ -151,6 +136,12 @@ namespace Yaba.Application.TransactionServices.Impl
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
         }
 
+        /// <summary>
+        /// Categorize all transactions with similar origin in one action
+        /// </summary>
+        /// <param name="dtoQuery"></param>
+        /// <param name="dtoBody"></param>
+        /// <returns></returns>
         public async Task CategorizeTransactionsWithSimilarOrigin(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody)
         {
             Validate.NotNullOrEmpty(dtoQuery.Origin, "transaction origin not provided");
@@ -166,6 +157,40 @@ namespace Yaba.Application.TransactionServices.Impl
             _transactionRepository.UpdateRange(transactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+        }
+
+        public async Task CategorizeTransactionsUsingCategoryWorker(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody)
+        {
+            Validate.NotNullOrEmpty(dtoQuery.Origin, "transaction origin not provided");
+            Validate.IsTrue(dtoQuery.Origin.Length > 2, "origin too short");
+
+            var transaction =  await _transactionRepository.GetById(dtoQuery.TransactionId);
+
+            var bankAccount = await _bankAccountRepository.GetById(transaction.BankAccountId);
+            Validate.NotNull(bankAccount, "Access Denied");
+
+            Validate.IsTrue(bankAccount.UserId == dtoQuery.UserId, "Access Denied");
+
+            await CategorizeTransactionsWithSimilarOriginsWithinAMonth(transaction, dtoBody.CategoryId);
+
+            // send message to worker
+        }
+
+        public async Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId)
+        {
+            var similarTransactions = await _transactionRepository.GetByDateAndOrigin(transaction.Date, transaction.Origin, (int)transaction.BankAccountId);
+
+            if (!similarTransactions.Any())
+                return;
+
+            foreach (var t in similarTransactions)
+            {
+                t.Category = (Category)categoryId;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+
         }
 
         public async Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto)

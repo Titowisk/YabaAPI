@@ -13,10 +13,11 @@ namespace Yaba.Application.TransactionServices
         Task Create(CreateUserTransactionDTO dto);
         Task<IEnumerable<ExistentTransactionsDatesResponseDTO>> GetExistentTransactionsDatesByUser(GetTransactionDatesDTO dto);
         Task CategorizeAllTransactionsWithSimilarOriginsToTransactionSentByClient(CategorizeUserTransactionsDTO dto);
-        Task CategorizeAllOtherTransactions(long transactionId);
         Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId);
         Task CategorizeTransactionsWithSimilarOrigin(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody);
 
+        Task CategorizeTransactionsUsingCategoryWorker(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody);
+        Task CategorizeAllOtherTransactions(long transactionId);
         Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto);
 
         IEnumerable<CategoryDTO> GetCategories();

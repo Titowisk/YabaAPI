@@ -41,7 +41,17 @@ namespace Yaba.WebApi.Controllers
         {
             dtoQuery.UserId = GetLoggedUserId();
             dtoQuery.BankAccountId = bankAccountId;
-            await _transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
+
+            if(dtoQuery.Year.HasValue)
+            {
+                // Patch category from all similar transactions (origin) within that year
+                await _transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
+            }
+            else
+            {
+                // Patch category from all similar transactions (origin)
+            }
+            // TODO: use massTransit and RabbitMQ to categorize transactions with similar orgins from all the OTHER months
 
             return Ok();
         }
