@@ -2,5 +2,5 @@
 
 public record UpdateTransactionsCategory
 {
-    public int TransactionId { get; set; }
+    public long TransactionId { get; set; }
 }

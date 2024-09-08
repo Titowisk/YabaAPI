@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Yaba.Domain.Models.Transactions.MessageContracts;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.IoC;
 using Yaba.Infrastructure.Persistence.Context;
@@ -87,6 +89,25 @@ void ConfigServiceCollection(WebApplicationBuilder builder)
 
     builder.Services.AddControllers()
         .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+    builder.Services.AddMassTransit(configure =>
+    {
+        configure.UsingRabbitMq((context, configuration) =>
+        {
+            configuration.ReceiveEndpoint("transaction-categorization-queue", configureEndpoint =>
+            {
+                configureEndpoint.Bind("api-worker-exchange");
+                configureEndpoint.Bind<UpdateTransactionsCategory>();
+            });
+
+            configuration.Host("localhost", "/", h => {
+                h.Username("guest");
+                h.Password("guest");
+            });
+
+            configuration.ConfigureEndpoints(context);
+        });
+    });
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();

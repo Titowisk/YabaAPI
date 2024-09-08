@@ -21,6 +21,8 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Yaba.Tools" Version="0.1.0" />
+	<PackageReference Include="MassTransit" Version="8.2.5" />
+	<PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
   </ItemGroup>
 
   <ItemGroup>

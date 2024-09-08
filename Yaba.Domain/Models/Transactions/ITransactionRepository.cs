@@ -18,6 +18,7 @@ namespace Yaba.Domain.Models.Transactions
         Task<IEnumerable<Transaction>> GetByDateAndOrigin(int userId, int bankAccountId, string origin, int? year, int? month);
         Task<IEnumerable<Transaction>> GetPredecessors(DateTime fromDateUntilToday, int bankAccountId);
         Task<IEnumerable<Transaction>> GetAllOtherTransactions(Transaction recentlyUpdatedtransaction);
+        Task<IEnumerable<Transaction>> GetAllOtherTransactionsOutsideMonth(Transaction recentlyUpdatedtransaction);
 
         void Insert(Transaction entity);
         void InsertRange(IEnumerable<Transaction> transactions);

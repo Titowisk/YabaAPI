@@ -1,5 +1,5 @@
 using MassTransit;
-using Yaba.TransactionCategoryWorker.MessageContracts;
+using Yaba.Domain.Models.Transactions.MessageContracts;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddMassTransit(configure =>

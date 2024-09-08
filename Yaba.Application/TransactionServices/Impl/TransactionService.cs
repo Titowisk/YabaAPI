@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using MassTransit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Transactions.Enumerations;
+using Yaba.Domain.Models.Transactions.MessageContracts;
 using Yaba.Infrastructure.AzureStorageQueue.Contracts;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.DTO.Transactions;
@@ -21,9 +23,11 @@ namespace Yaba.Application.TransactionServices.Impl
         private readonly IQueueMessageService _queueMessageService;
         private readonly IBankAccountRepository _bankAccountRepository;
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IBus _bus;
         private readonly UnitOfWork _uow;
 
         public TransactionService(
+            IBus bus, // TODO: move package to a different project ?
             UnitOfWork uow,
             IQueueMessageService queueMessageService,
             ITransactionRepository transactionRepository,
@@ -32,6 +36,7 @@ namespace Yaba.Application.TransactionServices.Impl
             _queueMessageService = queueMessageService;
             _bankAccountRepository = bankAccountRepository;
             _transactionRepository = transactionRepository;
+            _bus = bus;
             _uow = uow;
         }
 
@@ -119,23 +124,6 @@ namespace Yaba.Application.TransactionServices.Impl
             // TODO: _bus.RaiseEvent(new UserTransactionsWereCategorizedEvent(dto))
         }
 
-        public async Task CategorizeAllOtherTransactions(long transactionId)
-        {
-            Transaction transaction = await _transactionRepository.GetById(transactionId);
-            Validate.NotNull(transaction);
-
-            var similarTransactions = await _transactionRepository.GetAllOtherTransactions(transaction);
-
-            foreach (var tr in similarTransactions)
-            {
-                tr.Category = transaction.Category;
-            }
-
-            _transactionRepository.UpdateRange(similarTransactions);
-
-            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
-        }
-
         /// <summary>
         /// Categorize all transactions with similar origin in one action
         /// </summary>
@@ -174,6 +162,41 @@ namespace Yaba.Application.TransactionServices.Impl
             await CategorizeTransactionsWithSimilarOriginsWithinAMonth(transaction, dtoBody.CategoryId);
 
             // send message to worker
+            await _bus.Publish(new UpdateTransactionsCategory { TransactionId = transaction.Id });
+        }
+
+        public async Task CategorizeAllOtherTransactionsOutsideMonth(long transactionId)
+        {
+            Transaction transaction = await _transactionRepository.GetById(transactionId);
+            Validate.NotNull(transaction);
+
+            var similarTransactions = await _transactionRepository.GetAllOtherTransactionsOutsideMonth(transaction);
+
+            foreach (var tr in similarTransactions)
+            {
+                tr.Category = transaction.Category;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
+
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+        }
+
+        public async Task CategorizeAllOtherTransactions(long transactionId)
+        {
+            Transaction transaction = await _transactionRepository.GetById(transactionId);
+            Validate.NotNull(transaction);
+
+            var similarTransactions = await _transactionRepository.GetAllOtherTransactions(transaction);
+
+            foreach (var tr in similarTransactions)
+            {
+                tr.Category = transaction.Category;
+            }
+
+            _transactionRepository.UpdateRange(similarTransactions);
+
+            Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
         }
 
         public async Task CategorizeTransactionsWithSimilarOriginsWithinAMonth(Transaction transaction, short categoryId)

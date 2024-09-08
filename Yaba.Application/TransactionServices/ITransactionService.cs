@@ -18,6 +18,8 @@ namespace Yaba.Application.TransactionServices
 
         Task CategorizeTransactionsUsingCategoryWorker(CategorizeTransactionsQueryDTO dtoQuery, CategorizeTransactionsBodyDTO dtoBody);
         Task CategorizeAllOtherTransactions(long transactionId);
+        Task CategorizeAllOtherTransactionsOutsideMonth(long transactionId);
+
         Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto);
 
         IEnumerable<CategoryDTO> GetCategories();
