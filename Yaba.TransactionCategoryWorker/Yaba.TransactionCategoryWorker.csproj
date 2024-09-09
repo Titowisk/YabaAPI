@@ -15,5 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yaba.Application\Yaba.Application.csproj" />
+    <ProjectReference Include="..\Yaba.Infrastructure.IoC\Yaba.Infrastructure.IoC.csproj" />
   </ItemGroup>
 </Project>
