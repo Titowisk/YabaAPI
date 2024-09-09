@@ -56,7 +56,8 @@ You can log in using:
 - change appsettings.Development.json
 Replace "Server=yabaapi-sql-server-2022-1" with "Server=localhost"
 - run rabbitMQ container
-`TODO`
+`docker run -d -p 15672:15672 -p 5672:5672 --hostname yaba-messaging --name tito-coelho rabbitmq:3-management`
+> default username and password of guest / guest 
 - run api and worker projects using Visual Studio
 
 # Notes
