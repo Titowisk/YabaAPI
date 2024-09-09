@@ -34,15 +34,18 @@ namespace Yaba.WebApi.Controllers
 
         [HttpPatch]
         [Route("bank-accounts/{bankAccountId}")]
+        [Route("{id}/bank-accounts/{bankAccountId}")]
         public async Task<IActionResult> CategorizeTransactions(
+            long id,
             int bankAccountId,
             [FromQuery] CategorizeTransactionsQueryDTO dtoQuery,
             [FromBody] CategorizeTransactionsBodyDTO dtoBody)
         {
             dtoQuery.UserId = GetLoggedUserId();
             dtoQuery.BankAccountId = bankAccountId;
+            dtoQuery.TransactionId = id;
 
-            if(dtoQuery.Year.HasValue)
+            if (dtoQuery.Year.HasValue)
             {
                 // Patch category from all similar transactions (origin) within that year
                 await _transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
@@ -50,6 +53,7 @@ namespace Yaba.WebApi.Controllers
             else
             {
                 // Patch category from all similar transactions (origin)
+                await _transactionService.CategorizeTransactionsUsingCategoryWorker(dtoQuery, dtoBody);
             }
             // TODO: use massTransit and RabbitMQ to categorize transactions with similar orgins from all the OTHER months
 
