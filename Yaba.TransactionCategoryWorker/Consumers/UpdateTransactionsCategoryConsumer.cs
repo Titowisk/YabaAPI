@@ -16,6 +16,7 @@ namespace Yaba.TransactionCategoryWorker.Consumers
             _logger = logger;
         }
 
+        // TODO: not working, study more about exchanges and queues of RabbitMQ
         public async Task Consume(ConsumeContext<UpdateTransactionsCategory> context)
         {
             try
