@@ -44,6 +44,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C55EFD8-6222-4CC4-85EF-9F358248A628}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yml = compose.yml
+		yaba-api.yaml = yaba-api.yaml
 	EndProjectSection
 EndProject
 Global
