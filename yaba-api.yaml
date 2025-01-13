@@ -1,6 +1,9 @@
 # This file contains all yaml configuration for the kubernetes cluster: Deployment, Service, Secret, StatefulSet
-# Using minikube, for some reason I have to run: docker context use default to avoid possible errors
+# Using minikube, for some reason I have to run: `docker context use default` to avoid possible errors
 # To Run the Application:
+# - Build the api image:
+#   - cd ./Yaba.API/
+#   - docker build -t yaba-api:latest -f .\Yaba.WebApi\Dockerfile .
 # - minikube start
 # - minikube image load yaba-api:latest (if exists is necessary to manually remove the older image) 
 # - kubectl apply -f yaba-api.yaml
@@ -143,4 +146,3 @@ spec:
   - protocol: TCP
     port: 1433
     targetPort: 1433
-    
