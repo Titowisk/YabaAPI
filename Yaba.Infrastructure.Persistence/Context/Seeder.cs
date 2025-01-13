@@ -7,6 +7,7 @@ using Yaba.Domain.Models.BankAccounts.Enumerations;
 using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Transactions.Enumerations;
 using Yaba.Domain.Models.Users;
+using Yaba.Infrastructure.Security;
 
 namespace Yaba.Infrastructure.Persistence.Context
 {
@@ -18,7 +19,9 @@ namespace Yaba.Infrastructure.Persistence.Context
             if (doesUserExist)
                 return;
 
-            User testUser = new("test-user", "test-seed@gmail.com", "123Correct_");
+            string encryptedPassword = SecurityManager.GeneratePbkdf2Hash("123Correct_");
+
+            User testUser = new("test-user", "test-seed@gmail.com", encryptedPassword);
             dataContext.Users.Add(testUser);
             dataContext.SaveChanges();
 
