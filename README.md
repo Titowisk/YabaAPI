@@ -62,6 +62,7 @@ You can log in using:
 	- Use another Pod ? Multiple container Pod ?
 - Deploy rabbitMQ to the cluster using ?
 - Add otel colector to the cluster
+- Monitor the cluster using prometheus + grafana
 
 ## Continuous Integration
 - changes to api should trigger a build
