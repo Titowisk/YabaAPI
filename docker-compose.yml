@@ -1,0 +1,23 @@
+services:
+# dockerhub page of sqlserver https://hub.docker.com/_/microsoft-mssql-server
+  sql-server-2022:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "A&VeryComplex123Password"
+      ACCEPT_EULA: "Y"
+  yaba.webapi:
+    build:
+      context: .
+      dockerfile: Yaba.WebApi/Dockerfile
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    image: ${DOCKER_REGISTRY-}yabawebapi
+    depends_on:
+      - sql-server-2022
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - JwtConfig__SecretKey=this-is-only-for-development-and-glad-i-am-not-using-it-in-production
+      - ConnectionStrings__SqlServerDB=Server=sql-server-2022;Database=yaba;User Id=sa;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True
