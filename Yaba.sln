@@ -19,27 +19,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.2 - CrossCutting", "4.2 -
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.3 - Services", "4.3 - Services", "{D616B286-080E-4DD8-87F3-F6320260DA03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Domain", "Yaba.Domain\Yaba.Domain.csproj", "{FCA33D67-0B81-4488-A959-ABCD56142291}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Domain", "src\Yaba.Domain\Yaba.Domain.csproj", "{FCA33D67-0B81-4488-A959-ABCD56142291}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.Persistence", "Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj", "{EAD68103-9B66-436B-BE28-79F8AE94E0CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.Persistence", "src\Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj", "{EAD68103-9B66-436B-BE28-79F8AE94E0CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.DTO", "Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj", "{202890FD-587D-4339-ABD1-D33CD806E650}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.DTO", "src\Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj", "{202890FD-587D-4339-ABD1-D33CD806E650}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Application", "Yaba.Application\Yaba.Application.csproj", "{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Application", "src\Yaba.Application\Yaba.Application.csproj", "{5159CB8D-0F0B-4D65-AE24-D89C00EEBE94}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.Security", "Yaba.Infrastructure.Security\Yaba.Infrastructure.Security.csproj", "{4B3F1754-8AAE-4128-ADD2-C0F97929898C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.Security", "src\Yaba.Infrastructure.Security\Yaba.Infrastructure.Security.csproj", "{4B3F1754-8AAE-4128-ADD2-C0F97929898C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebJob", "Yaba.WebJob\Yaba.WebJob.csproj", "{55CA9595-8510-47C6-8E2C-D4802DAD0400}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebJob", "src\Yaba.WebJob\Yaba.WebJob.csproj", "{55CA9595-8510-47C6-8E2C-D4802DAD0400}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.AzureStorageQueue", "Yaba.Infrastructure.AzureStorageQueue\Yaba.Infrastructure.AzureStorageQueue.csproj", "{D51DAB31-4142-4115-B86E-72501A7764D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.AzureStorageQueue", "src\Yaba.Infrastructure.AzureStorageQueue\Yaba.Infrastructure.AzureStorageQueue.csproj", "{D51DAB31-4142-4115-B86E-72501A7764D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.IoC", "Yaba.Infrastructure.IoC\Yaba.Infrastructure.IoC.csproj", "{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Infrastructure.IoC", "src\Yaba.Infrastructure.IoC\Yaba.Infrastructure.IoC.csproj", "{EBA0F6DE-D502-46EB-B55E-765ABAB4DF02}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AE5CFBDE-A864-472E-9DDD-687520CDD876}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.Tests", "test\Yaba.Tests\Yaba.Tests.csproj", "{8E7E34B8-28DC-42BA-8844-B3607F767133}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebApi", "Yaba.WebApi\Yaba.WebApi.csproj", "{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaba.WebApi", "src\Yaba.WebApi\Yaba.WebApi.csproj", "{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C55EFD8-6222-4CC4-85EF-9F358248A628}"
 	ProjectSection(SolutionItems) = preProject

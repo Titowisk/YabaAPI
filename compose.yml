@@ -13,7 +13,7 @@ services:
     yaba-api:
         # build: . use the current directory, so I must use the CLI in the solution directory
         build:
-            dockerfile: ./Yaba.WebApi/Dockerfile
+            dockerfile: ./src/Yaba.WebApi/Dockerfile
         depends_on:
             - sql-server-2022
         environment:

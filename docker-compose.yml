@@ -10,7 +10,7 @@ services:
   yaba.webapi:
     build:
       context: .
-      dockerfile: Yaba.WebApi/Dockerfile
+      dockerfile: src/Yaba.WebApi/Dockerfile
     ports:
       - "5000:8080"
       - "5001:8081"
