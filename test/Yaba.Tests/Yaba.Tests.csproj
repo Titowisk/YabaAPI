@@ -27,6 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Yaba.Application\Yaba.Application.csproj" />
+    <ProjectReference Include="..\..\src\Yaba.Domain\Yaba.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Yaba.Infrastructure.AzureStorageQueue\Yaba.Infrastructure.AzureStorageQueue.csproj" />
+    <ProjectReference Include="..\..\src\Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj" />
+    <ProjectReference Include="..\..\src\Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\..\Yaba.Application\Yaba.Application.csproj" />
     <ProjectReference Include="..\..\Yaba.Domain\Yaba.Domain.csproj" />
   </ItemGroup>
