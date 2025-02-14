@@ -12,14 +12,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Yaba.WebApi/Yaba.WebApi.csproj", "Yaba.WebApi/"]
-COPY ["Yaba.Application/Yaba.Application.csproj", "Yaba.Application/"]
-COPY ["Yaba.Domain/Yaba.Domain.csproj", "Yaba.Domain/"]
-COPY ["Yaba.Infrastructure.DTO/Yaba.Infrastructure.DTO.csproj", "Yaba.Infrastructure.DTO/"]
-COPY ["Yaba.Infrastructure.AzureStorageQueue/Yaba.Infrastructure.AzureStorageQueue.csproj", "Yaba.Infrastructure.AzureStorageQueue/"]
-COPY ["Yaba.Infrastructure.Persistence/Yaba.Infrastructure.Persistence.csproj", "Yaba.Infrastructure.Persistence/"]
-COPY ["Yaba.Infrastructure.Security/Yaba.Infrastructure.Security.csproj", "Yaba.Infrastructure.Security/"]
-COPY ["Yaba.Infrastructure.IoC/Yaba.Infrastructure.IoC.csproj", "Yaba.Infrastructure.IoC/"]
+COPY ["src/Yaba.WebApi/Yaba.WebApi.csproj", "Yaba.WebApi/"]
+COPY ["src/Yaba.Application/Yaba.Application.csproj", "Yaba.Application/"]
+COPY ["src/Yaba.Domain/Yaba.Domain.csproj", "Yaba.Domain/"]
+COPY ["src/Yaba.Infrastructure.DTO/Yaba.Infrastructure.DTO.csproj", "Yaba.Infrastructure.DTO/"]
+COPY ["src/Yaba.Infrastructure.AzureStorageQueue/Yaba.Infrastructure.AzureStorageQueue.csproj", "Yaba.Infrastructure.AzureStorageQueue/"]
+COPY ["src/Yaba.Infrastructure.Persistence/Yaba.Infrastructure.Persistence.csproj", "Yaba.Infrastructure.Persistence/"]
+COPY ["src/Yaba.Infrastructure.Security/Yaba.Infrastructure.Security.csproj", "Yaba.Infrastructure.Security/"]
+COPY ["src/Yaba.Infrastructure.IoC/Yaba.Infrastructure.IoC.csproj", "Yaba.Infrastructure.IoC/"]
 RUN dotnet restore "./Yaba.WebApi/Yaba.WebApi.csproj"
 COPY . .
 WORKDIR "/src/Yaba.WebApi"
