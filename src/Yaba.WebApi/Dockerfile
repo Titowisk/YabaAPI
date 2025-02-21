@@ -21,7 +21,7 @@ COPY ["src/Yaba.Infrastructure.Persistence/Yaba.Infrastructure.Persistence.cspro
 COPY ["src/Yaba.Infrastructure.Security/Yaba.Infrastructure.Security.csproj", "Yaba.Infrastructure.Security/"]
 COPY ["src/Yaba.Infrastructure.IoC/Yaba.Infrastructure.IoC.csproj", "Yaba.Infrastructure.IoC/"]
 RUN dotnet restore "./Yaba.WebApi/Yaba.WebApi.csproj"
-COPY . .
+COPY ./src .
 WORKDIR "/src/Yaba.WebApi"
 RUN dotnet build "./Yaba.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
