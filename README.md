@@ -65,9 +65,11 @@ You can log in using:
 - Monitor the cluster using prometheus + grafana
 
 ## Continuous Integration
-- changes to api should trigger a build
-- changes to worker should trigger a build
-- changes to database should ?
+- new Pull Requests should trigger the application unit tests
+- closing Pull Requests should trigger a new docker image push
+- a successfull image push should trigger a deployment to the kubernetes cluster
+	- the deployment is done by changing the application.yaml tracked by ArgoCD
+
 - new exchanges/topics/queues should ?
 
 ## Continuous Delivery
