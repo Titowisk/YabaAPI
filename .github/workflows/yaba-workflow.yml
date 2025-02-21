@@ -3,8 +3,8 @@ name: yaba continuous integration
 on: [workflow_dispatch]
 
 env:
-  REGISTRY: titowisk
-  IMAGE_NAME: yaba-api
+  REGISTRY: docker.io
+  IMAGE_NAME: titowisk/yaba-api
 
 jobs:
   unit-tests:
