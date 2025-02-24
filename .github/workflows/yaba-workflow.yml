@@ -78,16 +78,13 @@ jobs:
       with:
         repository: titowisk/yaba-manifests
         token: ${{ secrets.GITHUB_TOKEN }}
+        path: yaba-manifests
     - name: Update image version in ArgoCD manifest
-      working-directory: yaba-manifests
       run: |
-        echo $(ls -a)
         sed -i 's|image: .*$|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}|' yaba-api/dev/deployment.yaml
 
     - name: Commit and push changes
-      working-directory: yaba-manifests
       run: |
-        echo $(ls -a)
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add yaba-api/dev/deployment.yaml
