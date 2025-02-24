@@ -69,5 +69,28 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  update-argoCD:
+    needs: push-image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository yaba-manifests
+      uses: actions/checkout@v4
+      with:
+        repository: titowisk/yaba-manifests
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: yaba-api/dev/deployment.yaml
+    - name: Update image version in ArgoCD manifest
+      run: |
+        cd yaba-api/dev
+        sed -i 's|image: .*$|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}|' yaba-api/dev/deployment.yaml
+
+    - name: Commit and push changes
+      run: |
+        cd yaba-api/dev
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add yaba-api/dev/deployment.yaml
+        git commit -m "Update image version to ${{ steps.meta.outputs.tags }}"
+        git push
 # References
 # https://github.com/actions/starter-workflows/blob/main/ci/docker-publish.yml 
