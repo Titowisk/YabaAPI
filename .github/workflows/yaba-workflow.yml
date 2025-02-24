@@ -57,17 +57,17 @@ jobs:
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
-        with:
-          context: .
-          file: src/Yaba.WebApi/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # - name: Build and push Docker image
+      #   id: build-and-push
+      #   uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+      #   with:
+      #     context: .
+      #     file: src/Yaba.WebApi/Dockerfile
+      #     push: ${{ github.event_name != 'pull_request' }}
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
 
   update-argoCD:
     needs: push-image
@@ -78,14 +78,13 @@ jobs:
       with:
         repository: titowisk/yaba-manifests
         token: ${{ secrets.GITHUB_TOKEN }}
-        path: yaba-api/dev/deployment.yaml
     - name: Update image version in ArgoCD manifest
-      working-directory: ./yaba-manifests
+      working-directory: yaba-manifests
       run: |
         sed -i 's|image: .*$|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}|' yaba-api/dev/deployment.yaml
 
     - name: Commit and push changes
-      working-directory: ./yaba-manifests
+      working-directory: yaba-manifests
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
