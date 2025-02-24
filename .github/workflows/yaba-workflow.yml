@@ -81,7 +81,7 @@ jobs:
         path: yaba-manifests
     - name: Update image version in ArgoCD manifest
       run: |
-        sed -i 's|image: .*$|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}|' yaba-api/dev/deployment.yaml
+        sed -i 's|image: .*$|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}|' yaba-manifests/yaba-api/dev/deployment.yaml
 
     - name: Commit and push changes
       run: |
