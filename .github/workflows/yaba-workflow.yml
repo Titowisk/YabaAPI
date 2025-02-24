@@ -12,6 +12,7 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: titowisk/yaba-api
+  ACTIONS_RUNNER_DEBUG: true
 
 jobs:
   unit-tests:
@@ -81,11 +82,13 @@ jobs:
         path: yaba-api/dev/deployment.yaml
     - name: Update image version in ArgoCD manifest
       run: |
+        ls
         cd yaba-manifests
         sed -i 's|image: .*$|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}|' yaba-api/dev/deployment.yaml
 
     - name: Commit and push changes
       run: |
+        ls
         cd yaba-manifests
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
