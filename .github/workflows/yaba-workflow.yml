@@ -1,6 +1,13 @@
 name: yaba continuous integration
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - v*
 
 env:
   REGISTRY: docker.io
