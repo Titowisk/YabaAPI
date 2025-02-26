@@ -82,7 +82,7 @@ jobs:
 
     - name: Extract first tag
       id: extract-tag
-      run: echo "::set-output name=tag::$(echo ${{ steps.meta.outputs.tags }} | cut -d ',' -f 1)"
+      run: echo "::set-output name=tag::$(echo ${{ steps.meta.outputs.tags }} | cut -d ',' -f 2)"
 
     - name: Checkout Repository yaba-manifests
       uses: actions/checkout@v4
