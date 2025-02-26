@@ -36,38 +36,38 @@ jobs:
       
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
-      # - name: Log into registry ${{ env.REGISTRY }}
-      #   if: github.event_name != 'pull_request'
-      #   uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-      #   with:
-      #     registry: ${{ env.REGISTRY }}
-      #     username: ${{ secrets.DOCKER_USER_NAME }}
-      #     password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
-      # - name: Extract Docker metadata
-      #   id: meta
-      #   uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
-      #   with:
-      #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
-      # - name: Build and push Docker image
-      #   id: build-and-push
-      #   uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
-      #   with:
-      #     context: .
-      #     file: src/Yaba.WebApi/Dockerfile
-      #     push: ${{ github.event_name != 'pull_request' }}
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        with:
+          context: .
+          file: src/Yaba.WebApi/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   update-argoCD:
-    needs: push-image
+    # needs: push-image
     runs-on: ubuntu-latest
     steps:
     # Extract metadata (tags, labels) for Docker
@@ -78,24 +78,27 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+    - name: Extract first tag
+      id: extract-tag
+      run: echo "::set-output name=tag::$(echo ${{ steps.meta.outputs.tags }} | cut -d ',' -f 1)"
+
     - name: Checkout Repository yaba-manifests
       uses: actions/checkout@v4
       with:
         repository: titowisk/yaba-manifests
         token: ${{ secrets.YABA_MANIFESTS_PAT }}
         path: yaba-manifests
-    - name: debug echo
-      run: echo "${{ steps.meta.outputs.tags }}"
     - name: Update image version in ArgoCD manifest
       run: |
-        sed -i 's|image: .*$|image: docker.io/titowisk/yaba-api:docker.io/titowisk/yaba-api:v0.5.2|' yaba-manifests/yaba-api/dev/deployment.yaml
+        sed -i 's@image: .*$@image: ${{ steps.extract-tag.outputs.tag }}@' yaba-manifests/yaba-api/dev/deployment.yaml
+        
     - name: Commit and push changes
       working-directory: yaba-manifests
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add yaba-api/dev/deployment.yaml
-        git commit -m "Update image version to v0.5.2"
+        git commit -m "Update image version to ${{ steps.meta.outputs.tags }}"
         git push
 # References
 # https://github.com/actions/starter-workflows/blob/main/ci/docker-publish.yml 
