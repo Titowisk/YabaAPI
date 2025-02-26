@@ -3,10 +3,10 @@ name: yaba continuous integration
 on:
   workflow_dispatch:
   push:
-    branches:
-      - fix/github-action
-    # tags:
-    #   - v*
+    # branches:
+    #   - fix/github-action
+    tags:
+      - v*
 
 env:
   REGISTRY: docker.io
@@ -82,7 +82,7 @@ jobs:
 
     - name: Extract first tag
       id: extract-tag
-      run: echo "::set-output name=tag::$(echo ${{ steps.meta.outputs.tags }} | cut -d ',' -f 2)"
+      run: echo "::set-output name=tag::$(echo ${{ steps.meta.outputs.tags }} | cut -d ',' -f 1)"
 
     - name: Checkout Repository yaba-manifests
       uses: actions/checkout@v4
