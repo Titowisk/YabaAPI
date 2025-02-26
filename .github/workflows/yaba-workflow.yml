@@ -3,9 +3,6 @@ name: yaba continuous integration
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
-      - main
     tags:
       - v*
 
@@ -73,6 +70,14 @@ jobs:
     needs: push-image
     runs-on: ubuntu-latest
     steps:
+    # Extract metadata (tags, labels) for Docker
+    # https://github.com/docker/metadata-action
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
     - name: Checkout Repository yaba-manifests
       uses: actions/checkout@v4
       with:
