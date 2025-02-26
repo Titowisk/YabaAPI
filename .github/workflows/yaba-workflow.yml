@@ -77,7 +77,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: titowisk/yaba-manifests
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.YABA_MANIFESTS_PAT }}
         path: yaba-manifests
     - name: Update image version in ArgoCD manifest
       run: |
