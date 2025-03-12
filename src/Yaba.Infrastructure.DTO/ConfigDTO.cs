@@ -15,4 +15,10 @@
         public string AzureWebJobsStorage { get; set; }
     }
 
+    public class AuthConfig
+    {
+        public string[] Issuers { get; set; }
+        public string[] Audiences { get; set; }
+        public string Authority { get; set; }
+    }
 }

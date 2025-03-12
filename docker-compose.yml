@@ -21,3 +21,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - JwtConfig__SecretKey=this-is-only-for-development-and-glad-i-am-not-using-it-in-production
       - ConnectionStrings__SqlServerDB=Server=sql-server-2022;Database=yaba;User Id=sa;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True
+      - AuthConfig__Authority=https://dev-sj62fenrmj4ar2vk.us.auth0.com/
+      - AuthConfig__Audiences__0=yaba-api
+      - AuthConfig__Audiences__1=yaba-auth0
+      - AuthConfig__Issuers__0=yaba-api
+      

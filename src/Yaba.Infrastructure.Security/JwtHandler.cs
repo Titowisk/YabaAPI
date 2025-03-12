@@ -15,15 +15,15 @@ namespace Yaba.Infrastructure.Security
 
             var claims = new Claim[]
             {
-                new Claim(ClaimTypes.Name, userName),
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
+                new(ClaimTypes.Name, userName),
+                new(JwtRegisteredClaimNames.Sub, userId.ToString())
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = "Yaba API",
-                Audience = "Yaba API",
+                Issuer = "yaba-api",
+                Audience = "yaba-api",
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
