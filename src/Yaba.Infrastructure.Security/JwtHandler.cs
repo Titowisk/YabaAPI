@@ -15,8 +15,8 @@ namespace Yaba.Infrastructure.Security
 
             var claims = new Claim[]
             {
-                new Claim(ClaimTypes.Name, userName),
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
+                new(ClaimTypes.Name, userName),
+                new(JwtRegisteredClaimNames.Sub, userId.ToString())
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor()
