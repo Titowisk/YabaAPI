@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,26 +28,6 @@ ConfigServiceCollection(builder);
 WebApplication app = builder.Build();
 ConfigWebApplication(app);
 
-void ConfigureTokenValidation(IServiceCollection services, SecurityKey securityKey)
-{
-    var tokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidateIssuer = true,
-        ValidIssuer = "Yaba API",
-        ValidateAudience = true,
-        ValidAudience = "Yaba API",
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = securityKey
-    };
-
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.RequireHttpsMetadata = builder.Environment.IsDevelopment();
-            options.SaveToken = true;
-            options.TokenValidationParameters = tokenValidationParameters;
-        });
-}
 
 static void ConfigWebApplication(WebApplication app)
 {
@@ -96,10 +77,8 @@ void ConfigServiceCollection(WebApplicationBuilder builder)
     });
 
     DependencyResolver.RegisterServices(builder.Services, builder.Configuration);
-
-    var secretKey = builder.Configuration.GetSection("JwtConfig:SecretKey").Value;
-    var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
-    ConfigureTokenValidation(builder.Services, securityKey);
+    
+    ConfigureTokenValidation(builder.Services);
 
     builder.Services.AddCors(options =>
     {
@@ -107,7 +86,35 @@ void ConfigServiceCollection(WebApplicationBuilder builder)
         {
             policyBuilder.AllowAnyHeader();
             policyBuilder.AllowAnyMethod();
-            policyBuilder.AllowAnyMethod();
+            policyBuilder.AllowAnyOrigin();
         });
     });
+}
+
+void ConfigureTokenValidation(IServiceCollection services)
+{
+    var secretKey = builder.Configuration.GetSection("JwtConfig:SecretKey").Value ?? string.Empty;
+    var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+
+    var authConfig = builder.Configuration.GetSection("AuthConfig").Get<AuthConfig>();
+
+    var tokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidIssuers = authConfig?.Issuers,
+        ValidateAudience = true,
+        ValidAudiences = authConfig?.Audiences,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = securityKey
+    };
+
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.Authority = authConfig?.Authority;
+
+            options.RequireHttpsMetadata = builder.Environment.IsDevelopment();
+            options.SaveToken = true;
+            options.TokenValidationParameters = tokenValidationParameters;
+        });
 }

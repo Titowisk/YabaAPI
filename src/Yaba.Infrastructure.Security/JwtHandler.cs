@@ -22,8 +22,8 @@ namespace Yaba.Infrastructure.Security
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = "Yaba API",
-                Audience = "Yaba API",
+                Issuer = "yaba-api",
+                Audience = "yaba-api",
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
