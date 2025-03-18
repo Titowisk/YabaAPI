@@ -1,25 +1,61 @@
 # Why the name compose.yml instead of docker-compose.yml ? > https://docs.docker.com/compose/compose-application-model/#the-compose-file
-
 services:
-    # dockerhub page of sqlserver https://hub.docker.com/_/microsoft-mssql-server
-    sql-server-2022:
-        image: "mcr.microsoft.com/mssql/server:2022-latest"
-        ports:
-            - "1433:1433"
-        environment:
-            SA_PASSWORD: "A&VeryComplex123Password"
-            ACCEPT_EULA: "Y"
+# dockerhub page of sqlserver https://hub.docker.com/_/microsoft-mssql-server
+  sql-server-2022:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "A&VeryComplex123Password"
+      ACCEPT_EULA: "Y"
 
-    yaba-api:
-        # build: . use the current directory, so I must use the CLI in the solution directory
-        build:
-            dockerfile: ./src/Yaba.WebApi/Dockerfile
-        depends_on:
-            - sql-server-2022
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-        # Because of the exposed ports on the api dockerfile
-        ports:
-            - "5000:8080"
-            - "5001:8081"
-        
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    container_name: zookeper
+    ports:
+      - 2181:2181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEPER_TICK_TIME=2000
+    networks:
+      - kafka-net
+
+  kafka-cp:
+    image: confluentinc/cp-kafka
+    container_name: kafka-cp
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+    networks:
+      - kafka-net
+
+  yaba.webapi:
+    build:
+      context: .
+      dockerfile: src/Yaba.WebApi/Dockerfile
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    image: ${DOCKER_REGISTRY-}yabawebapi
+    depends_on:
+      - sql-server-2022
+      - kafka-cp
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - JwtConfig__SecretKey=this-is-only-for-development-and-glad-i-am-not-using-it-in-production
+      - ConnectionStrings__SqlServerDB=Server=sql-server-2022;Database=yaba;User Id=sa;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True
+      - AuthConfig__Authority=https://dev-sj62fenrmj4ar2vk.us.auth0.com/
+      - AuthConfig__Audiences__0=yaba-api
+      - AuthConfig__Audiences__1=yaba-auth0
+      - AuthConfig__Issuers__0=yaba-api
+      - KafkaConfig__Topics__0=category-topic
+      - KafkaConfig__BootstrapServers=kafka:9093
+      - KafkaConfig__Partitions=3
+      - KafkaConfig__ReplicationFactor=1
+      
+networks:
+  kafka-net:    
