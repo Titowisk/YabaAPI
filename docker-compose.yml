@@ -26,7 +26,7 @@ services:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_BROKER_ID=1
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-cp:9092
 
   yaba.webapi:
     build:
@@ -47,8 +47,7 @@ services:
       - AuthConfig__Audiences__0=yaba-api
       - AuthConfig__Audiences__1=yaba-auth0
       - AuthConfig__Issuers__0=yaba-api
-      - KafkaConfig__Topics__0=category-topic
-      - KafkaConfig__BootstrapServers=kafka:9093
+      - KafkaConfig__BootstrapServers=kafka-cp:9092
       - KafkaConfig__Partitions=3
       - KafkaConfig__ReplicationFactor=1
  
