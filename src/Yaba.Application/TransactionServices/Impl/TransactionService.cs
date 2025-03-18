@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Yaba.Domain.Models.BankAccounts;
 using Yaba.Domain.Models.BankAccounts.Enumerations;
@@ -10,6 +11,7 @@ using Yaba.Domain.Models.Transactions.Enumerations;
 using Yaba.Infrastructure.AzureStorageQueue.Contracts;
 using Yaba.Infrastructure.DTO;
 using Yaba.Infrastructure.DTO.Transactions;
+using Yaba.Infrastructure.Kafka.Services;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
 using Yaba.Tools.Validations;
 using Transaction = Yaba.Domain.Models.Transactions.Transaction;
@@ -18,6 +20,7 @@ namespace Yaba.Application.TransactionServices.Impl
 {
     public class TransactionService : ITransactionService
     {
+        private readonly ProducerService _producerService;
         private readonly IQueueMessageService _queueMessageService;
         private readonly IBankAccountRepository _bankAccountRepository;
         private readonly ITransactionRepository _transactionRepository;
@@ -27,12 +30,14 @@ namespace Yaba.Application.TransactionServices.Impl
             UnitOfWork uow,
             IQueueMessageService queueMessageService,
             ITransactionRepository transactionRepository,
-            IBankAccountRepository bankAccountRepository)
+            IBankAccountRepository bankAccountRepository,
+            ProducerService producerService)
         {
             _queueMessageService = queueMessageService;
             _bankAccountRepository = bankAccountRepository;
             _transactionRepository = transactionRepository;
             _uow = uow;
+            _producerService = producerService;
         }
 
         public async Task Create(CreateUserTransactionDTO dto)
@@ -164,6 +169,15 @@ namespace Yaba.Application.TransactionServices.Impl
             _transactionRepository.UpdateRange(transactions);
 
             Validate.IsTrue(await _uow.CommitAsync(), "Ocorreu um problema na categorização das transações");
+        }
+
+        public async Task RequestEventStreamingCategorization(long transactionId, short categoryId, CancellationToken cancellationToken)
+        {
+            var transaction = await _transactionRepository.GetById(transactionId);
+
+            Validate.NotNull(transaction, "Transaction not found");
+
+            await _producerService.ProduceAsync(transaction.Id.ToString(), categoryId.ToString(), cancellationToken);
         }
 
         public async Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto)

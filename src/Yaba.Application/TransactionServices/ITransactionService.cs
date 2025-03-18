@@ -20,5 +20,6 @@ namespace Yaba.Application.TransactionServices
         Task GenerateRandomizedDataForGenericBank(GenerateDataDTO dto);
 
         IEnumerable<CategoryDTO> GetCategories();
+        Task RequestEventStreamingCategorization(long transactionId, short categoryId, System.Threading.CancellationToken cancellationToken);
     }
 }
