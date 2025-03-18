@@ -7,6 +7,27 @@ services:
     environment:
       SA_PASSWORD: "A&VeryComplex123Password"
       ACCEPT_EULA: "Y"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    container_name: zookeper
+    ports:
+      - 2181:2181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEPER_TICK_TIME=2000
+
+  kafka-cp:
+    image: confluentinc/cp-kafka
+    container_name: kafka-cp
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+
   yaba.webapi:
     build:
       context: .
@@ -17,6 +38,7 @@ services:
     image: ${DOCKER_REGISTRY-}yabawebapi
     depends_on:
       - sql-server-2022
+      - kafka-cp
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - JwtConfig__SecretKey=this-is-only-for-development-and-glad-i-am-not-using-it-in-production
@@ -25,4 +47,8 @@ services:
       - AuthConfig__Audiences__0=yaba-api
       - AuthConfig__Audiences__1=yaba-auth0
       - AuthConfig__Issuers__0=yaba-api
-      
+      - KafkaConfig__Topics__0=category-topic
+      - KafkaConfig__BootstrapServers=kafka:9093
+      - KafkaConfig__Partitions=3
+      - KafkaConfig__ReplicationFactor=1
+ 
