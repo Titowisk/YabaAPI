@@ -16,6 +16,7 @@ using Yaba.Domain.Models.Transactions;
 using Yaba.Domain.Models.Users;
 using Yaba.Infrastructure.AzureStorageQueue.Contracts;
 using Yaba.Infrastructure.AzureStorageQueue.Implementations;
+using Yaba.Infrastructure.Kafka.Services;
 using Yaba.Infrastructure.Persistence.Context;
 using Yaba.Infrastructure.Persistence.Repositories;
 using Yaba.Infrastructure.Persistence.UnitOfWork;
@@ -44,7 +45,7 @@ namespace Yaba.Infrastructure.IoC
             services.AddTransient<NuBankReader>();
 
             services.AddScoped<IQueueMessageService, QueueMessageService>();
-
+            services.AddScoped<ProducerService>();
         }
     }
 }
