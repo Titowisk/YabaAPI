@@ -51,6 +51,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Infrastructure", "src\Yaba.Infrastructure\Yaba.Infrastructure.csproj", "{EF3C64BA-A45B-4E3B-AD18-773C900E5CF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yaba.Worker.Categorizer", "src\Yaba.Worker.Categorizer\Yaba.Worker.Categorizer.csproj", "{F8FCD47B-C7A3-43A2-B0D5-D0A5AA59F66F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{EF3C64BA-A45B-4E3B-AD18-773C900E5CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF3C64BA-A45B-4E3B-AD18-773C900E5CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF3C64BA-A45B-4E3B-AD18-773C900E5CF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8FCD47B-C7A3-43A2-B0D5-D0A5AA59F66F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8FCD47B-C7A3-43A2-B0D5-D0A5AA59F66F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8FCD47B-C7A3-43A2-B0D5-D0A5AA59F66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8FCD47B-C7A3-43A2-B0D5-D0A5AA59F66F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,6 +135,7 @@ Global
 		{18349AAF-4D48-4301-BB1B-5A69DBF3C7A3} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
 		{F3CE3898-F590-4862-8C91-DD82949A9324} = {5C55EFD8-6222-4CC4-85EF-9F358248A628}
 		{EF3C64BA-A45B-4E3B-AD18-773C900E5CF8} = {C8FCBF3D-B2DE-4754-B3F9-1D076A03C163}
+		{F8FCD47B-C7A3-43A2-B0D5-D0A5AA59F66F} = {AFAB4D4C-1A62-42C9-9D6A-0284414545E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABB214B-4FF9-4C2C-9926-1467825E1EFE}
