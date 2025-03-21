@@ -1,12 +1,16 @@
+using Yaba.Infrastructure.Kafka.Services;
+
 namespace Yaba.Worker.Categorizer;
 
 public class KafkaWorker : BackgroundService
 {
     private readonly ILogger<KafkaWorker> _logger;
+    private readonly ConsumerService _consumerService;
 
-    public KafkaWorker(ILogger<KafkaWorker> logger)
+    public KafkaWorker(ILogger<KafkaWorker> logger, ConsumerService consumerService)
     {
         _logger = logger;
+        _consumerService = consumerService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -17,7 +21,8 @@ public class KafkaWorker : BackgroundService
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
-            await Task.Delay(1000, stoppingToken);
+
+            await _consumerService.ConsumeAsync(stoppingToken);
         }
     }
 }

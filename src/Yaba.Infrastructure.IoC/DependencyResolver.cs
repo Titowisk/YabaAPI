@@ -46,6 +46,7 @@ namespace Yaba.Infrastructure.IoC
 
             services.AddScoped<IQueueMessageService, QueueMessageService>();
             services.AddScoped<ProducerService>();
+            services.AddScoped<ConsumerService>();
         }
     }
 }
