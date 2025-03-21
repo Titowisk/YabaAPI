@@ -15,13 +15,10 @@ public class KafkaWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("Started worker running at: {time}", DateTimeOffset.Now);
+
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            }
-
             await _consumerService.ConsumeAsync(stoppingToken);
         }
     }
