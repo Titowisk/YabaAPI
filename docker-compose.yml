@@ -50,4 +50,20 @@ services:
       - KafkaConfig__BootstrapServers=kafka-cp:9092
       - KafkaConfig__Partitions=3
       - KafkaConfig__ReplicationFactor=1
+  
+  yaba.worker.categorizer:
+    build:
+      context: .
+      dockerfile: src/Yaba.Worker.Categorizer/Dockerfile
+    image: ${DOCKER_REGISTRY-}yabaworkercategorizer
+    depends_on:
+      - sql-server-2022
+      - kafka-cp
+      - yaba.webapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__SqlServerDB=Server=sql-server-2022;Database=yaba;User Id=sa;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True
+      - KafkaConfig__BootstrapServers=kafka-cp:9092
+      - KafkaConfig__GroupId=yaba-categorizer
+      - KafkaConfig__AutoOffsetReset=earliest
  
