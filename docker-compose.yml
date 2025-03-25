@@ -43,6 +43,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - JwtConfig__SecretKey=this-is-only-for-development-and-glad-i-am-not-using-it-in-production
       - ConnectionStrings__SqlServerDB=Server=sql-server-2022;Database=yaba;User Id=sa;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True
+      # there are environment variables not used, TODO: identify and remove them
       - AuthConfig__Authority=https://dev-sj62fenrmj4ar2vk.us.auth0.com/
       - AuthConfig__Audiences__0=yaba-api
       - AuthConfig__Audiences__1=yaba-auth0
@@ -63,6 +64,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__SqlServerDB=Server=sql-server-2022;Database=yaba;User Id=sa;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True
+      # there are environment variables not used, TODO: identify and remove them
       - KafkaConfig__BootstrapServers=kafka-cp:9092
       - KafkaConfig__GroupId=yaba-categorizer
       - KafkaConfig__AutoOffsetReset=earliest
@@ -70,10 +72,13 @@ services:
   kafka-ui:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka-cp
     ports:
       - 8080:8080
     environment:
       DYNAMIC_CONFIG_ENABLED: true
+      KAFKA_CLUSTERS_0_NAME: yaba-local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-cp:9092
   
       
