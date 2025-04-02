@@ -65,6 +65,8 @@ void ConfigServiceCollection(WebApplicationBuilder builder)
         .Configure<AzureConfig>(builder.Configuration.GetSection("AzureConfig"));
     builder.Services
         .Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
+    builder.Services
+        .Configure<KafkaConfig>(builder.Configuration.GetSection("KafkaConfig"));
 
     builder.Services.AddControllers()
         .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -77,7 +79,7 @@ void ConfigServiceCollection(WebApplicationBuilder builder)
     });
 
     DependencyResolver.RegisterServices(builder.Services, builder.Configuration);
-    
+
     ConfigureTokenValidation(builder.Services);
 
     builder.Services.AddCors(options =>

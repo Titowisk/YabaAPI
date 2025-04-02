@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Yaba.Application.TransactionServices;
 using Yaba.Infrastructure.DTO;
@@ -43,6 +44,16 @@ namespace Yaba.WebApi.Controllers
             dtoQuery.BankAccountId = bankAccountId;
             await _transactionService.CategorizeTransactionsWithSimilarOrigin(dtoQuery, dtoBody);
 
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("{id}/event-streaming-categorization")]
+        public async Task<IActionResult> CategorizeTransactions(long id,
+            [FromBody] CategorizeTransactionsBodyDTO dtoBody,
+            CancellationToken cancellationToken)
+        {
+            await _transactionService.RequestEventStreamingCategorization(id, dtoBody.CategoryId, cancellationToken);
             return Ok();
         }
 

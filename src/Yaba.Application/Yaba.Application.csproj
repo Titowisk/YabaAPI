@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Yaba.Infrastructure.DTO\Yaba.Infrastructure.DTO.csproj" />
     <ProjectReference Include="..\Yaba.Infrastructure.Persistence\Yaba.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\Yaba.Infrastructure.Security\Yaba.Infrastructure.Security.csproj" />
+    <ProjectReference Include="..\Yaba.Infrastructure\Yaba.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

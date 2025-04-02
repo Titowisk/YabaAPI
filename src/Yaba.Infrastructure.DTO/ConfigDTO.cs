@@ -21,4 +21,12 @@
         public string[] Audiences { get; set; }
         public string Authority { get; set; }
     }
+
+    public class KafkaConfig
+    {
+        public string BootstrapServers { get; set; }
+        public string[] Topics { get; set; }
+        public int Partitions { get; set; }
+        public short ReplicationFactor { get; set; }
+    }
 }

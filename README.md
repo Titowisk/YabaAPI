@@ -53,23 +53,41 @@ You can log in using:
 
 # Roadmaps
 
+- deploy the application to a Cloud (Google, Azure, Aws...)
+- Monitor the cluster using prometheus + grafana ?
+- Add rabbitMQ example
+
 ## Kubernetes
 
-- Create a kubernetes cluster
-- Deploy the api to the cluster using Deployment
-- Deploy the database to the cluster using StatefulSet
+- Create a kubernetes cluster [OK]
+- Deploy the api to the cluster using Deployment [OK]
+- Deploy the database to the cluster using StatefulSet [OK]
 - Deploy worker to the cluster using Deployment
 	- Use another Pod ? Multiple container Pod ?
 - Deploy rabbitMQ to the cluster using ?
 - Add otel colector to the cluster
-- Monitor the cluster using prometheus + grafana
 
 ## Continuous Integration
 - new Pull Requests should trigger the application unit tests
-- closing Pull Requests should trigger a new docker image push
-- a successfull image push should trigger a deployment to the kubernetes cluster
-	- the deployment is done by changing the application.yaml tracked by ArgoCD
+- closing Pull Requests should trigger a new docker image push [OK]
 
 - new exchanges/topics/queues should ?
 
 ## Continuous Delivery
+- a successfull image push should trigger a deployment to the kubernetes cluster (ArgoCD) [OK]
+	- the deployment is done by changing the application.yaml tracked by ArgoCD [OK]
+
+# ToDo (Currently Working On)
+- Try to deploy kafka components (kafka-cp, zookerper, kafka-ui) and yaba worker as it is to the minikube local cluster. 
+	- see docker-compose.yaml for reference
+- Remember how to apply the application.yaml (ArgoCD) manually to make repeated tests until a successfull deployment
+- Check with Postman and kafka ui if everything is working inside the cluster
+
+## 01/04/2025
+- I learned how to create different applications in a cluster inside minikube using argoCD
+- But my kafka test is not working yet, ArgoCD is complaining about something that I couldn't check because
+the client is throwing errors. Minikube is buggy.
+
+## 31/03/2025
+- I made changes that now need to be tested. I asked chatGPT to help me setting up what is needed.
+- Now I need to test the first option to see if works like I want
